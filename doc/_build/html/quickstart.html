@@ -1,0 +1,220 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quickstart &mdash; Photometry Pipeline 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="top" title="Photometry Pipeline 0.9 documentation" href="index.html" />
+    <link rel="next" title="Functions" href="functions.html" />
+    <link rel="prev" title="Installation and Setup" href="install.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="functions.html" title="Functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation and Setup"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Photometry Pipeline 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Quickstart</a><ul>
+<li><a class="reference internal" href="#prerequisits">Prerequisits</a></li>
+<li><a class="reference internal" href="#running-pp">Running PP</a><ul>
+<li><a class="reference internal" href="#fully-automated-mode">Fully Automated Mode</a></li>
+<li><a class="reference internal" href="#semi-automated-mode">Semi-Automated Mode</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pp-diagnostics">PP Diagnostics</a></li>
+<li><a class="reference internal" href="#results">Results</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="previous chapter">Installation and Setup</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="functions.html"
+                        title="next chapter">Functions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/quickstart.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="quickstart">
+<span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="prerequisits">
+<h2>Prerequisits<a class="headerlink" href="#prerequisits" title="Permalink to this headline">¶</a></h2>
+<p>Image data should be properly reduced before using the pipeline for
+best results. PP&#8217;s ability to provide astrometric and photometric
+calibration puts some constraints on the way data is stored: data from
+separated fields, as well as data using different instrument settings
+(e.g., different binning modes) should be stored in individual
+directories, which in turn should be separated by filters:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>-+- all_data -+
+              |
+              +- field_1 -+- filter_1
+              |           +- filter_2
+              |           +- filter_3
+              |
+              +- field_2 -+- filter_1
+              |           +- filter_2
+             ...
+</pre></div>
+</div>
+<p>Separated fields are defined as having gaps between individual frames
+that are comparable to, or larger than, the field of view. Series of
+frames that were tracked on a moving target can be put in the same
+directory if the total track is smaller than 3-5 times the size of a
+single-frame field of view.</p>
+<p>Moving objects are currently only identified based on the images&#8217;
+<code class="docutils literal"><span class="pre">OBJECT</span></code> keywords. The object name should be as simple as possible,
+consisting either of the bodies official number or designation; please
+use either a blank or an underscore to separate the designation&#8217;s year
+from the identifier.</p>
+</div>
+<div class="section" id="running-pp">
+<h2>Running PP<a class="headerlink" href="#running-pp" title="Permalink to this headline">¶</a></h2>
+<p>PP can be run in a fully automated or semi-automated mode, providing
+different levels of user interaction.</p>
+<div class="section" id="fully-automated-mode">
+<h3>Fully Automated Mode<a class="headerlink" href="#fully-automated-mode" title="Permalink to this headline">¶</a></h3>
+<p>In the directory tree example above, PP can be run in different
+places, treating the data differently. If you want to run PP only on
+data for one field and filter, you can change in that directory and
+<strong>run PP locally on all fits files in that directory</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>cd all_data/field_1/filter_1
+pp_run *fits
+</pre></div>
+</div>
+<p>If your data are organized as shown in the example above, you can <strong>run
+PP from any higher level directory to analyze all underlying
+directories in a consecutive way</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>cd all_data
+pp_run all
+</pre></div>
+</div>
+<p>Passing <code class="docutils literal"><span class="pre">all</span></code> signalizes PP to walk through underlying directories,
+starting from the current one. In case you want PP to only run on a
+subset of fits files, you can use option <cite>-prefix</cite>, e.g.,</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>pp_run -prefix reduced all
+</pre></div>
+</div>
+<p>is the equivalent of using only files that are included in
+<code class="docutils literal"><span class="pre">reduced*.fits</span></code>.</p>
+</div>
+<div class="section" id="semi-automated-mode">
+<h3>Semi-Automated Mode<a class="headerlink" href="#semi-automated-mode" title="Permalink to this headline">¶</a></h3>
+<p>TBD</p>
+</div>
+</div>
+<div class="section" id="pp-diagnostics">
+<h2>PP Diagnostics<a class="headerlink" href="#pp-diagnostics" title="Permalink to this headline">¶</a></h2>
+<p>PP generates by default significant amounts of diagnostic information
+on each run. These information can be accessed in the individual
+directories where the data resides with any web browser, e.g.,</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>firefox all_data/field_2/filter_3/diagnostics.html
+</pre></div>
+</div>
+<p>If you ran PP with the <cite>all</cite> argument (see above), a file
+<code class="docutils literal"><span class="pre">summary.html</span></code> will be generated in the root directory (<code class="docutils literal"><span class="pre">all_data</span></code>),
+which provides links to the individual <code class="docutils literal"><span class="pre">index.html</span></code> files.</p>
+<p>More information on the diagnostic output is available here:
+<a class="reference internal" href="diagnostics.html#diagnostics"><span>Diagnostics</span></a>.</p>
+</div>
+<div class="section" id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
+<p>PP derives the calibrated photometry for the target that it finds in
+the <code class="docutils literal"><span class="pre">OBJECT</span></code> header keyword, as well as one rather bright &#8216;control
+star&#8217; that is used to check the consistency of the photometric
+calibration. Results are written to files
+<code class="docutils literal"><span class="pre">photometry_&lt;objectname&gt;.dat</span></code> in the respective filter directory.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="functions.html" title="Functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation and Setup"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Photometry Pipeline 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Michael Mommert.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+    </div>
+  </body>
+</html>
