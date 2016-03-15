@@ -86,7 +86,7 @@ pp_process_idx = 0
 
 ### potential FITS header keywords for looking up the instrument and filter 
 instrument_keys = ['INSTRUME']
-filter_keys     = ['FILTER', 'CCDFLTID']
+filter_keys     = ['FILTER', 'CCDFLTID', "FILTERS']
 
 
 
