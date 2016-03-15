@@ -205,6 +205,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                                       None, obsparam,
                                       display=True, diagnostics=False,
                                       dont_run_registration_again=True)
+                    return output
                 else:
                     logging.critical('No match possible with either catalog ' \
                                      + '- abort!') 
