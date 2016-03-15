@@ -737,8 +737,8 @@ def add_results(data):
             plt.gca().add_patch(circle)
 
             # place expected position (if within thumbnail)
-            if (exp_x >= 0 and exp_x <= boxsize/2. and 
-                exp_y >= 0 and exp_y <= boxsize/2.): 
+            if (abs(exp_x-obj_x) <= boxsize/2. and 
+                abs(exp_y-obj_y) <= boxsize/2.): 
                 plt.scatter(exp_x-obj_x+boxsize/2., 
                             exp_y-obj_y+boxsize/2., 
                             marker='+', s=100, color='green')
