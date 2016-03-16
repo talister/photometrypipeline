@@ -582,8 +582,6 @@ def add_calibration(data):
 
         # plot reference sources
         if len(dat['match'][0][3]) > 0 and len(dat['match'][0][4]) > 0:
-            print match[0][3], match[0][4]
-
             w = wcs.WCS(header)
             world_coo = [[dat['match'][0][3][idx], dat['match'][0][4][idx]] \
                          for idx in dat['zp_usedstars']]

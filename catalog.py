@@ -675,6 +675,12 @@ class catalog:
             # ... derive a linear best fit and remove outliers (>3 sigma)
             ri = numpy.array(filtered_mags[1]) - numpy.array(filtered_mags[2])
             gr = numpy.array(filtered_mags[0]) - numpy.array(filtered_mags[1])
+
+            if len(ri) == 0 or len(gr) == 0:
+                logging.warning('no suitable stars for transformation to %s' %
+                                targetfilter)
+                return 0
+
             param = optimization.curve_fit(self.lin_func, ri, gr, [1,0])[0]
             resid = numpy.sqrt(((ri+param[0]*gr-param[0]*param[1])/
                                 (param[0]**2+1))**2+
