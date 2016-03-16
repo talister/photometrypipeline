@@ -425,6 +425,8 @@ def add_calibration(data):
 
     ### produce calibration plot for each frame
     for idx, cat in enumerate(data['catalogs']):
+        if not data['zeropoints'][idx]['success']:
+            continue
         ax1 = plt.subplot(211)
         ax1.set_title('%s: %s-band from %s' % 
                       (cat.catalogname, data['filtername'], 
@@ -507,15 +509,18 @@ def add_calibration(data):
     html += "<TH>Filename</TH><TH>Zeropoint (mag)</TH><TH>ZP_sigma (mag)</TH>" \
             + "<TH>N_stars</TH><TH>N_matched</TH>\n</TR>\n"
     for dat in data['zeropoints']:
-        html += ("<TR><TD><A HREF=\"#%s\">%s</A></TD>" \
-                 + "<TD>%7.4f</TD><TD>%7.4f</TD><TD>%d</TD>" \
-                 + "<TD>%d</TD>\n</TR>" ) % \
+        if 'plotfilename' in dat.keys():
+            html += ("<TR><TD><A HREF=\"#%s\">%s</A></TD>" \
+                     + "<TD>%7.4f</TD><TD>%7.4f</TD><TD>%d</TD>" \
+                     + "<TD>%d</TD>\n</TR>" ) % \
                 (dat['plotfilename'], dat['filename'], dat['zp'],
                  dat['zp_sig'], dat['zp_nstars'],
                  len(dat['match'][0][0]))
     html += "</TABLE>\n"
     html += "<P><IMG SRC=\"%s\">" % data['zpplot']
     for dat in data['zeropoints']:
+        if not dat['success']:
+            continue
         catframe = _pp_conf.diagroot + '/' + \
                    dat['filename'][:dat['filename'].find('.ldac')] + \
                    '.fits_reference_stars.png'
@@ -576,7 +581,9 @@ def add_calibration(data):
         img.axes.get_yaxis().set_visible(False)
 
         # plot reference sources
-        if len(dat['match'][0][0]) > 0:
+        if len(dat['match'][0][3]) > 0 and len(dat['match'][0][4]) > 0:
+            print match[0][3], match[0][4]
+
             w = wcs.WCS(header)
             world_coo = [[dat['match'][0][3][idx], dat['match'][0][4][idx]] \
                          for idx in dat['zp_usedstars']]

@@ -190,6 +190,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         clipping_steps = []
         #  [zeropoint, sigma, chi2, source indices in match array, match]
         
+        # fewer than 3 reference stars -> skip this catalog
         if len(residuals) < 3:
             if display:
                 print ('Warning: %d reference stars after source matching ' \
@@ -197,7 +198,19 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                 logging.warning(('Warning: %d reference stars after source ' \
                                 + 'matching for frame %s') % \
                                 (len(residuals), cat.catalogname))
-                clipping_steps.append([0, 0, 1e-10, [], [[], []]])
+                clipping_steps = [[0, 0, 1e-10, [], [[], []]]]
+
+                output['zeropoints'].append({'filename':cat.catalogname,
+                                'zp': numpy.nan,
+                                'zp_sig': numpy.nan,
+                                'zp_nstars': 0,
+                                'zp_usedstars': 0, 
+                                'obstime':cat.obstime,
+                                'match':[[],[]],
+                                'clipping_steps':clipping_steps,
+                                'zp_idx': numpy.nan,
+                                'success': False })
+                continue
 
 
         # if minstars is a fraction, use minstars*len(match[0][0])
@@ -256,7 +269,8 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                      'obstime':cat.obstime,
                                      'match':match,
                                      'clipping_steps':clipping_steps,
-                                     'zp_idx': idx})
+                                     'zp_idx': idx,
+                                     'success': True})
 
 
         print '%6.3f+-%.3f (%d/%d reference stars)' % \
