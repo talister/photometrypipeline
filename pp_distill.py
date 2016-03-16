@@ -97,14 +97,16 @@ def distill(catalogs, man_targetname, offset, display=False,
             extract_other_catalog=['ra.deg', 'dec.deg', 'FLAGS', 'MAG_APER'],
             tolerance=1./3600.)
 
-    ctlstar_idx = numpy.argsort(match[1][3])[int(0.1*len(match[1][3]))]
+    if len(match[0][0]) > 0:
 
-    for cat_idx, cat in enumerate(catalogs):
-        objects.append({'ident'      : 'control_star',
-                        'obsdate.jd' :  cat.obstime,
-                        'cat_idx'    :  cat_idx,
-                'ra.deg'     :  match[1][0][ctlstar_idx],
-                'dec.deg'    :  match[1][1][ctlstar_idx]})
+        ctlstar_idx = numpy.argsort(match[1][3])[int(0.1*len(match[1][3]))]
+
+        for cat_idx, cat in enumerate(catalogs):
+            objects.append({'ident'      : 'control_star',
+                            'obsdate.jd' :  cat.obstime,
+                            'cat_idx'    :  cat_idx,
+                            'ra.deg'     :  match[1][0][ctlstar_idx],
+                            'dec.deg'    :  match[1][1][ctlstar_idx]})
 
 
     ### check for moving targets
@@ -112,7 +114,7 @@ def distill(catalogs, man_targetname, offset, display=False,
         print 'checking JPL Horizons for moving targets'
 
     obsparam = _pp_conf.telescope_parameters[\
-                        catalogs[objects[0]['cat_idx']].origin\
+                        catalogs[0].origin\
                                              .split(';')[0].strip()]
 
     for cat_idx, cat in enumerate(catalogs):
@@ -192,13 +194,22 @@ def distill(catalogs, man_targetname, offset, display=False,
                    extract_other_catalog=extract_other_catalog+mag_keys,
                    tolerance=None)
 
+
         for i in range(len(match[0][0])):
+            # derive calibrated magnitudes, if available
+            try:
+                cal_mag = match[1][len(extract_other_catalog)+2][i] 
+                cal_magerr = match[1][len(extract_other_catalog)+3][i]
+            except IndexError:
+                # use instrumental magnitudes
+                cal_mag = match[1][len(extract_other_catalog)][i]
+                cal_magerr = match[1][len(extract_other_catalog)+1][i]
+
             data.append([match[0][2][i], match[0][0][i], match[0][1][i],
                          match[1][0][i], match[1][1][i], 
                          match[1][len(extract_other_catalog)][i], 
                          match[1][len(extract_other_catalog)+1][i],
-                         match[1][len(extract_other_catalog)+2][i], 
-                         match[1][len(extract_other_catalog)+3][i],
+                         cal_mag, cal_magerr, 
                          cat.obstime, cat.catalogname,
                          match[1][2][i], match[1][3][i],
                          cat.origin])
@@ -228,6 +239,14 @@ def distill(catalogs, man_targetname, offset, display=False,
 
             # sort measured magnitudes by target
             if dat[0] == target:
+                try:
+                    filtername = dat[13].split(';')[3]
+                except IndexError:
+                    filtername = '-'
+                try:
+                    catalogname = dat[13].split(';')[2]
+                except IndexError:
+                    catalogname = dat[13].split(';')[1]
 
                 output[target].append(dat)
                 outf.write(('%26.26s ' % dat[10].replace(' ', '_')) + 
@@ -245,8 +264,8 @@ def distill(catalogs, man_targetname, offset, display=False,
                            ('%6.4f '   % numpy.sqrt(dat[8]**2-dat[6]**2)) +
                            ('%7.4f '   % dat[5]) +
                            ('%6.4f  '  % dat[6]) +
-                           ('%s  '   % dat[13].split(';')[2]) + 
-                           ('%s  '   % dat[13].split(';')[3]) + 
+                           ('%s  '   % catalogname) + 
+                           ('%s  '   % filtername) + 
                            ('%s\n'   % dat[13].split(';')[0]))
                 
         outf.writelines('#\n# [1]: Horizons_RA - image_RA [arcsec]\n'+
