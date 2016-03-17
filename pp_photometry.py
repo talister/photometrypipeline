@@ -54,7 +54,8 @@ def curve_of_growth_analysis(filenames, parameters,
                              display=False, diagnostics=False):
 
     output = {}
-
+    obsparam = parameters['obsparam']
+    
     logging.info('starting photometry with parameters: %s' % \
                  (', '.join([('%s: %s' % (var, str(val))) for 
                              var, val in locals().items()])))   
@@ -99,7 +100,7 @@ def curve_of_growth_analysis(filenames, parameters,
             hdu = fits.open(filename)
                 
             # pull target coordinates from Horizons
-            targetname =  hdu[0].header['object']
+            targetname =  hdu[0].header[obsparam['object']]
             if parameters['manobjectname'] is not None:
                 targetname = parameters['manobjectname'].replace('_', ' ')
 

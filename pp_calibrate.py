@@ -346,7 +346,10 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         ldac_filename = filename[:filename.find('.fit')]+'.ldac'
         cat = catalog(filename)
         if display:
-            print cat.read_ldac(ldac_filename, filename, maxflag=3), \
+            print cat.read_ldac(ldac_filename, filename, maxflag=3,
+                                object_keyword=obsparam['object'],
+                                exptime_keyword=obsparam['exptime'],
+                                time_keyword=obsparam['obsmidtime_jd']), \
                 '(sources, columns) read from', filename
 
         # reject all flagged sources
