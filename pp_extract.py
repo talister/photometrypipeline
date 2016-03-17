@@ -50,7 +50,7 @@ version = '1.0'
 
 # threading definitions
 nThreads = 10
-extractQueue = Queue.Queue(100)
+extractQueue = Queue.Queue(10000)
 threadLock = threading.Lock()   
 
 
