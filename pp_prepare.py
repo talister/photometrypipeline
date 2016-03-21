@@ -82,8 +82,8 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
         imdata = hdulist[0].data
 
         ### add header keywords for Source Extractor
-        header['EPOCH'] = 2000
-        header['EQUINOX'] = 2000
+        header['EPOCH'] = (2000, 'PP: required for registration')
+        header['EQUINOX'] = (2000, 'PP: required for registration')
 
         # read out image binning mode
         if '_' in obsparam['binning'][0]:
@@ -99,7 +99,7 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
         header['SECPIX'] = (\
         numpy.average([obsparam['secpix'][0]*binning_x,
                        obsparam['secpix'][1]*binning_y]), 
-        'pixel size in arcsec (after binning)')
+        'PP: pixel size in arcsec (after binning)')
 
         # remove keywords that might collide with fake wcs
         for key in header.keys():
@@ -115,27 +115,35 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
                 header.remove(key)
 
         # add header keywords for SCAMP
-        header['PHOTFLAG']  = ('F', 'data is not photometric (SCAMP)')
-        header['PHOT_K']  = (0.05, 'assumed extinction coefficient')
+        header['PHOTFLAG']  = ('F', 'PP: data is not photometric (SCAMP)')
+        header['PHOT_K']  = (0.05, 'PP: assumed extinction coefficient')
 
         # create observation midtime jd 
         if obsparam['date_keyword'].find('|') == -1:
             header['MIDTIMJD'] = \
-                toolbox.dateobs_to_jd(header[obsparam['date_keyword']]) + \
-                float(header[obsparam['exptime']])/2./86400.
+                (toolbox.dateobs_to_jd(header[obsparam['date_keyword']]) + \
+                 float(header[obsparam['exptime']])/2./86400.,
+                 'PP: obs midtime')
         else:
             datetime = header[obsparam['date_keyword'].split('|')[0]]+'T'+\
                        header[obsparam['date_keyword'].split('|')[1]]
-            header['MIDTIMJD'] = toolbox.dateobs_to_jd(datetime) + \
-                                 float(header[obsparam['exptime']])/2./86400.
+            header['MIDTIMJD'] = (toolbox.dateobs_to_jd(datetime) + \
+                                  float(header[obsparam['exptime']])/2./86400.,
+                                  'PP: obs midtime')
 
 
         # other keywords
-        header['TELINSTR'] = (obsparam['telescope_instrument'])
-        header['FILTER'] = (header[obsparam['filter']])
-        header['EXPTIME'] = (header[obsparam['exptime']])
-        header['AIRMASS'] = (header[obsparam['airmass']])
-
+        header['TELINSTR'] = (obsparam['telescope_instrument'],
+                              'PP: tel/instr name')
+        header['TEL_KEYW'] = (obsparam['telescope_keyword'],
+                              'PP: tel/instr keyword') 
+        header['FILTER'] = (header[obsparam['filter']], 'PP:copied')
+        header['EXPTIME'] = (header[obsparam['exptime']], 'PP: copied')
+        if obsparam['airmass'] in header:
+            header['AIRMASS'] = (header[obsparam['airmass']], 'PP: copied')
+        else:
+            header['AIRMASS'] = (1, 'PP: fake airmass')
+            
         ##### add fake wcs information that is necessary to run SCAMP
 
         if obsparam['radec_separator'] == 'XXX':
@@ -173,29 +181,29 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
 
         ### create fake header
         #header['WCSDIM'] = (2, 'WCS Dimensionality')
-        header['RADECSYS'] = 'FK5'
-        header['RADESYS'] = 'FK5'
-        header['CTYPE1'] = ('RA---TAN', 'Coordinate type')
-        header['CTYPE2'] = ('DEC--TAN', 'Coordinate type')
-        header['CRVAL1'] = (ra_deg, 'Coordinate reference value')
-        header['CRVAL2'] = (dec_deg, ' Coordinate reference value')
+        header['RADECSYS'] = ('FK5', 'PP: fake wcs coordinates')
+        header['RADESYS'] = ('FK5', 'PP: fake wcs coordinates')
+        header['CTYPE1'] = ('RA---TAN', 'PP: fake Coordinate type')
+        header['CTYPE2'] = ('DEC--TAN', 'PP: fake Coordinate type')
+        header['CRVAL1'] = (ra_deg, 'PP: fake Coordinate reference value')
+        header['CRVAL2'] = (dec_deg, 'PP: fake Coordinate reference value')
         header['CRPIX1'] = (int(float(header[obsparam['extent'][0]])/2), 
-                            'Coordinate reference pixel')
+                            'PP: fake Coordinate reference pixel')
         header['CRPIX2'] = (int(float(header[obsparam['extent'][1]])/2), 
-                            'Coordinate reference pixel')
+                            'PP: fake Coordinate reference pixel')
 
         header['CD1_1']  = (xnorm * numpy.cos(rotate/180.*numpy.pi) * \
                 obsparam['secpix'][0]*binning_x/3600., \
-                                             'Coordinate matrix')
+                                             'PP: fake Coordinate matrix')
         header['CD1_2']  = (ynorm * -numpy.sin(rotate/180.*numpy.pi) * \
                 obsparam['secpix'][1]*binning_y/3600., \
-                                             'Coordinate matrix')
+                                             'PP: fake Coordinate matrix')
         header['CD2_1']  = (xnorm * numpy.sin(rotate/180.*numpy.pi) * \
                 obsparam['secpix'][0]*binning_x/3600., \
-                                             'Coordinate matrix')
+                                             'PP: fake Coordinate matrix')
         header['CD2_2']  = (ynorm * numpy.cos(rotate/180.*numpy.pi) * \
                 obsparam['secpix'][1]*binning_y/3600., \
-                                             'Coordinate matrix')
+                                             'PP: fake Coordinate matrix')
 
         hdulist.flush()
         hdulist.close()
@@ -230,6 +238,9 @@ if __name__ == '__main__':
                         action="store_true")
     parser.add_argument('-rotate', help='rotate fake wcs by angle (deg)', 
                         default=0)
+    parser.add_argument("-telescope", help='manual telescope override',
+                        default=None)
+
 
     args = parser.parse_args()         
     man_ra = args.ra
@@ -241,6 +252,7 @@ if __name__ == '__main__':
     man_flipx = args.flipx
     man_flipy = args.flipy
     man_rotate = float(args.rotate)
+    telescope = args.telescope
     filenames = args.images
 
     ### read telescope information from fits headers
@@ -253,11 +265,12 @@ if __name__ == '__main__':
                 instruments.append(header[key])
         hdulist.close()
 
-    if len(instruments) == 0:
+    if len(instruments) == 0 and telescope is None:
         raise KeyError('cannot identify telescope/instrument; please update' + \
                        '_pp_conf.instrument_keys accordingly')
         
-    telescope = _pp_conf.instrument_identifiers[instruments[0]]
+    if telescope is None:
+        telescope = _pp_conf.instrument_identifiers[instruments[0]]
     obsparam = _pp_conf.telescope_parameters[telescope]
 
     # account for flips and rotation in telescope configuration

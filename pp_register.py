@@ -77,6 +77,12 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                          'quiet':False}
     extraction = pp_extract.extract_multiframe(filenames, extractparameters)
 
+    if extraction is None:
+        if display:
+            print 'ERROR: extraction was not successful'
+        logging.error('extraction was not successful')
+        return None
+    
     ldac_files = [filename[:filename.find('.fit')]+'.ldac' \
                   for filename in filenames]
 
@@ -85,6 +91,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         obsparam['astrometry_catalogs'] = [mancat]
 
     fileline = " ".join(ldac_files)
+
     for cat_idx, refcat in enumerate(obsparam['astrometry_catalogs']):
 
         output = {}
@@ -111,7 +118,6 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
             logging.info('%d sources in catalog %s; enough for SCAMP' %
                          (n_sources, refcat))
 
-
         # remove existing scamp output
         os.remove('scamp_output.xml') if os.path.exists('scamp_output.xml') \
             else None
@@ -122,7 +128,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         # assemble arguments for scamp, run it, and wait for it
         commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
                       ' -ASTREF_CATALOG '+refcat+' '+fileline
-        scamp =subprocess.Popen(shlex.split(commandline))
+        scamp = subprocess.Popen(shlex.split(commandline))
         scamp.wait()
 
         ##### identify successful and failed WCS registrations based on
@@ -255,7 +261,13 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         # cleaning up (in case the registration succeeded)
         os.remove(filename[:filename.find('.fit')]+'.head')
 
-
+        
+    if len(badfits) == len(filenames):
+        if display:
+            print 'ERROR: registration failed for all images'
+        logging.error('ERROR: registration failed for all images')
+        return output
+        
     ##### print astrometry output file
     outf = open('best_astrometry.dat', 'w')
     outf.writelines('# filename AS_contrast XY_contrast ' \

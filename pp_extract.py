@@ -110,7 +110,7 @@ class extractor(threading.Thread):
             commandline = 'sex -c %s %s %s' % \
                           (self.param['obsparam']['sex-config-file'], 
                            optionstring, filename)
-            
+
             # run SEXTRACTOR and wait for it to finish
             try:
                 sex = subprocess.Popen(shlex.split(commandline), 
@@ -121,7 +121,20 @@ class extractor(threading.Thread):
                 logging.error('cannot call Source Extractor')
 
             sex.wait()
-
+            
+            # check output for error messages from Source Extractor
+            sex_output = sex.communicate()[1]
+            if 'not found, using internal defaults' in sex_output:
+                if not self.param['quiet']:
+                    print ('ERROR: no Source Extractor setup file ' +
+                           'available (should be in %s)') % \
+                           self.param['obsparam']['sex-config-file'] 
+                logging.error(('ERROR: no Source Extractor setup file ' +
+                               'available (should be in %s)') % \
+                              self.param['obsparam']['sex-config-file'])
+                extractQueue.task_done()  # inform queue that this task is done
+                return None
+                
             # read in LDAC file
             ldac_filename = filename[:filename.find('.fit')]+'.ldac'
             ldac_data = catalog(ldac_filename)
@@ -160,10 +173,7 @@ class extractor(threading.Thread):
                  'Sextractor source area threshold (px)')
             out['fits_header'] = hdu[0].header
 
-            threadLock.acquire()
             hdu.flush()
-            threadLock.release()
-
             hdu.close()
             
             threadLock.acquire()   
@@ -266,6 +276,11 @@ def extract_multiframe(filenames, parameters):
     threadLock.release()
     extractQueue.join()
 
+    # check if extraction was successful
+    if any(['catalog_data' not in output[i].keys()
+            for i in range(len(output))]):
+        return None
+    
 
     ### output content
     #
@@ -296,7 +311,7 @@ if __name__ == '__main__':
                         default=None)
     parser.add_argument("-aprad",
                         help='aperture radius (list) for photometry (px)',
-                        default='')
+                        default=0)
     parser.add_argument("-telescope", help='manual telescope override',
                         default=None)
     parser.add_argument('-quiet', help='no logging',
