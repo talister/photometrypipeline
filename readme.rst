@@ -18,7 +18,8 @@ Currently Supported Observatories
 * CTIO/ANDICAM (CCD camera)
 * DCT/LMI
 * VATT/VATT4k
-
+* Apache Point ARC 3.5m/AGILE
+* Apache Point ARC 3.5m/ARCTIC
 
 Currently Supported Reference Catalogs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,6 +53,12 @@ into your terminal::
 
   git clone https://github.com/mommermi/photometrypipeline
 
+PP is evolving. Once you have downloaded PP, you can update to the
+latest code by simply running::
+
+  git pull
+
+after changing into the directory where the code resides on your machine.
 
 Documentation
 -------------
