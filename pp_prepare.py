@@ -72,18 +72,21 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
         header = hdulist[0].header
 
         # add other headers, if available
-        for i in range(len(hdulist)):
-            try:
-                header += hdulist[i].header
-            except:
-                pass
+        if len(hdulist) > 1:
+            for i in range(len(hdulist)):
+                try:
+                    header += hdulist[i].header
+                except:
+                    pass
 
         # read image data
         imdata = hdulist[0].data
 
         ### add header keywords for Source Extractor
-        header['EPOCH'] = (2000, 'PP: required for registration')
-        header['EQUINOX'] = (2000, 'PP: required for registration')
+        if 'EPOCH' not in header:
+            header['EPOCH'] = (2000, 'PP: required for registration')
+        if 'EQUINOX' not in header:
+            header['EQUINOX'] = (2000, 'PP: required for registration')
 
         # read out image binning mode
         if '_' in obsparam['binning'][0]:
@@ -92,14 +95,25 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
                                          split('_')[0]].split()[0])
                 binning_y = float(header[obsparam['binning'][1].\
                                          split('_')[0]].split()[1])
+            if '_x' in obsparam['binning'][0]:
+                binning_x = float(header[obsparam['binning'][0].\
+                                         split('_')[0]].split('x')[0])
+                binning_y = float(header[obsparam['binning'][1].\
+                                         split('_')[0]].split('x')[1])
         else:
             binning_x = header[obsparam['binning'][0]]
             binning_y = header[obsparam['binning'][1]]
 
+        # add pixel resolution keyword
         header['SECPIX'] = (\
         numpy.average([obsparam['secpix'][0]*binning_x,
                        obsparam['secpix'][1]*binning_y]), 
         'PP: pixel size in arcsec (after binning)')
+
+        # set NAXIS1 and NAXIS2 based on data array size
+        # (might be set improperly after cropping)
+        header['NAXIS1'] = (imdata.shape[1], 'PP: based on data array shape')
+        header['NAXIS2'] = (imdata.shape[0], 'PP: based on data array shape')
 
         # remove keywords that might collide with fake wcs
         for key in header.keys():
@@ -111,7 +125,7 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
                        'CFINT1', 'CTYPE2', 'CRPIX2', 'CRVAL2', 
                        'CRDELT2', 'CFINT2', 'CDELT1', 'CDELT2', 
                        'LTM1_1', 'LTM2_2', 'WAT0_001', 'LTV1', 
-                       'LTV2', 'PIXXMIT', 'PIXOFFST']:
+                         'LTV2', 'PIXXMIT', 'PIXOFFST']:
                 header.remove(key)
 
         # add header keywords for SCAMP
@@ -171,6 +185,13 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
             dec_deg = float(header['TELDEC']) - \
                       float(header['JITTER_Y'])/3600.
 
+        # check if instrument has a chip offset
+        x_offset, y_offset = 0, 0
+        if man_ra is None or man_dec is None and 'chip_offset' in obsparam:
+            if obsparam['chip_offset'][2] == 'arcsec':
+                scale = float(header['SECPIX'])
+            x_offset = float(header[obsparam['chip_offset'][0]])/scale
+            y_offset = float(header[obsparam['chip_offset'][1]])/scale
 
         # apply flips
         xnorm, ynorm = 1, 1
@@ -187,10 +208,10 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
         header['CTYPE2'] = ('DEC--TAN', 'PP: fake Coordinate type')
         header['CRVAL1'] = (ra_deg, 'PP: fake Coordinate reference value')
         header['CRVAL2'] = (dec_deg, 'PP: fake Coordinate reference value')
-        header['CRPIX1'] = (int(float(header[obsparam['extent'][0]])/2), 
-                            'PP: fake Coordinate reference pixel')
-        header['CRPIX2'] = (int(float(header[obsparam['extent'][1]])/2), 
-                            'PP: fake Coordinate reference pixel')
+        header['CRPIX1'] = (int(float(header[obsparam['extent'][0]])/2)+
+                            x_offset, 'PP: fake Coordinate reference pixel')
+        header['CRPIX2'] = (int(float(header[obsparam['extent'][1]])/2)+
+                            y_offset, 'PP: fake Coordinate reference pixel')
 
         header['CD1_1']  = (xnorm * numpy.cos(rotate/180.*numpy.pi) * \
                 obsparam['secpix'][0]*binning_x/3600., \

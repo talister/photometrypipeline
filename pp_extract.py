@@ -243,6 +243,13 @@ def extract_multiframe(filenames, parameters):
             binning_y = float(hdu[0].header[\
                             parameters['obsparam']['binning'][1].\
                                      split('_')[0]].split()[1])
+        if '_x' in parameters['obsparam']['binning'][0]:
+            binning_x = float(\
+                        hdu[0].header[parameters['obsparam']['binning'][0].\
+                                      split('_')[0]].split('x')[0])
+            binning_y = float(\
+                        hdu[0].header[parameters['obsparam']['binning'][1].\
+                                      split('_')[0]].split('x')[1])
     else:
         binning_x = hdu[0].header[parameters['obsparam']['binning'][0]]
         binning_y = hdu[0].header[parameters['obsparam']['binning'][1]]

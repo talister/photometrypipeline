@@ -67,7 +67,8 @@ def skycenter(catalogs, ra_key='XWIN_WORLD', dec_key='YWIN_WORLD'):
 
 def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                              preferred_catalogs,
-                             min_sources=20, max_sources=1e4,
+                        min_sources=_pp_conf.min_sources_photometric_catalog,
+                             max_sources=1e4,
                              display=False):
     """create a photometric catalog of the field of view"""
 
@@ -131,7 +132,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
         print 'ERROR: not enough sources in reference catalog %s (%d)' % \
             (catalogname, n_sources)
     logging.warning('not enough sources in reference catalog %s (%d)' % \
-                    n_sources)
+                    (catalogname, n_sources))
     return None
 
 

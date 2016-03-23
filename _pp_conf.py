@@ -97,8 +97,10 @@ filter_keys     = ['FILTER', 'CCDFLTID', 'FILTERS']
 # minimum number of reference sources in astrometric reference catalog
 # in one of the frames (middle one of sequence); try other catalog
 # if number of sources less than this number
-min_sources_astrometric_catalog = 10
+min_sources_astrometric_catalog = 20
 
+# minimum number of reference sources in photometric reference catalog
+min_sources_photometric_catalog = 3
 
 
 # SCAMP contrast criteria for a good fit

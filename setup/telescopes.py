@@ -347,18 +347,85 @@ arc35agile_param = {
 }
 
 
+# Magellan, IMACS
+magimacs_param = {
+    'telescope_instrument' : 'Magellan/IMACS', # telescope/instrument name
+    'telescope_keyword'    : 'MAGIMAGS',   # telescope/instrument keyword
+    'observatory_code'     : '269',         # MPC observatory code
+    'secpix'               : (0.11, 0.11 ), # pixel size (arcsec)
+                                            # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True, 
+    'flipy'                : False, 
+    'rotate'               : 90, 
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('BINNING_x1', 'BINNING_x2'), 
+                           # binning in x/y, '_blankN' denotes that both axes
+                           # are listed in one keyword, sep. by blanks
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'chip_offset'          : ('CHOFFX', 'CHOFFY', 'arcsec'),
+                             # chip offset (x, y, unit) [optional]
+    'date_keyword'         : 'DATE-OBS|UT-TIME', # obs date/time
+                                         # keyword; use
+                                         # 'date|time' if
+                                         # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTER',  # filter keyword
+    'filter_translations'  : {'Sloan_u': 'u', 'Sloan_g': 'g', 'Sloan_r': 'r',
+                              'Sloan_i': 'i', 'Sloan_z': 'z'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'aprad_default'        : 4, # default aperture radius in px 
+    'aprad_range'          : [2, 15], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/magimacs.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/magimacs.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
+                              'DATE-OBS,UT-TIME,RA,DEC,AIRMASS,' +
+                              'SECPIX,TEL_KEYW'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/magimacs.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+}
+
 
 ##### access functions for telescope configurations
 
 
 implemented_telescopes = ['VATT4k', 'ANDICAM', 'DCTLMI', 'ARC35ARCTIC',
-                          'ARC35AGILE']
+                          'ARC35AGILE', 'MAGIMACS']
 
-instrument_identifiers = {'= "Vatt4k"':  'VATT4k',
-                          'ANDICAM-CCD': 'ANDICAM',
-                          'LMI':         'DCTLMI',
-                          'arctic':      'ARC35ARCTIC',
-                          'agile':       'ARC35AGILE'}
+instrument_identifiers = {'= "Vatt4k"':        'VATT4k',
+                          'ANDICAM-CCD':       'ANDICAM',
+                          'LMI':               'DCTLMI',
+                          'arctic':            'ARC35ARCTIC',
+                          'agile':             'ARC35AGILE',
+                          'IMACS Long-Camera': 'MAGIMACS'}
 
 
 
@@ -367,4 +434,5 @@ telescope_parameters = {'VATT4k' :     vatt4k_param,
                         'ANDICAM':     andicam_param,
                         'DCTLMI':      dctlmi_param,
                         'ARC35ARCTIC': arc35arctic_param,
-                        'ARC35AGILE':  arc35agile_param}
+                        'ARC35AGILE':  arc35agile_param,
+                        'MAGIMACS':    magimacs_param}
