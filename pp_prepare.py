@@ -187,7 +187,7 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
 
         # check if instrument has a chip offset
         x_offset, y_offset = 0, 0
-        if man_ra is None or man_dec is None and 'chip_offset' in obsparam:
+        if (man_ra is None or man_dec is None) and 'chip_offset' in obsparam:
             if obsparam['chip_offset'][2] == 'arcsec':
                 scale = float(header['SECPIX'])
             x_offset = float(header[obsparam['chip_offset'][0]])/scale

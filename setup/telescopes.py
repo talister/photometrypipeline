@@ -350,7 +350,7 @@ arc35agile_param = {
 # Magellan, IMACS
 magimacs_param = {
     'telescope_instrument' : 'Magellan/IMACS', # telescope/instrument name
-    'telescope_keyword'    : 'MAGIMAGS',   # telescope/instrument keyword
+    'telescope_keyword'    : 'MAGIMACS',   # telescope/instrument keyword
     'observatory_code'     : '269',         # MPC observatory code
     'secpix'               : (0.11, 0.11 ), # pixel size (arcsec)
                                             # before binning
