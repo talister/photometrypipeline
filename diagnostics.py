@@ -742,9 +742,9 @@ def add_results(data):
             fig = plt.figure(figsize=(plotsize,plotsize), 
                              dpi=boxsize/plotsize)
             img = plt.imshow(thumbdata, cmap='gray',
-                             vmin=median-0.5*std, 
+                             vmin=median-2*std, 
                              #vmax=maxval,
-                             vmax=min([median+0.5*std,maxval]),
+                             vmax=min([median+2*std,maxval]),
                              origin='lower')
             # remove axes
             plt.axis('off')

@@ -169,6 +169,10 @@ def curve_of_growth_analysis(filenames, parameters,
             #n_src = data.shape[0] # use all sources
             n_src = 50 # use only 50 sources
             for idx, src in enumerate(data.data[:n_src]):
+                if (any(numpy.isnan(src['FLUX_GROWTH'])) or 
+                    any(numpy.isnan(src['FLUX_APER'])) or 
+                    any(numpy.isnan(src['FLUXERR_APER']))):
+                    continue
                 background_flux.append(src['FLUX_GROWTH']/\
                                        max(src['FLUX_GROWTH']))
                 background_snr.append(src['FLUX_APER']/\
