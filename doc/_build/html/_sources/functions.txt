@@ -20,7 +20,7 @@ below. All functions presented here can be called from the terminal.
                   underlying directories (the range of images can be
                   limited by using the `-prefix` option)
 
-   The use of `PP_RUN` is discussed in the :ref:`quickstart` reference.
+   The use of `pp_run` is discussed in the :ref:`quickstart` reference.
 
    This wrapper should work successfully for most data sets. If the
    analysis fails at some point - or provides inadequate results -

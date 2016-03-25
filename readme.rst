@@ -20,6 +20,7 @@ Currently Supported Observatories
 * VATT/VATT4k
 * Apache Point ARC 3.5m/AGILE
 * Apache Point ARC 3.5m/ARCTIC
+* Magellan/IMACS
 
 Currently Supported Reference Catalogs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

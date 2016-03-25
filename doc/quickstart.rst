@@ -8,7 +8,9 @@ Prerequisits
 ------------
 
 Image data should be properly reduced before using the pipeline for
-best results. PP's ability to provide astrometric and photometric
+best results, including cropping the data section. Bias subtraction
+and flat fielding improves photometry results but is not absolutely
+necessary. PP's ability to provide astrometric and photometric
 calibration puts some constraints on the way data is stored: data from
 separated fields, as well as data using different instrument settings
 (e.g., different binning modes) should be stored in individual

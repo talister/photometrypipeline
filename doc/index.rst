@@ -29,7 +29,9 @@ observatories/instruments (telescope identifiers are given in square brackets):
 * CTIO/ANDICAM (CCD camera) [ANDICAM]
 * DCT/LMI [DCTLMI]
 * VATT/VATT4k [VATT4k]
-
+* Apache Point ARC 3.5m/AGILE [ARC35AGILE]
+* Apache Point ARC 3.5m/ARCTIC [ARC35ARCTIC]
+* Magellan/IMACS [MAGIMACS]
 
 If you would like to use the pipeline for other observatories, please
 contact me.
@@ -81,9 +83,9 @@ Feel free to contact me in case of questions or suggestions: michael
 Acknowledgments
 ---------------
 
-PP is supported by NASA grants NNX15AE90G and NNX14AN82G, as well as
-NSF grant XXX through the Mission Accessible Near-Earth Objects Survey
-(`MANOS`_).
+PP is supported by NASA grants NNX15AE90G and NNX14AN82G and has been
+developed in the framework of the Mission Accessible Near-Earth
+Objects Survey (`MANOS`_).
 
 
 Indices and tables
