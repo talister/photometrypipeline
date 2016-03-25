@@ -181,15 +181,22 @@ def create_index(filenames, obsparam, display=False):
     
         ### create frame image
         imgdat = hdulist[0].data
-        median = numpy.median(imgdat)
-        std    = numpy.std(imgdat) 
+        median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
+                                     int(imgdat.shape[1]*0.75),
+                                     int(imgdat.shape[0]*0.25):
+                                     int(imgdat.shape[0]*0.75)])
+        std    = numpy.std(imgdat[int(imgdat.shape[1]*0.25):
+                                  int(imgdat.shape[1]*0.75),
+                                  int(imgdat.shape[0]*0.25):
+                                  int(imgdat.shape[0]*0.75)]) 
 
         downscale = 2. # scale down image by this factor
         fig = plt.figure(figsize=(header[obsparam['extent'][0]]/(downscale*100),
                                 header[obsparam['extent'][1]]/(downscale*100)),
                                   dpi=downscale*100)
-        img = plt.imshow(imgdat, cmap='gray', vmin=median-1*std,
-                         vmax=median+2*std, origin='lower')
+
+        img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
+                         vmax=median+0.5*std, origin='lower')
         # remove axes
         plt.axis('off')
         img.axes.get_xaxis().set_visible(False)
@@ -256,8 +263,14 @@ def add_registration(data, extraction_data):
                         '_astrometry.png'        
         imgdat = fits.open(dat['fits_filename'])[0].data
         header = fits.open(dat['fits_filename'])[0].header
-        median = numpy.median(imgdat)
-        std    = numpy.std(imgdat) 
+        median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
+                                     int(imgdat.shape[1]*0.75),
+                                     int(imgdat.shape[0]*0.25):
+                                     int(imgdat.shape[0]*0.75)])
+        std    = numpy.std(imgdat[int(imgdat.shape[1]*0.25):
+                                     int(imgdat.shape[1]*0.75),
+                                     int(imgdat.shape[0]*0.25):
+                                     int(imgdat.shape[0]*0.75)]) 
 
         # turn relevant header keys into floats
         # astropy.io.fits bug
@@ -271,8 +284,8 @@ def add_registration(data, extraction_data):
         fig = plt.figure(figsize=(header[obsparam['extent'][0]]/(downscale*100),
                                 header[obsparam['extent'][1]]/(downscale*100)), 
                          dpi=downscale*100)
-        img = plt.imshow(imgdat, cmap='gray', vmin=median-1*std,
-                         vmax=median+2*std, origin='lower')
+        img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
+                         vmax=median+0.5*std, origin='lower')
         # remove axes
         plt.axis('off')
         img.axes.get_xaxis().set_visible(False)
@@ -559,8 +572,14 @@ def add_calibration(data):
                         '.fits'
         imgdat = fits.open(fits_filename)[0].data
         header = fits.open(fits_filename)[0].header
-        median = numpy.median(imgdat)
-        std    = numpy.std(imgdat) 
+        median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
+                                     int(imgdat.shape[1]*0.75),
+                                     int(imgdat.shape[0]*0.25):
+                                     int(imgdat.shape[0]*0.75)])
+        std    = numpy.std(imgdat[int(imgdat.shape[1]*0.25):
+                                     int(imgdat.shape[1]*0.75),
+                                     int(imgdat.shape[0]*0.25):
+                                     int(imgdat.shape[0]*0.75)]) 
 
         # turn relevant header keys into floats
         # astropy.io.fits bug
@@ -573,8 +592,8 @@ def add_calibration(data):
         fig = plt.figure(figsize=(imgdat.shape[0]/300.,
                                   imgdat.shape[1]/300.), 
                          dpi=300)
-        img = plt.imshow(imgdat, cmap='gray', vmin=median-1*std,
-                         vmax=median+2*std, origin='lower')
+        img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
+                         vmax=median+0.5*std, origin='lower')
         # remove axes
         plt.axis('off')
         img.axes.get_xaxis().set_visible(False)
@@ -723,9 +742,9 @@ def add_results(data):
             fig = plt.figure(figsize=(plotsize,plotsize), 
                              dpi=boxsize/plotsize)
             img = plt.imshow(thumbdata, cmap='gray',
-                             vmin=median-2*std, 
+                             vmin=median-0.5*std, 
                              #vmax=maxval,
-                             vmax=min([median+3*std,maxval]),
+                             vmax=min([median+0.5*std,maxval]),
                              origin='lower')
             # remove axes
             plt.axis('off')

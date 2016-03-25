@@ -167,7 +167,7 @@ def curve_of_growth_analysis(filenames, parameters,
         #   assume n_background_sources >> 1, do not reject target 
         if not parameters['target_only']:
             #n_src = data.shape[0] # use all sources
-            n_src = 100 # use only 100 sources
+            n_src = 50 # use only 50 sources
             for idx, src in enumerate(data.data[:n_src]):
                 background_flux.append(src['FLUX_GROWTH']/\
                                        max(src['FLUX_GROWTH']))
