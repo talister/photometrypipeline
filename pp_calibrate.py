@@ -183,7 +183,6 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         for i in numpy.where(match[0][1] < 0.01):
             match[0][1][i] = 0.01
 
-
         residuals     = match[0][0]-match[1][0] # ref - instr
         residuals_sig = match[0][1]**2+match[1][1]**2
         m_idc         = range(len(match[0][0]))
@@ -352,9 +351,6 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
                                 exptime_keyword=obsparam['exptime'],
                                 time_keyword=obsparam['obsmidtime_jd']), \
                 '(sources, columns) read from', filename
-
-        # reject all flagged sources
-        cat.reject_sources_other_than(cat.data['FLAGS'] == 0)
 
         catalogs.append(cat)
 

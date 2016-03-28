@@ -291,7 +291,12 @@ if __name__ == '__main__':
                        '_pp_conf.instrument_keys accordingly')
         
     if telescope is None:
-        telescope = _pp_conf.instrument_identifiers[instruments[0]]
+        try:
+            telescope = _pp_conf.instrument_identifiers[instruments[0]]
+        except KeyError:
+            raise KeyError('cannot identify telescope/instrument; please ' + \
+                           'update _pp_conf.instrument_identifiers accordingly')
+
     obsparam = _pp_conf.telescope_parameters[telescope]
 
     # account for flips and rotation in telescope configuration

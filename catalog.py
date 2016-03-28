@@ -92,6 +92,7 @@ class catalog:
         """
 
         n_raw = self.shape[0]
+
         self.data = self.data[condition]
 
         logging.info('%s:reject %s sources' % 

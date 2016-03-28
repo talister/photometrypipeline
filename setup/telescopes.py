@@ -414,6 +414,70 @@ magimacs_param = {
 }
 
 
+# Calar Alto 1.23m, DLR-MKIII
+ca123dlrmkiii_param = {
+    'telescope_instrument' : 'Calar Alto 1.23m/DLR-MKIII',# telescope/instrument
+    'telescope_keyword'    : 'CA123DLRMKIII',   # telescope/instrument keyword
+    'observatory_code'     : '493',         # MPC observatory code
+    'secpix'               : (0.3132, 0.3132 ), # pixel size (arcsec)
+                                            # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True, 
+    'flipy'                : True, 
+    'rotate'               : 0, 
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('CCDBINX', 'CCDBINY'), 
+                           # binning in x/y, '_blankN' denotes that both axes
+                           # are listed in one keyword, sep. by blanks
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointin, Dec 
+    'radec_separator'      : 'XXX',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                         # keyword; use
+                                         # 'date|time' if
+                                         # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTER',  # filter keyword
+    'filter_translations'  : {'V_Johnson': 'V', 'R_Johnson': 'R'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'aprad_default'        : 4, # default aperture radius in px 
+    'aprad_range'          : [2, 15], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/ca123dlrmkiii.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/ca123dlrmkiii.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
+                              'DATE-OBS,RA,DEC,AIRMASS,' +
+                              'SECPIX,TEL_KEYW'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/ca123dlrmkiii.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+}
+
+
 ##### access functions for telescope configurations
 
 
@@ -425,14 +489,16 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4k',
                           'LMI':               'DCTLMI',
                           'arctic':            'ARC35ARCTIC',
                           'agile':             'ARC35AGILE',
-                          'IMACS Long-Camera': 'MAGIMACS'}
+                          'IMACS Long-Camera': 'MAGIMACS',
+                          'DLR-MKIII':         'CA123DLRMKIII'}
 
 
 
 
-telescope_parameters = {'VATT4k' :     vatt4k_param, 
-                        'ANDICAM':     andicam_param,
-                        'DCTLMI':      dctlmi_param,
-                        'ARC35ARCTIC': arc35arctic_param,
-                        'ARC35AGILE':  arc35agile_param,
-                        'MAGIMACS':    magimacs_param}
+telescope_parameters = {'VATT4k' :       vatt4k_param, 
+                        'ANDICAM':       andicam_param,
+                        'DCTLMI':        dctlmi_param,
+                        'ARC35ARCTIC':   arc35arctic_param,
+                        'ARC35AGILE':    arc35agile_param,
+                        'MAGIMACS':      magimacs_param,
+                        'CA123DLRMKIII': ca123dlrmkiii_param}
