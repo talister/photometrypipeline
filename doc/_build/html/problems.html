@@ -47,6 +47,19 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Problems?</a><ul>
+<li><a class="reference internal" href="#frequently-asked-questions">Frequently Asked Questions</a><ul>
+<li><a class="reference internal" href="#general-problems">General Problems</a></li>
+<li><a class="reference internal" href="#pp-calibrate-photometric-calibration">pp_calibrate (Photometric Calibration)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#this-does-not-solve-my-problem">... This Does Not Solve My Problem...</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="diagnostics.html"
                         title="previous chapter">Diagnostics</a></p>
@@ -80,6 +93,35 @@
             
   <div class="section" id="problems">
 <h1>Problems?<a class="headerlink" href="#problems" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="frequently-asked-questions">
+<h2>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="general-problems">
+<h3>General Problems<a class="headerlink" href="#general-problems" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><strong>The pipeline does not run and gives me an error similar to `pp_run: Command not found`. What is wrong?</strong></dt>
+<dd>There are two things to check: (1) did you properly setup the
+<cite>PHOTPIPEDIR</cite> environment variable (check this by typing <code class="docutils literal"><span class="pre">echo</span>
+<span class="pre">$PHOTPIPEDIR</span></code> in a terminal), or (2) the command <code class="docutils literal"><span class="pre">pp_run</span></code> uses a
+symbolic link to <code class="docutils literal"><span class="pre">pp_run.py</span></code>; if the former does not work, try
+the latter.</dd>
+</dl>
+</div>
+<div class="section" id="pp-calibrate-photometric-calibration">
+<h3>pp_calibrate (Photometric Calibration)<a class="headerlink" href="#pp-calibrate-photometric-calibration" title="Permalink to this headline">¶</a></h3>
+<p><strong>I keep getting output like `zeropoint for image.fits: Warning: 0 reference stars after source matching for frame image.ldac`. What does it mean?</strong></p>
+<blockquote>
+<div>It means that none of the reference stars with measured magnitudes
+in your field of view could be matched with a source in your
+image. As a result, the magnitudes in the photometry output files
+are simply instrumental magnitudes, not calibrated ones. Try using
+a different photometric catalog in <code class="docutils literal"><span class="pre">pp_calibrate</span></code>. If your
+field of view is small (&lt;2 arcmin), there might just be no stars
+with known magnitudes in the field, in which case there is not a
+lot that can be done...</div></blockquote>
+</div>
+</div>
+<div class="section" id="this-does-not-solve-my-problem">
+<h2>... This Does Not Solve My Problem...<a class="headerlink" href="#this-does-not-solve-my-problem" title="Permalink to this headline">¶</a></h2>
 <p>If you encounter problems, e.g., PP stops unexpectedly or crashes,
 please don&#8217;t hesitate to contact me (michael . mommert (at) nau . edu)
 and attach the following things to your email:</p>
@@ -89,6 +131,7 @@ and attach the following things to your email:</p>
 <li>the <strong>error message</strong> that was printed on the screen.</li>
 </ul>
 <p>I will try to get back to you as soon as possible.</p>
+</div>
 </div>
 
 

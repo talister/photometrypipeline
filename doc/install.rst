@@ -19,7 +19,7 @@ Installing Additional Software
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 PP requires `git`_ for the installation, a number of non-standard
-Python modules (available from the `Python Package Index`_ through
+Python 2.7 modules (available from the `Python Package Index`_ through
 `pip`_):
 
 * `numpy`_
@@ -30,10 +30,11 @@ Python modules (available from the `Python Package Index`_ through
 
 and some freely available software:
 
-* `Source Extractor`_ (requires the latest development version r345 to
-  use URAT-1)
-* `SCAMP`_  
+* `Source Extractor`_ 
+* `SCAMP`_  (requires the latest development version `r345`_ to use URAT-1)
 
+Installation walkthroughs for MAC OS and Ubuntu 15.10 will be available here, soon!
+  
 
 Setup
 -----
@@ -69,3 +70,4 @@ all the stuff that goes into ``setup/telescopes.py``...
 .. _callhorizons: https://pypi.python.org/pypi/CALLHORIZONS
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp
+.. _r345: http://www.astromatic.net/wsvn/public/dl.php?repname=public+software.scamp&path=%2Ftrunk%2F&rev=0&isdir=1

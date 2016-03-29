@@ -9,47 +9,13 @@ Photometry Pipeline Documentation
 Introduction
 ------------
 
-The Photometry Pipeline (PP) is a Python software package for
+The Photometry Pipeline (PP) is a Python 2.7 software package for
 automated photometric analysis of imaging data from small to
 medium-sized observatories. It uses `Source Extractor`_ and `SCAMP`_
 to register and photometrically calibrate images based on catalogs
 that are available online; photometry is measured using Source
 Extractor aperture photometry. PP has been designed for asteroid
 observations, but can be used with any kind of imaging data.
-
-
-.. _supported_observatories:
-
-Supported Observatories
-~~~~~~~~~~~~~~~~~~~~~~~
-
-The pipeline is currently set up to work on data from the following
-observatories/instruments (telescope identifiers are given in square brackets):
-
-* CTIO/ANDICAM (CCD camera) [ANDICAM]
-* DCT/LMI [DCTLMI]
-* VATT/VATT4k [VATT4k]
-* Apache Point ARC 3.5m/AGILE [ARC35AGILE]
-* Apache Point ARC 3.5m/ARCTIC [ARC35ARCTIC]
-* Magellan/IMACS [MAGIMACS]
-
-If you would like to use the pipeline for other observatories, please
-contact me.
-
-.. _supported_catalogs:
-
-Supported Reference Catalogs 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-PP is currently able to use the following catalogs for astrometric and
-photometric calibration:
-
-* SDSS-R9
-* URAT-1
-* 2MASS
-
-If you are interested in using catalogs other than those listed,
-please let me know.
 
 
 Contents
@@ -60,11 +26,9 @@ Contents
 
    install
    quickstart
-
+   supported
    functions
-
    diagnostics
-
    problems
 
 
