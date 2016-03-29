@@ -154,11 +154,12 @@ def run_the_pipeline(filenames):
                                         display=True,
                                         diagnostics=True)
     
-    if len(registration['goodfits']) == len(filenames):
+
+    elif len(registration['badfits']) == len(filenames):
+        summary_message = "<FONT COLOR=\"red\">registration failed</FONT>" 
+    elif len(registration['goodfits']) == len(filenames):
         summary_message = "<FONT COLOR=\"green\">all images registered" + \
                            "</FONT>; "
-    elif len(registration['goodfits']) == 0:
-        summary_message = "<FONT COLOR=\"red\">registration failed</FONT>" 
     else:
         summary_message = "<FONT COLOR=\"orange\">registration failed for " + \
                            ("%d/%d images</FONT>; " % 

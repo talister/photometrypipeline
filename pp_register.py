@@ -183,7 +183,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
 
         ##### check registration outcome
 
-        logging.info(' > match succeeded for %d/%d images\n' % \
+        logging.info(' > match succeeded for %d/%d images' % \
                      (len(goodfits), len(filenames)))
         print '\n################################# ' + \
             'REGISTRATION SUMMARY:\n###'
@@ -197,7 +197,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
             break
         # registration failed for most (or all) images
         else:
-            logging.info(' > match  for %d/%d images\n' % \
+            logging.info(' > match failed for %d/%d images' % \
                          (len(badfits), len(filenames)))
 
             ### in case the registration failed, try again!
