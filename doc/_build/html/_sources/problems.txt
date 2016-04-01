@@ -23,10 +23,25 @@ pp_calibrate (Photometric Calibration)
    in your field of view could be matched with a source in your
    image. As a result, the magnitudes in the photometry output files
    are simply instrumental magnitudes, not calibrated ones. Try using
-   a different photometric catalog in ``pp_calibrate``. If your
+   a different photometric catalog in :func:`pp_calibrate`. If your
    field of view is small (<2 arcmin), there might just be no stars
    with known magnitudes in the field, in which case there is not a
    lot that can be done...
+
+
+pp_distill (Target Photometry Extraction)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Why does the target photometry vary wildly, although the magnitude zeropoints are consistent with each other?**
+
+   Check the offset of the photometry position to the expected target
+   position. If the offsets are not consistent, it is likely that PP
+   picks up noise or nearby sources (also check the target thumbnail
+   images). This can happen if the target is very faint (in this case,
+   lower the `snr` limit in :func:`pp_photometry`), or if the `snr`
+   limit and `minarea` paramters are picked too small and too much
+   noise is picked up. In either case, redo the :func:`pp_photometry`
+   step and play with the `snr` and `minarea` parameters.
    
 
 ... This Does Not Solve My Problem...
@@ -37,7 +52,7 @@ please don't hesitate to contact me (michael . mommert (at) nau . edu)
 and attach the following things to your email:
 
 * the **LOG file** of your PP process (can be found in the
-  ``.diagnostics/`` directory, and 
+  ``.diagnostics/`` directory), and 
 
 * the **error message** that was printed on the screen.
 

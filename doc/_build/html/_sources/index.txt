@@ -18,6 +18,21 @@ Extractor aperture photometry. PP has been designed for asteroid
 observations, but can be used with any kind of imaging data.
 
 
+Scope
+-----
+
+PP has been designed to provide automated photometry for the majority
+of data coming from small to medium-sized observatories. It is not
+intended to provide high-accuracy photometry, nor is it designed to
+work on extremely sparse or crowded fields. PP requires a field of
+view of a few arcminutes to ensure that sufficient background stars
+are available for registration and photometric calibration. For a
+7'x7' field, photometric uncertaintes are of the order of 0.03 mag (if
+sufficient SDSS-R9 or URAT-1 stars are in the field). Feel free to try
+PP on your data, but please be aware that it has its limits.
+
+
+
 Contents
 --------
 

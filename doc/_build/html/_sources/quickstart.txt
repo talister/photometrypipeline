@@ -74,10 +74,25 @@ is the equivalent of using only files that are included in
 ``reduced*.fits``.
 
 
+Semi-Automated Mode Walkthrough
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Semi-Automated Mode
-~~~~~~~~~~~~~~~~~~~
+This section describes the individual steps PP takes to analyze the
+data. While ``pp_run`` performs these steps automatically, each of the
+following functions can be called manually, which allows to tweak the
+analysis process. If you intend to perform the analysis fully
+manually, please note the individual functions have to be called in
+the following order:
 
+* :func:`pp_prepare`
+
+* :func:`pp_register`
+
+* :func:`pp_photometry`
+
+* :func:`pp_calibrate`
+
+* :func:`pp_distill`
 
 TBD
 
@@ -108,3 +123,7 @@ the ``OBJECT`` header keyword, as well as one rather bright 'control
 star' that is used to check the consistency of the photometric
 calibration. Results are written to files
 ``photometry_<objectname>.dat`` in the respective filter directory.
+
+
+Although PP is designed to run mostly automatically, some common sense
+is required to make sure the results are reliable. 

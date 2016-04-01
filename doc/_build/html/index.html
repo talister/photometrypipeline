@@ -51,6 +51,7 @@
   <ul>
 <li><a class="reference internal" href="#">Photometry Pipeline Documentation</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#scope">Scope</a></li>
 <li><a class="reference internal" href="#contents">Contents</a></li>
 <li><a class="reference internal" href="#license-and-contact">License and Contact</a></li>
 <li><a class="reference internal" href="#acknowledgments">Acknowledgments</a></li>
@@ -101,6 +102,18 @@ to register and photometrically calibrate images based on catalogs
 that are available online; photometry is measured using Source
 Extractor aperture photometry. PP has been designed for asteroid
 observations, but can be used with any kind of imaging data.</p>
+</div>
+<div class="section" id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Permalink to this headline">¶</a></h2>
+<p>PP has been designed to provide automated photometry for the majority
+of data coming from small to medium-sized observatories. It is not
+intended to provide high-accuracy photometry, nor is it designed to
+work on extremely sparse or crowded fields. PP requires a field of
+view of a few arcminutes to ensure that sufficient background stars
+are available for registration and photometric calibration. For a
+7&#8217;x7&#8217; field, photometric uncertaintes are of the order of 0.03 mag (if
+sufficient SDSS-R9 or URAT-1 stars are in the field). Feel free to try
+PP on your data, but please be aware that it has its limits.</p>
 </div>
 <div class="section" id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>

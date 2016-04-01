@@ -57,7 +57,7 @@
 <li><a class="reference internal" href="#prerequisits">Prerequisits</a></li>
 <li><a class="reference internal" href="#running-pp">Running PP</a><ul>
 <li><a class="reference internal" href="#fully-automated-mode">Fully Automated Mode</a></li>
-<li><a class="reference internal" href="#semi-automated-mode">Semi-Automated Mode</a></li>
+<li><a class="reference internal" href="#semi-automated-mode-walkthrough">Semi-Automated Mode Walkthrough</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pp-diagnostics">PP Diagnostics</a></li>
@@ -164,8 +164,21 @@ subset of fits files, you can use option <cite>-prefix</cite>, e.g.,</p>
 <p>is the equivalent of using only files that are included in
 <code class="docutils literal"><span class="pre">reduced*.fits</span></code>.</p>
 </div>
-<div class="section" id="semi-automated-mode">
-<h3>Semi-Automated Mode<a class="headerlink" href="#semi-automated-mode" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="semi-automated-mode-walkthrough">
+<h3>Semi-Automated Mode Walkthrough<a class="headerlink" href="#semi-automated-mode-walkthrough" title="Permalink to this headline">¶</a></h3>
+<p>This section describes the individual steps PP takes to analyze the
+data. While <code class="docutils literal"><span class="pre">pp_run</span></code> performs these steps automatically, each of the
+following functions can be called manually, which allows to tweak the
+analysis process. If you intend to perform the analysis fully
+manually, please note the individual functions have to be called in
+the following order:</p>
+<ul class="simple">
+<li><a class="reference internal" href="functions.html#pp_prepare" title="pp_prepare"><code class="xref py py-func docutils literal"><span class="pre">pp_prepare()</span></code></a></li>
+<li><a class="reference internal" href="functions.html#pp_register" title="pp_register"><code class="xref py py-func docutils literal"><span class="pre">pp_register()</span></code></a></li>
+<li><a class="reference internal" href="functions.html#pp_photometry" title="pp_photometry"><code class="xref py py-func docutils literal"><span class="pre">pp_photometry()</span></code></a></li>
+<li><a class="reference internal" href="functions.html#pp_calibrate" title="pp_calibrate"><code class="xref py py-func docutils literal"><span class="pre">pp_calibrate()</span></code></a></li>
+<li><a class="reference internal" href="functions.html#pp_distill" title="pp_distill"><code class="xref py py-func docutils literal"><span class="pre">pp_distill()</span></code></a></li>
+</ul>
 <p>TBD</p>
 </div>
 </div>
@@ -190,6 +203,8 @@ the <code class="docutils literal"><span class="pre">OBJECT</span></code> header
 star&#8217; that is used to check the consistency of the photometric
 calibration. Results are written to files
 <code class="docutils literal"><span class="pre">photometry_&lt;objectname&gt;.dat</span></code> in the respective filter directory.</p>
+<p>Although PP is designed to run mostly automatically, some common sense
+is required to make sure the results are reliable.</p>
 </div>
 </div>
 

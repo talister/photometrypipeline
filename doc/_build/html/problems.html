@@ -53,6 +53,7 @@
 <li><a class="reference internal" href="#frequently-asked-questions">Frequently Asked Questions</a><ul>
 <li><a class="reference internal" href="#general-problems">General Problems</a></li>
 <li><a class="reference internal" href="#pp-calibrate-photometric-calibration">pp_calibrate (Photometric Calibration)</a></li>
+<li><a class="reference internal" href="#pp-distill-target-photometry-extraction">pp_distill (Target Photometry Extraction)</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#this-does-not-solve-my-problem">... This Does Not Solve My Problem...</a></li>
@@ -114,10 +115,23 @@ the latter.</dd>
 in your field of view could be matched with a source in your
 image. As a result, the magnitudes in the photometry output files
 are simply instrumental magnitudes, not calibrated ones. Try using
-a different photometric catalog in <code class="docutils literal"><span class="pre">pp_calibrate</span></code>. If your
+a different photometric catalog in <a class="reference internal" href="functions.html#pp_calibrate" title="pp_calibrate"><code class="xref py py-func docutils literal"><span class="pre">pp_calibrate()</span></code></a>. If your
 field of view is small (&lt;2 arcmin), there might just be no stars
 with known magnitudes in the field, in which case there is not a
 lot that can be done...</div></blockquote>
+</div>
+<div class="section" id="pp-distill-target-photometry-extraction">
+<h3>pp_distill (Target Photometry Extraction)<a class="headerlink" href="#pp-distill-target-photometry-extraction" title="Permalink to this headline">¶</a></h3>
+<p><strong>Why does the target photometry vary wildly, although the magnitude zeropoints are consistent with each other?</strong></p>
+<blockquote>
+<div>Check the offset of the photometry position to the expected target
+position. If the offsets are not consistent, it is likely that PP
+picks up noise or nearby sources (also check the target thumbnail
+images). This can happen if the target is very faint (in this case,
+lower the <cite>snr</cite> limit in <a class="reference internal" href="functions.html#pp_photometry" title="pp_photometry"><code class="xref py py-func docutils literal"><span class="pre">pp_photometry()</span></code></a>), or if the <cite>snr</cite>
+limit and <cite>minarea</cite> paramters are picked too small and too much
+noise is picked up. In either case, redo the <a class="reference internal" href="functions.html#pp_photometry" title="pp_photometry"><code class="xref py py-func docutils literal"><span class="pre">pp_photometry()</span></code></a>
+step and play with the <cite>snr</cite> and <cite>minarea</cite> parameters.</div></blockquote>
 </div>
 </div>
 <div class="section" id="this-does-not-solve-my-problem">
@@ -127,7 +141,7 @@ please don&#8217;t hesitate to contact me (michael . mommert (at) nau . edu)
 and attach the following things to your email:</p>
 <ul class="simple">
 <li>the <strong>LOG file</strong> of your PP process (can be found in the
-<code class="docutils literal"><span class="pre">.diagnostics/</span></code> directory, and</li>
+<code class="docutils literal"><span class="pre">.diagnostics/</span></code> directory), and</li>
 <li>the <strong>error message</strong> that was printed on the screen.</li>
 </ul>
 <p>I will try to get back to you as soon as possible.</p>
