@@ -51,8 +51,8 @@ logging.basicConfig(filename = _pp_conf.log_filename,
                     datefmt  = _pp_conf.log_datefmt)
 
 
-def distill(catalogs, man_targetname, offset, display=False,
-            diagnostics=False):
+def distill(catalogs, man_targetname, offset, fixed_coo,
+            display=False, diagnostics=False):
     """
     distill wrapper
     """
@@ -149,6 +149,14 @@ def distill(catalogs, man_targetname, offset, display=False,
                  int(len(objects)/len(catalogs)))
 
 
+    ### add fixed target position to object catalog (if different from [0,0])
+    if fixed_coo is not [0,0]:
+        for cat_idx, cat in enumerate(catalogs):
+            objects.append({'ident': 'fixed_target',
+                            'obsdate.jd': cat.obstime[0],
+                            'cat_idx'   : cat_idx,
+                            'ra.deg'    : fixed_coo[0],
+                            'dec.deg'   : fixed_coo[1]})
 
 
     ##### extract source data for identified targets
@@ -306,10 +314,13 @@ if __name__ == '__main__':
     parser.add_argument('-target', help='target name', default=None)
     parser.add_argument('-offset', help='primary target offset (arcsec)', 
                         nargs=2, default=[0,0])
+    parser.add_argument('-fixed_coo', help='target RA and DEC (degrees)', 
+                        nargs=2, default=[0,0])
     parser.add_argument('images', help='images to process', nargs='+')
     args = parser.parse_args()
     man_targetname = args.target
     man_offset = [float(coo) for coo in args.offset]
+    fixed_coo = [float(coo) for coo in args.fixed_coo]
     filenames = args.images
 
     # check if input filenames is actually a list
@@ -318,7 +329,7 @@ if __name__ == '__main__':
             filenames = [filename[:-1] for filename in open(filenames[0], 'r').\
                          readlines()]
 
-    distillate = distill(filenames, man_targetname, man_offset,
+    distillate = distill(filenames, man_targetname, man_offset, fixed_coo,
                          display=True, diagnostics=True)
 
 

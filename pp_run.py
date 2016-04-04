@@ -155,7 +155,7 @@ def run_the_pipeline(filenames):
                                         diagnostics=True)
     
 
-    elif len(registration['badfits']) == len(filenames):
+    if len(registration['badfits']) == len(filenames):
         summary_message = "<FONT COLOR=\"red\">registration failed</FONT>" 
     elif len(registration['goodfits']) == len(filenames):
         summary_message = "<FONT COLOR=\"green\">all images registered" + \
@@ -250,8 +250,9 @@ def run_the_pipeline(filenames):
 
     ### distill photometry results
     print '\n----- distill photometry results\n'    
-    distillate = pp_distill.distill(calibration['catalogs'], man_targetname, 
-                                    [0,0], display=True, diagnostics=True)
+    distillate = pp_distill.distill(calibration['catalogs'],
+                                    man_targetname, [0,0], [0,0],
+                                    display=True, diagnostics=True)
 
     targets = numpy.array(distillate['targetnames'].keys())
     try:

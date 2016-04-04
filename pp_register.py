@@ -209,7 +209,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                     output = register(filenames, telescope, sex_snr,
                                       source_minarea, aprad,
                                       None, obsparam,
-                                      display=True, diagnostics=False,
+                                      display=True, diagnostics=True,
                                       dont_run_registration_again=True)
                     return output
                 else:
