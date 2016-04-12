@@ -83,8 +83,17 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         logging.error('extraction was not successful')
         return None
     
-    ldac_files = [filename[:filename.find('.fit')]+'.ldac' \
-                  for filename in filenames]
+    ### check if enough sources have been detected in images
+    ldac_files = []
+    for frame in extraction:
+        if frame['catalog_data'].shape[0] > 5:
+            ldac_files.append(frame['ldac_filename'])
+
+    if len(ldac_files) == 0:
+        if display:
+            print 'ERROR: no sources detected in image files'
+        logging.error('no sources detected in image files')
+        return {'goodfits': [], 'badfits': filenames}
 
     ##### run scamp on all image catalogs using different catalogs
     if mancat is not None:
@@ -192,8 +201,8 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         print '###\n###############################' + \
             '#######################\n'
 
-        # registration succeeded for most images
-        if len(goodfits) > len(badfits):
+        # registration succeeded for all images
+        if len(goodfits) == len(badfits):
             break
         # registration failed for most (or all) images
         else:
