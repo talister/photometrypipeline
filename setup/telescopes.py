@@ -357,10 +357,22 @@ magimacs_param = {
     'ext_coeff'            : 0.05,          # typical extinction coefficient
 
 
-    # image orientation preferences
-    'flipx'                : True, 
-    'flipy'                : False, 
-    'rotate'               : 90, 
+    # image orientation preferences (for each chip)
+    'chip_id'              : 'CHIP',        # chip identifier (remove,
+                                            # if not existent) 
+    # the following keys are dictionaries if 'chip_id' exists, single
+    # values otherwise
+    'flipx'                : {1:True, 2:True, 3:True, 4:True, 5:True, 6:True,
+                              7:True, 8:True}, 
+    'flipy'                : {1:False, 2:False, 3:False, 4:False, 5:False,
+                              6:False, 7:False, 8:False}, 
+    'rotate'               : {1:270, 2:270, 3:270, 4:270, 5:90, 6:90,
+                              7:90, 8:90}, 
+    'chip_offset_fixed'    : {1:(-0.033, -0.099), 2:(-0.033, -0.033),
+                              3:(-0.033, 0.033),  4:(-0.033, 0.099),
+                              5:(0.033, -0.033),  6:(0.033, -0.099),
+                              7:(0.033, 0.099),   8:(0.033, 0.033)},
+                             # chip offset (ra, dec in degress) [optional]
 
     # instrument-specific FITS header keywords
     'binning'              : ('BINNING_x1', 'BINNING_x2'), 
@@ -371,8 +383,6 @@ magimacs_param = {
     'dec'                  : 'DEC', # telescope pointin, Dec 
     'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
                                     # if already in degrees
-    'chip_offset'          : ('CHOFFX', 'CHOFFY', 'arcsec'),
-                             # chip offset (x, y, unit) [optional]
     'date_keyword'         : 'DATE-OBS|UT-TIME', # obs date/time
                                          # keyword; use
                                          # 'date|time' if
@@ -390,9 +400,9 @@ magimacs_param = {
 
 
     # source extractor settings
-    'source_minarea'       : 12, # default sextractor source minimum N_pixels
-    'aprad_default'        : 4, # default aperture radius in px 
-    'aprad_range'          : [2, 15], # [minimum, maximum] aperture radius (px)
+    'source_minarea'       : 20, # default sextractor source minimum N_pixels
+    'aprad_default'        : 8, # default aperture radius in px 
+    'aprad_range'          : [5, 25], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/magimacs.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning

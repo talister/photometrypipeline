@@ -202,7 +202,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
             '#######################\n'
 
         # registration succeeded for all images
-        if len(goodfits) == len(badfits):
+        if len(badfits) == 0:
             break
         # registration failed for most (or all) images
         else:

@@ -161,6 +161,14 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                      in ref_cat.fields else '_e_'+filtername+'mag'
         
         # reject sources with MAG_APER/MAGERR_APER = 99 or nan
+
+        ### read this: if there is a
+        # ValueError: boolean index array should have 1 dimension
+        # pointing here, the problem is that pp_extract has not been 
+        # properly run using a single aperture 
+        ### currently it seems like pp_photometry (maybe callhorizons)
+        # has not finished properly
+
         cat.reject_sources_other_than(cat.data['MAG_APER'] != 99)
         cat.reject_sources_other_than(cat.data['MAGERR_APER'] != 99)
         cat.reject_sources_with(numpy.isnan(cat.data['MAG_APER']))

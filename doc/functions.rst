@@ -164,7 +164,8 @@ the logical order:
    Details on the calibration process....
 
 
-.. function:: pp_distill ([-target string], [-offset float float], images)
+.. function:: pp_distill ([-target string], [-offset float float], 
+	      [-fixed_coo float float], images)
 
    extraction of calibrated photometry for targets
 
@@ -176,6 +177,8 @@ the logical order:
                    positions (e.g., Horizons position for moving
                    targets) in arcsec; requires two floats, one for RA
                    and one for Dec
+   :param -fixed_coo: (optional) fixed target position (requires two
+                   floats, one for RA and one for Dec, coordinates in degrees)
    :param images:  images to run `pp_distill` on
 
    This function will automatically read the target name from the FITS

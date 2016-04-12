@@ -79,6 +79,26 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
                 except:
                     pass
 
+        # account for flips and rotation in telescope configuration
+        # if instrument has several chips...
+        if 'chip_id' in obsparam:
+            chip_id = header[obsparam['chip_id']]
+            this_flipx = obsparam['flipx'][chip_id]
+            this_flipy = obsparam['flipy'][chip_id]
+            this_rotate = obsparam['rotate'][chip_id]
+        # if not...
+        else:
+            this_flipx = obsparam['flipx']
+            this_flipy = obsparam['flipy']
+            this_rotate = obsparam['rotate']
+
+        if flipx:
+            this_flipx = numpy.invert(this_flipx)
+        if flipy:
+            this_flipy = numpy.invert(this_flipy)
+        if rotate > 0:
+            this_rotate += rotate
+
         # read image data
         imdata = hdulist[0].data
 
@@ -110,10 +130,10 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
                        obsparam['secpix'][1]*binning_y]), 
         'PP: pixel size in arcsec (after binning)')
 
-        # set NAXIS1 and NAXIS2 based on data array size
-        # (might be set improperly after cropping)
-        header['NAXIS1'] = (imdata.shape[1], 'PP: based on data array shape')
-        header['NAXIS2'] = (imdata.shape[0], 'PP: based on data array shape')
+        # # set NAXIS1 and NAXIS2 based on data array size
+        # # (might be set improperly after cropping)
+        # header['NAXIS1'] = (imdata.shape[1], 'PP: based on data array shape')
+        # header['NAXIS2'] = (imdata.shape[0], 'PP: based on data array shape')
 
         # remove keywords that might collide with fake wcs
         for key in header.keys():
@@ -179,26 +199,29 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
             ra_deg = float(man_ra)
             dec_deg = float(man_dec)
 
+        #### note to self: put this into code block below
         if obsparam['telescope_instrument'] == 'UKIRTWFCAM':
             ra_deg = float(header['TELRA'])/24.*360. - \
                      float(header['JITTER_X'])/3600.
             dec_deg = float(header['TELDEC']) - \
                       float(header['JITTER_Y'])/3600.
 
-        # check if instrument has a chip offset
-        x_offset, y_offset = 0, 0
-        if (man_ra is None or man_dec is None) and 'chip_offset' in obsparam:
-            if obsparam['chip_offset'][2] == 'arcsec':
-                scale = float(header['SECPIX'])
-            x_offset = float(header[obsparam['chip_offset'][0]])/scale
-            y_offset = float(header[obsparam['chip_offset'][1]])/scale
-
         # apply flips
         xnorm, ynorm = 1, 1
-        if flipx:
+        if this_flipx:
             xnorm = -1
-        if flipy:
+        if this_flipy:
             ynorm = -1
+
+        # check if instrument has a chip offset
+        ra_offset, dec_offset = 0, 0
+        if (man_ra is None or man_dec is None) and \
+           'chip_offset_fixed' in obsparam:
+            cid = header[obsparam['chip_id']]
+            ra_offset = float(obsparam['chip_offset_fixed'][cid][0])
+            dec_offset = float(obsparam['chip_offset_fixed'][cid][1])
+
+
 
         ### create fake header
         #header['WCSDIM'] = (2, 'WCS Dimensionality')
@@ -206,23 +229,25 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
         header['RADESYS'] = ('FK5', 'PP: fake wcs coordinates')
         header['CTYPE1'] = ('RA---TAN', 'PP: fake Coordinate type')
         header['CTYPE2'] = ('DEC--TAN', 'PP: fake Coordinate type')
-        header['CRVAL1'] = (ra_deg, 'PP: fake Coordinate reference value')
-        header['CRVAL2'] = (dec_deg, 'PP: fake Coordinate reference value')
-        header['CRPIX1'] = (int(float(header[obsparam['extent'][0]])/2)+
-                            x_offset, 'PP: fake Coordinate reference pixel')
-        header['CRPIX2'] = (int(float(header[obsparam['extent'][1]])/2)+
-                            y_offset, 'PP: fake Coordinate reference pixel')
+        header['CRVAL1'] = (ra_deg+ra_offset, 
+                            'PP: fake Coordinate reference value')
+        header['CRVAL2'] = (dec_deg+dec_offset, 
+                            'PP: fake Coordinate reference value')
+        header['CRPIX1'] = (int(float(header[obsparam['extent'][0]])/2), 
+                            'PP: fake Coordinate reference pixel')
+        header['CRPIX2'] = (int(float(header[obsparam['extent'][1]])/2),
+                            'PP: fake Coordinate reference pixel')
 
-        header['CD1_1']  = (xnorm * numpy.cos(rotate/180.*numpy.pi) * \
+        header['CD1_1']  = (xnorm * numpy.cos(this_rotate/180.*numpy.pi) * \
                 obsparam['secpix'][0]*binning_x/3600., \
                                              'PP: fake Coordinate matrix')
-        header['CD1_2']  = (ynorm * -numpy.sin(rotate/180.*numpy.pi) * \
+        header['CD1_2']  = (ynorm * -numpy.sin(this_rotate/180.*numpy.pi) * \
                 obsparam['secpix'][1]*binning_y/3600., \
                                              'PP: fake Coordinate matrix')
-        header['CD2_1']  = (xnorm * numpy.sin(rotate/180.*numpy.pi) * \
+        header['CD2_1']  = (xnorm * numpy.sin(this_rotate/180.*numpy.pi) * \
                 obsparam['secpix'][0]*binning_x/3600., \
                                              'PP: fake Coordinate matrix')
-        header['CD2_2']  = (ynorm * numpy.cos(rotate/180.*numpy.pi) * \
+        header['CD2_2']  = (ynorm * numpy.cos(this_rotate/180.*numpy.pi) * \
                 obsparam['secpix'][1]*binning_y/3600., \
                                              'PP: fake Coordinate matrix')
 
@@ -234,7 +259,7 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
     
     ##### create diagnostics 
     if diagnostics:
-        diag.create_index(filenames, obsparam, display)    
+        diag.create_index(filenames, os.getcwd(), obsparam, display)    
 
     logging.info('Done! -----------------------------------------------------')
 
@@ -299,22 +324,9 @@ if __name__ == '__main__':
 
     obsparam = _pp_conf.telescope_parameters[telescope]
 
-    # account for flips and rotation in telescope configuration
-    flipx = obsparam['flipx']
-    flipy = obsparam['flipy']
-    rotate = obsparam['rotate']
-
-    if man_flipx:
-        flipx = numpy.invert(flipx)
-    if man_flipy:
-        flipy = numpy.invert(flipy)
-    if man_rotate > 0:
-        rotate += man_rotate
-
-
     # run prepare wrapper
-    preparation = prepare(filenames, obsparam, flipx=flipx, flipy=flipy,
-                          man_ra=man_ra, man_dec=man_dec, rotate=rotate,
+    preparation = prepare(filenames, obsparam, flipx=man_flipx, flipy=man_flipy,
+                          man_ra=man_ra, man_dec=man_dec, rotate=man_rotate,
                           diagnostics=True, display=True)
 
 

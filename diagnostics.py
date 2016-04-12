@@ -133,7 +133,7 @@ def insert_into_summary(text):
 
 ### individual pipeline process diagnostic websites
 
-def create_index(filenames, obsparam, display=False):
+def create_index(filenames, directory, obsparam, display=False):
     """
     create index.html
     diagnostic root website for one pipeline process
@@ -147,7 +147,9 @@ def create_index(filenames, obsparam, display=False):
     refheader = fits.open(filenames[0])[0].header
     filtername = obsparam['filter_translations'][refheader[obsparam['filter']]]
 
-    html = ("<H1>%s/%s-band - Diagnostic Output</H1>\n" + \
+    html = "<H2>data directory: %s</H2>\n" % directory
+
+    html += ("<H1>%s/%s-band - Diagnostic Output</H1>\n" + \
                "%d frames total, see full pipeline " + \
                "<A HREF=\"%s\">log</A> for more information\n") % \
                (obsparam['telescope_instrument'], filtername,

@@ -12,24 +12,7 @@ but can be used with any kind of imaging data.
 
 Please note that this project is still under development. 
 
-Currently Supported Observatories
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* CTIO/ANDICAM (CCD camera)
-* DCT/LMI
-* VATT/VATT4k
-* Apache Point ARC 3.5m/AGILE
-* Apache Point ARC 3.5m/ARCTIC
-* Magellan/IMACS
-
-Currently Supported Reference Catalogs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* SDSS-R9
-* URAT-1
-* 2MASS
-
-
+See `this document`_ for a list of supported instruments and catalogs.
 
 Installation
 ------------
@@ -88,5 +71,5 @@ Feel free to contact me in case of questions or suggestions: michael
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp
 .. _documentation: http://mommermi.github.io/pp/index.html
-
+.. _this document: http://mommermi.github.io/pp/supported.html
 
