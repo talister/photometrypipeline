@@ -297,8 +297,10 @@ filter name is read from the image FITS headers</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="pp_distill">
-<code class="descname">pp_distill</code><span class="sig-paren">(</span><span class="optional">[</span><em>-target string</em>, <span class="optional">]</span><span class="optional">[</span><em>-offset float float</em>, <span class="optional">]</span><em>images</em><span class="sig-paren">)</span><a class="headerlink" href="#pp_distill" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">pp_distill ([-target string], [-offset float float],</code></dt>
+<dt>
+<code class="descname">[-fixed_coo float float], images)</code></dt>
 <dd><p>extraction of calibrated photometry for targets</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -313,6 +315,8 @@ underscores if the target&#8217;s name is a designation</li>
 positions (e.g., Horizons position for moving
 targets) in arcsec; requires two floats, one for RA
 and one for Dec</li>
+<li><strong>-fixed_coo</strong> &#8211; (optional) fixed target position (requires two
+floats, one for RA and one for Dec, coordinates in degrees)</li>
 <li><strong>images</strong> &#8211; images to run <cite>pp_distill</cite> on</li>
 </ul>
 </td>
