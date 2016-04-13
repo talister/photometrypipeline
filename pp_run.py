@@ -53,7 +53,7 @@ logging.basicConfig(filename = _pp_conf.log_filename,
                     datefmt  = _pp_conf.log_datefmt)
 
 
-def run_the_pipeline(filenames):
+def run_the_pipeline(filenames, man_targetname, fixed_aprad):
     """
     wrapper to run the photometry pipeline
     """
@@ -195,7 +195,11 @@ def run_the_pipeline(filenames):
     sex_snr, source_minarea = 1.5, obsparam['source_minarea']
     background_only = False
     target_only = False
-    aprad = None # force curve-of-growth analysis
+    if fixed_aprad == 0:
+        aprad = None # force curve-of-growth analysis
+    else:
+        aprad = fixed_aprad # skip curve_of_growth analysis
+
     print '\n----- derive optimium photometry aperture\n'
     phot = pp_photometry.photometry(filenames, sex_snr, source_minarea, aprad,
                                     man_targetname, background_only, 
@@ -203,14 +207,20 @@ def run_the_pipeline(filenames):
                                     telescope, obsparam, display=True,
                                     diagnostics=True)
 
-    summary_message = ("<FONT COLOR=\"green\">aprad = %5.1f px, " + \
-                        "</FONT>") % phot['optimum_aprad']
-    if phot['n_target'] > 0:
-        summary_message += "<FONT COLOR=\"green\">based on target and " + \
-                           "background</FONT>; " 
+    # data went through curve-of-growth analysis
+    if phot is not None:
+        summary_message = ("<FONT COLOR=\"green\">aprad = %5.1f px, " + \
+                           "</FONT>") % phot['optimum_aprad']
+        if phot['n_target'] > 0:
+            summary_message += "<FONT COLOR=\"green\">based on target and " + \
+                               "background</FONT>; " 
+        else:
+            summary_message += "<FONT COLOR=\"orange\">based on background " + \
+                               "only </FONT>; " 
+    # a fixed aperture radius has been used
     else:
-        summary_message += "<FONT COLOR=\"orange\">based on background only " +\
-                           "</FONT>; " 
+        summary_message += "using a fixed aperture radius of %.1f px;" % aprad
+
 
     # add information to summary website, if requested
     if _pp_conf.use_diagnostics_summary:
@@ -283,12 +293,15 @@ if __name__ == '__main__':
                         default=None)
     parser.add_argument('-target', help='primary targetname override', 
                         default=None)
+    parser.add_argument('-fixed_aprad', help='fixed aperture radius (px)', 
+                        default=0)
     parser.add_argument('images', help='images to process or \'all\'', 
                         nargs='+')
 
     args = parser.parse_args()         
     prefix = args.prefix
     man_targetname = args.target
+    fixed_aprad = float(args.fixed_aprad)
     filenames = args.images
 
 
@@ -314,7 +327,7 @@ if __name__ == '__main__':
             if len(filenames) > 0:
                 print '\n RUN PIPELINE IN %s' % root
                 os.chdir(root)
-                run_the_pipeline(filenames)
+                run_the_pipeline(filenames, man_targetname, fixed_aprad)
                 os.chdir(_masterroot_directory)
             else:
                 print '\n NOTHING TO DO IN %s' % root
@@ -322,7 +335,7 @@ if __name__ == '__main__':
 
     else:
         # call run_the_pipeline only on filenames
-        run_the_pipeline(filenames)
+        run_the_pipeline(filenames, man_targetname, fixed_aprad)
         pass
 
 

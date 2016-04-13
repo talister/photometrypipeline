@@ -90,8 +90,10 @@
 <p>The individual pipeline functions are introduced and explained
 below. All functions presented here can be called from the terminal.</p>
 <dl class="function">
-<dt id="pp_run">
-<code class="descname">pp_run</code><span class="sig-paren">(</span><span class="optional">[</span><em>-prefix string</em>, <span class="optional">]</span><span class="optional">[</span><em>-target string</em>, <span class="optional">]</span><em>images</em><span class="sig-paren">)</span><a class="headerlink" href="#pp_run" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">pp_run ([-prefix string], [-target string],</code></dt>
+<dt>
+<code class="descname">[-fixed_aprad float], images)</code></dt>
 <dd><p>serves as a wrapper for all the individual pipeline processes</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -104,6 +106,9 @@ below. All functions presented here can be called from the terminal.</p>
 images, this overrides the <code class="docutils literal"><span class="pre">OBJECT</span></code> keyword in the
 FITS headers; note to replace blanks with
 underscores if the target&#8217;s name is a designation</li>
+<li><strong>-fixed_aprad</strong> &#8211; (optional) use this fixed aperture radius for
+all data instead of finding the aperture
+radius in a curve-of-growth analysis</li>
 <li><strong>images</strong> &#8211; images on which the pipeline is supposed to run,
 wildcard symbols (<code class="docutils literal"><span class="pre">'*'</span></code>, <code class="docutils literal"><span class="pre">'?'</span></code>) can be used; or,
 by using <code class="docutils literal"><span class="pre">all</span></code>, PP runs on all FITS files in

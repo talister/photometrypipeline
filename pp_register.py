@@ -86,7 +86,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
     ### check if enough sources have been detected in images
     ldac_files = []
     for frame in extraction:
-        if frame['catalog_data'].shape[0] > 5:
+        if frame['catalog_data'].shape[0] > 10:
             ldac_files.append(frame['ldac_filename'])
 
     if len(ldac_files) == 0:

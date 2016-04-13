@@ -291,7 +291,7 @@ def curve_of_growth_analysis(filenames, parameters,
     #   'target_flux'     : target fluxes as a function of aprad,
     #   'target_snr'      : target snrs as a function of aprad,
     #   'background_flux' : background fluxes as a function of aprad,
-    #   'backgruund_snr'  : background snrs as a function of aprad,
+    #   'background_snr'  : background snrs as a function of aprad,
     #   'parameters'      : source extractor parameters 
     # }
     ###    
