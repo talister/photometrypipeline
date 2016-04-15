@@ -457,14 +457,14 @@ ca123dlrmkiii_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
-    'filter_translations'  : {'V_Johnson': 'V', 'R_Johnson': 'R'},
+    'filter_translations'  : {'V_Johnson': 'V', 'R_Johnson': 'R', 'free': None},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
 
 
     # source extractor settings
-    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'source_minarea'       : 15, # default sextractor source minimum N_pixels
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 15], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/ca123dlrmkiii.sex',

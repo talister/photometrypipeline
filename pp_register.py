@@ -209,28 +209,50 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
             logging.info(' > match failed for %d/%d images' % \
                          (len(badfits), len(filenames)))
 
-            ### in case the registration failed, try again!
+            ### if registration failed, try again with the same catalog!
             # this will make use of the .head files and improves results
-            if (cat_idx == len(obsparam['astrometry_catalogs'])-1):
-                if not dont_run_registration_again:
-                    logging.critical('No match possible with either catalog ' \
-                                     + '- try again') 
-                    output = register(filenames, telescope, sex_snr,
-                                      source_minarea, aprad,
-                                      None, obsparam,
-                                      display=True, diagnostics=True,
-                                      dont_run_registration_again=True)
+            if not dont_run_registration_again:
+                logging.critical('Not all image matched ' \
+                                 + '- try again with the same catalog')
+                if display:
+                    print 'Not all image matched ' \
+                        + '- try again with the same catalog'
+
+                output = register(filenames, telescope, sex_snr,
+                                  source_minarea, aprad,
+                                  refcat, obsparam,
+                                  display=True, diagnostics=True,
+                                  dont_run_registration_again=True)
+                
+                # if the rerun succeeded, leave
+                if output['badfits'] == 0:
                     return output
+                # if not, try the next catalog
                 else:
-                    logging.critical('No match possible with either catalog ' \
-                                     + '- abort!') 
-                    return output
+                    continue
+
             else:
-                logging.info('No match possible with this catalog ' \
-                                 + '- try next one in the list') 
+                logging.critical('Not all image matched ' \
+                                 + '- won\'t try again with this catalog, ' \
+                                 + 'switch catalog') 
+                if display:
+                    print 'Not all image matched ' \
+                        + '- won\'t try again with this catalog, switch catalog'
 
                 # try next catalog in the list
-                continue
+                return output
+
+            ### if this is the last catalog in the list
+            if (cat_idx == len(obsparam['astrometry_catalogs'])-1) and \
+               dont_run_registration_again:
+                logging.info('No perfect match possible with either catalog' \
+                                 + '- proceed with what has been matched') 
+                if display:
+                    print 'No perfect match possible with either catalog' \
+                        + '- proceed with what has been matched'
+
+                # leave this loop
+                break
 
     ##### update image headers with wcs solutions where registration
     ##### was successful
@@ -268,7 +290,8 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         hdu.close()
     
         # cleaning up (in case the registration succeeded)
-        os.remove(filename[:filename.find('.fit')]+'.head')
+        if len(goodfits) == len(badfits):
+            os.remove(filename[:filename.find('.fit')]+'.head')
 
         
     if len(badfits) == len(filenames):
