@@ -433,7 +433,7 @@ if __name__ == '__main__':
     parser.add_argument('-minstars', help='min number of calibration stars '+\
                         'or fraction', default=0.5)
     parser.add_argument("-catalog",
-                        choices=['SDSS', 'URAT-1', '2MASS'],
+                        choices=['SDSS-R9', 'URAT-1', '2MASS'],
                         help="use this catalog instead of default one")
     parser.add_argument("-filter", help="manual filter override")
     parser.add_argument('images', help='images to process', nargs='+')
