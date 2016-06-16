@@ -91,10 +91,11 @@ def run_the_pipeline(filenames, man_targetname, fixed_aprad):
         for key in _pp_conf.instrument_keys:
             if key in header:
                 instruments.append(header[key])
+                break
         for key in _pp_conf.filter_keys:
             if key in header:
                 filters.append(header[key])
-
+                break
     if len(filenames) == 0:
         raise IOError('cannot find any data...')
 

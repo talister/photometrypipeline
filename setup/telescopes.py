@@ -488,27 +488,290 @@ ca123dlrmkiii_param = {
 }
 
 
+# Lowell31, NASACAM
+lowell31_param = {
+    'telescope_instrument' : 'Lowell31/NASACAM', # telescope/instrument name
+    'telescope_keyword'    : 'LOWELL31',      # telescope/instrument keyword
+    'observatory_code'     : '688',         # MPC observatory code
+    'secpix'               : (0.456, 0.456), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True,
+    'flipy'                : False,
+    'rotate'               : 270,
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('CDELT1', 'CDELT2'), # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'TELRA',  # telescope pointing, RA
+    'dec'                  : 'TELDEC', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS|UT', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTER2',  # filter keyword
+    'filter_translations'  : {'V': 'V', 'I': 'I'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'aprad_default'        : 5, # default aperture radius in px 
+    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/lowell31.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/lowell31.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER1,FILTER2,EXPTIME,OBJECT,' +
+                              'DATE-OBS,UT,TELRA,TELDEC,SCALE,AIRMASS,' +
+                              'TEL_KEYW'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/lowell31.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+}
+
+
+# Lowell42, NASA42
+lowell42_param = {
+    'telescope_instrument' : 'Lowell42/NASA42', # telescope/instrument name
+    'telescope_keyword'    : 'LOWELL42',      # telescope/instrument keyword
+    'observatory_code'     : '688',         # MPC observatory code
+    'secpix'               : (0.327, 0.327), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True,
+    'flipy'                : False,
+    'rotate'               : 90,
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('CCDSUM_blank1', 'CCDSUM_blank2'), 
+                           # binning in x/y, '_blankN' denotes that both axes
+                           # are listed in one keyword, sep. by blanks
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'TELRA',  # telescope pointing, RA
+    'dec'                  : 'TELDEC', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS|UTC-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTNAME',  # filter keyword
+    'filter_translations'  : {'V': 'V', 'I': 'I'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'aprad_default'        : 5, # default aperture radius in px 
+    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/lowell42.sex',
+    'mask_file'            : {'3,3' : rootpath+'/setup/mask_lowell42_3x3.fits'},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/lowell42.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,CCDSUM,FILTNAME,EXPTIME,'+
+                              'OBJECT,' +
+                              'DATE-OBS,UTC-OBS,TELRA,TELDEC,PIXSCAL,AIRMASS,' +
+                              'TEL_KEYW'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/lowell42.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+}
+
+
+# CTIO 0.9m, CFCCD
+ctio09_param = {
+    'telescope_instrument' : 'CTIO09/CFCCD', # telescope/instrument name
+    'telescope_keyword'    : 'CTIO09',      # telescope/instrument keyword
+    'observatory_code'     : '807',         # MPC observatory code
+    'secpix'               : (0.396, 0.396), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : False,
+    'flipy'                : False,
+    'rotate'               : 180,
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('CCDSUM_blank1', 'CCDSUM_blank2'), 
+                             # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTERS',  # filter keyword
+    'filter_translations'  : {'dia v': 'V', 'dia ov': 'V','dia i': 'I'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'aprad_default'        : 5, # default aperture radius in px 
+    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/ctio09.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/ctio09.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTERS,EXPTIME,OBJECT,' +
+                              'DATE-OBS,RA,DEC,CCDSUM,AIRMASS,' +
+                              'TEL_KEYW'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/ctio09.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+}
+
+
+# CTIO 1.0m, Y4KCAM
+ctio10_param = {
+    'telescope_instrument' : 'CTIO10/Y4KCAM', # telescope/instrument name
+    'telescope_keyword'    : 'CTIO10',      # telescope/instrument keyword
+    'observatory_code'     : '807',         # MPC observatory code
+    'secpix'               : (0.289, 0.289), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True,
+    'flipy'                : False,
+    'rotate'               : 180,
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('CCDSUM_blank1', 'CCDSUM_blank2'), 
+                             # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS|TIME-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTERID',  # filter keyword
+    'filter_translations'  : {'V': 'V', 'I': 'I'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'aprad_default'        : 5, # default aperture radius in px 
+    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/ctio10.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/ctio10.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTERID,EXPTIME,OBJECT,' +
+                              'DATE-OBS,TIME-OBS, RA,DEC,CCDSUM,AIRMASS,' +
+                              'TEL_KEYW'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/ctio10.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+}
+
+
+
 ##### access functions for telescope configurations
 
 
 implemented_telescopes = ['VATT4k', 'ANDICAM', 'DCTLMI', 'ARC35ARCTIC',
-                          'ARC35AGILE', 'MAGIMACS']
+                          'ARC35AGILE', 'MAGIMACS', 'LOWELL31', 'LOWELL42',
+                          'CTIO09', 'CTIO10']
 
+# translate INSTRUME (or others, see _pp_conf.py) header keyword into
+# PP telescope keyword 
 instrument_identifiers = {'= "Vatt4k"':        'VATT4k',
                           'ANDICAM-CCD':       'ANDICAM',
                           'LMI':               'DCTLMI',
                           'arctic':            'ARC35ARCTIC',
                           'agile':             'ARC35AGILE',
                           'IMACS Long-Camera': 'MAGIMACS',
-                          'DLR-MKIII':         'CA123DLRMKIII'}
+                          'DLR-MKIII':         'CA123DLRMKIII',
+                          'NASAcam':           'LOWELL31',
+                          'nasa42':            'LOWELL42',
+                          'cfccd':             'CTIO09',
+                          'Y4KCam':            'CTIO10'}
 
-
-
-
+# translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4k' :       vatt4k_param, 
                         'ANDICAM':       andicam_param,
                         'DCTLMI':        dctlmi_param,
                         'ARC35ARCTIC':   arc35arctic_param,
                         'ARC35AGILE':    arc35agile_param,
                         'MAGIMACS':      magimacs_param,
-                        'CA123DLRMKIII': ca123dlrmkiii_param}
+                        'CA123DLRMKIII': ca123dlrmkiii_param,
+                        'LOWELL31':      lowell31_param,
+                        'LOWELL42':      lowell42_param,
+                        'CTIO09':        ctio09_param,
+                        'CTIO10':        ctio10_param}

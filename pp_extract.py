@@ -255,6 +255,7 @@ def extract_multiframe(filenames, parameters):
         binning_y = hdu[0].header[parameters['obsparam']['binning'][1]]
     bin_string = '%d,%d' % (binning_x, binning_y)
 
+
     if bin_string in parameters['obsparam']['mask_file']:
         mask_file = parameters['obsparam']['mask_file'][bin_string]
         parameters['mask_file'] = mask_file

@@ -143,9 +143,12 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
                 header.remove(key)
             elif key in ['CTYPE1', 'CRPIX1', 'CRVAL1', 'CROTA1', 
                        'CFINT1', 'CTYPE2', 'CRPIX2', 'CRVAL2', 
-                       'CRDELT2', 'CFINT2', 'CDELT1', 'CDELT2', 
+                       'CRDELT2', 'CFINT2',  
                        'LTM1_1', 'LTM2_2', 'WAT0_001', 'LTV1', 
                          'LTV2', 'PIXXMIT', 'PIXOFFST']:
+                # removed 'CDELT1', 'CDELT2', from the list
+                # used by LOWELL31
+
                 header.remove(key)
 
         # add header keywords for SCAMP
@@ -161,6 +164,7 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
         else:
             datetime = header[obsparam['date_keyword'].split('|')[0]]+'T'+\
                        header[obsparam['date_keyword'].split('|')[1]]
+            datetime = datetime.replace('/', '-')
             header['MIDTIMJD'] = (toolbox.dateobs_to_jd(datetime) + \
                                   float(header[obsparam['exptime']])/2./86400.,
                                   'PP: obs midtime')
