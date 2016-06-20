@@ -5,8 +5,8 @@ Diagnostics
 
 By default, PP creates extensive diagnostic output to provide the user
 with a comfortable way to assess the quality of the derived
-results. Focusing on human readability, the diagnostic output is
-accessible with a web browser.
+results. Focusing on human readability, the diagnostic output is in
+the form of a html website that is accessible with any web browser.
 
 
 Overview

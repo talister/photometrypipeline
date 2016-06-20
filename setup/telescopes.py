@@ -27,7 +27,7 @@ Photometry Pipeline Configuation File
 # VATT, VATT4k
 vatt4k_param = {
     'telescope_instrument' : 'VATT/VATT4k', # telescope/instrument name
-    'telescope_keyword'    : 'VATT4k',      # telescope/instrument keyword
+    'telescope_keyword'    : 'VATT4K',      # telescope/instrument keyword
     'observatory_code'     : '290',         # MPC observatory code
     'secpix'               : (0.1875, 0.1875), # pixel size (arcsec)
                                                # before binning
@@ -85,74 +85,6 @@ vatt4k_param = {
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
     'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
 }
-
-
-
-
-
-# CTIO, ANDICAM (CCD)
-andicam_param = {
-    'telescope_instrument' : 'CTIO/ANDICAM_CCD', # telescope/instrument name
-    'telescope_keyword'    : 'ANDICAM',          # telescope/instrument keyword
-    'observatory_code'     : '807',         # MPC observatory code
-    'secpix'               : (0.185, 0.185), # pixel size (arcsec)
-                                               # before binning
-    'ext_coeff'            : 0.05,          # typical extinction coefficient
-
-
-    # image orientation preferences
-    'flipx'                : True, 
-    'flipy'                : False, 
-    'rotate'               : 0, 
-
-    # instrument-specific FITS header keywords
-    'binning'              : ('CCDXBIN', 'CCDYBIN'), # binning in x/y
-    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
-    'ra'                   : 'RA',  # telescope pointing, RA
-    'dec'                  : 'DEC', # telescope pointin, Dec 
-    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
-                                    # if already in degrees
-    'date_keyword'         : 'DATE-OBS|TIME-OBS', # obs date/time
-                                                  # keyword; use
-                                                  # 'date|time' if
-                                                  # separate
-    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
-                                         # (usually provided by
-                                         # pp_prepare
-    'object'               : 'OBJECT',  # object name keyword 
-    'filter'               : 'CCDFLTID',  # filter keyword
-    'filter_translations'  : {'V': 'V', 'R': 'R', 'B': 'B'},
-                             # filtername translation dictionary
-    'exptime'              : 'EXPTIME', # exposure time keyword (s)
-    'airmass'              : 'SECZ', # airmass keyword
-
-
-    # source extractor settings
-    'source_minarea'       : 15, # default sextractor source minimum N_pixels
-    'aprad_default'        : 4, # default aperture radius in px 
-    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
-    'sex-config-file'      : rootpath+'/setup/andicam.sex',
-    'mask_file'            : {'2,2' : rootpath+'/setup/mask_andicam_2x2.fits'},
-    #                        mask files as a function of x,y binning
-
-    # scamp settings
-    'scamp-config-file'    : rootpath+'/setup/andicam.scamp', 
-
-    # swarp settings
-    'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
-                              'DATE-OBS,TIME-OBS,RA,DEC,SECPIX,SECZ,' +
-                              'TEL_KEYW'),
-    #                        keywords to be copied in image
-    #                        combination using swarp
-    'swarp-config-file'    : rootpath+'/setup/andicam.swarp',  
-
-    # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
-}
-
-
-
 
 
 # DCT, LMI
@@ -654,7 +586,7 @@ ctio09_param = {
 
 
     # source extractor settings
-    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'source_minarea'       : 15, # default sextractor source minimum N_pixels
     'aprad_default'        : 5, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/ctio09.sex',
@@ -709,8 +641,8 @@ ctio10_param = {
                                          # (usually provided by
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
-    'filter'               : 'FILTERID',  # filter keyword
-    'filter_translations'  : {'V': 'V', 'I': 'I'},
+    'filter'               : 'FILTER',  # filter keyword
+    'filter_translations'  : {3: 'V'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -728,7 +660,7 @@ ctio10_param = {
     'scamp-config-file'    : rootpath+'/setup/ctio10.scamp', 
 
     # swarp settings
-    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTERID,EXPTIME,OBJECT,' +
+    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
                               'DATE-OBS,TIME-OBS, RA,DEC,CCDSUM,AIRMASS,' +
                               'TEL_KEYW'),
     #                         keywords to be copied in image
@@ -741,18 +673,80 @@ ctio10_param = {
 }
 
 
+# CTIO 1.3m, ANDICAM (CCD)
+ctio13ccd_param = {
+    'telescope_instrument' : 'CTIO/ANDICAM_CCD', # telescope/instrument name
+    'telescope_keyword'    : 'CTIO13CCD',        # telescope/instrument keyword
+    'observatory_code'     : '807',         # MPC observatory code
+    'secpix'               : (0.185, 0.185), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True, 
+    'flipy'                : False, 
+    'rotate'               : 0, 
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('CCDXBIN', 'CCDYBIN'), # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS|TIME-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'CCDFLTID',  # filter keyword
+    'filter_translations'  : {'V': 'V', 'R': 'R', 'B': 'B'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'SECZ', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'aprad_default'        : 4, # default aperture radius in px 
+    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/andicam.sex',
+    'mask_file'            : {'2,2' : rootpath+'/setup/mask_andicam_2x2.fits'},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/andicam.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
+                              'DATE-OBS,TIME-OBS,RA,DEC,SECPIX,SECZ,' +
+                              'TEL_KEYW'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/andicam.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+}
+
+
+
 
 ##### access functions for telescope configurations
 
 
-implemented_telescopes = ['VATT4k', 'ANDICAM', 'DCTLMI', 'ARC35ARCTIC',
+implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'ARC35AGILE', 'MAGIMACS', 'LOWELL31', 'LOWELL42',
-                          'CTIO09', 'CTIO10']
+                          'CTIO09', 'CTIO10', 'CTIO13CCD']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword 
-instrument_identifiers = {'= "Vatt4k"':        'VATT4k',
-                          'ANDICAM-CCD':       'ANDICAM',
+instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'LMI':               'DCTLMI',
                           'arctic':            'ARC35ARCTIC',
                           'agile':             'ARC35AGILE',
@@ -761,11 +755,11 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4k',
                           'NASAcam':           'LOWELL31',
                           'nasa42':            'LOWELL42',
                           'cfccd':             'CTIO09',
-                          'Y4KCam':            'CTIO10'}
+                          'Y4KCam':            'CTIO10',
+                          'ANDICAM-CCD':       'CTIO13CCD'}
 
 # translate telescope keyword into parameter set defined here
-telescope_parameters = {'VATT4k' :       vatt4k_param, 
-                        'ANDICAM':       andicam_param,
+telescope_parameters = {'VATT4K' :       vatt4k_param, 
                         'DCTLMI':        dctlmi_param,
                         'ARC35ARCTIC':   arc35arctic_param,
                         'ARC35AGILE':    arc35agile_param,
@@ -774,4 +768,5 @@ telescope_parameters = {'VATT4k' :       vatt4k_param,
                         'LOWELL31':      lowell31_param,
                         'LOWELL42':      lowell42_param,
                         'CTIO09':        ctio09_param,
-                        'CTIO10':        ctio10_param}
+                        'CTIO10':        ctio10_param,
+                        'CTIO13CCD':     ctio13_ccd_param}
