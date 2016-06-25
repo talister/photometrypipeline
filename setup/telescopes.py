@@ -769,4 +769,4 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'LOWELL42':      lowell42_param,
                         'CTIO09':        ctio09_param,
                         'CTIO10':        ctio10_param,
-                        'CTIO13CCD':     ctio13_ccd_param}
+                        'CTIO13CCD':     ctio13ccd_param}
