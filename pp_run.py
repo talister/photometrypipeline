@@ -53,7 +53,7 @@ logging.basicConfig(filename = _pp_conf.log_filename,
                     datefmt  = _pp_conf.log_datefmt)
 
 
-def run_the_pipeline(filenames, man_targetname, fixed_aprad):
+def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
     """
     wrapper to run the photometry pipeline
     """
@@ -130,7 +130,10 @@ def run_the_pipeline(filenames, man_targetname, fixed_aprad):
             logging.error('%s %s' % (filenames[i], filters[i]))
         sys.exit()    
 
-    filtername = obsparam['filter_translations'][filters[0]]
+    if man_filtername is None:
+        filtername = obsparam['filter_translations'][filters[0]]
+    else:
+        filtername = man_filtername
     logging.info('%d %s frames identified' % (len(filenames), filtername))
     
     print 'run photometry pipeline on %d %s %s frames' % \
@@ -231,10 +234,9 @@ def run_the_pipeline(filenames, man_targetname, fixed_aprad):
 
     ### run photometric calibration
     minstars = _pp_conf.minstars
-    manfilter = filtername
     manualcatalog = None
     print '\n----- run photometric calibration\n'
-    calibration = pp_calibrate.calibrate(filenames, minstars, manfilter,
+    calibration = pp_calibrate.calibrate(filenames, minstars, filtername,
                                          manualcatalog, obsparam, display=True,
                                          diagnostics=True)
 
@@ -294,6 +296,8 @@ if __name__ == '__main__':
                         default=None)
     parser.add_argument('-target', help='primary targetname override', 
                         default=None)
+    parser.add_argument('-filter', help='filter name override', 
+                        default=None)
     parser.add_argument('-fixed_aprad', help='fixed aperture radius (px)', 
                         default=0)
     parser.add_argument('images', help='images to process or \'all\'', 
@@ -302,6 +306,7 @@ if __name__ == '__main__':
     args = parser.parse_args()         
     prefix = args.prefix
     man_targetname = args.target
+    man_filtername = args.filter
     fixed_aprad = float(args.fixed_aprad)
     filenames = args.images
 
@@ -328,7 +333,8 @@ if __name__ == '__main__':
             if len(filenames) > 0:
                 print '\n RUN PIPELINE IN %s' % root
                 os.chdir(root)
-                run_the_pipeline(filenames, man_targetname, fixed_aprad)
+                run_the_pipeline(filenames, man_targetname, man_filtername,
+                                 fixed_aprad)
                 os.chdir(_masterroot_directory)
             else:
                 print '\n NOTHING TO DO IN %s' % root
@@ -336,7 +342,8 @@ if __name__ == '__main__':
 
     else:
         # call run_the_pipeline only on filenames
-        run_the_pipeline(filenames, man_targetname, fixed_aprad)
+        run_the_pipeline(filenames, man_targetname, man_filtername, 
+                         fixed_aprad)
         pass
 
 

@@ -51,6 +51,11 @@ went wrong.
 Diagnostics Details
 -------------------
 
+An example diagnostic page is available `here`_. The following section
+discuss the output in detail.
+
 TBD
 
 
+
+.. _here: http://phy54.phy.nau.edu/photometrypipeline/example_7813/diagnostics.html

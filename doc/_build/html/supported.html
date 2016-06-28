@@ -54,7 +54,10 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Supported Observatories</a></li>
-<li><a class="reference internal" href="#supported-reference-catalogs">Supported Reference Catalogs</a></li>
+<li><a class="reference internal" href="#supported-reference-catalogs">Supported Reference Catalogs</a><ul>
+<li><a class="reference internal" href="#supported-catalog-transformations">Supported Catalog Transformations</a></li>
+</ul>
+</li>
 </ul>
 
   <h4>Previous topic</h4>
@@ -94,21 +97,68 @@
   <div class="section" id="supported-observatories">
 <span id="id1"></span><h1>Supported Observatories<a class="headerlink" href="#supported-observatories" title="Permalink to this headline">¶</a></h1>
 <p>The pipeline is currently set up to work on data from the following
-observatories/instruments (telescope identifiers are given in square
-brackets):</p>
-<ul class="simple">
-<li>Apache Point ARC 3.5m/AGILE [ARC35AGILE]</li>
-<li>Apache Point ARC 3.5m/ARCTIC [ARC35ARCTIC]</li>
-<li>Calar Alto 1.23m/DLR-MkIII [CA123DLRMKIII]</li>
-<li>CTIO 0.9m/CFCCD [CTIO09]</li>
-<li>CTIO 1.0m/Y4KCam [CTIO10]</li>
-<li>CTIO 1.3m/ANDICAM (CCD camera) [CTIO13CCD]</li>
-<li>DCT/LMI [DCTLMI]</li>
-<li>Lowell 31&#8221;/NASACAM [LOWELL31]</li>
-<li>Lowell 42&#8217;/NASA42 [LOWELL42]</li>
-<li>Magellan/IMACS [MAGIMACS]</li>
-<li>VATT/VATT4k [VATT4K]</li>
-</ul>
+observatories/instruments:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="42%" />
+<col width="32%" />
+<col width="26%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Telescope</th>
+<th class="head">Instrument</th>
+<th class="head">PP Keyword</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Apache Point ARC 3.5m</td>
+<td>AGILE</td>
+<td>ARC35AGILE</td>
+</tr>
+<tr class="row-odd"><td>Apache Point ARC 3.5m</td>
+<td>ARCTIC</td>
+<td>ARC35ARCTIC</td>
+</tr>
+<tr class="row-even"><td>Calar Alto 1.23m</td>
+<td>DLR-MkIII</td>
+<td>CA123DLRMKIII</td>
+</tr>
+<tr class="row-odd"><td>CTIO 0.9m</td>
+<td>CFCCD</td>
+<td>CTIO09</td>
+</tr>
+<tr class="row-even"><td>CTIO 1.0m</td>
+<td>Y4KCam</td>
+<td>CTIO10</td>
+</tr>
+<tr class="row-odd"><td>CTIO 1.3m</td>
+<td>ANDICAM (CCD)</td>
+<td>CTIO13CCD</td>
+</tr>
+<tr class="row-even"><td>Discovery Channel
+Telescope</td>
+<td>LMI</td>
+<td>DCTLMI</td>
+</tr>
+<tr class="row-odd"><td>Lowell 31&#8221;</td>
+<td>NASACAM</td>
+<td>LOWELL31</td>
+</tr>
+<tr class="row-even"><td>Lowell 42&#8221;</td>
+<td>NASA42</td>
+<td>LOWELL42</td>
+</tr>
+<tr class="row-odd"><td>Magellan</td>
+<td>IMACS</td>
+<td>MAGIMACS</td>
+</tr>
+<tr class="row-even"><td>Vatican Advanced
+Technology Telescope</td>
+<td>VATT4k</td>
+<td>VATT4K</td>
+</tr>
+</tbody>
+</table>
 <p>If you would like to use the pipeline for other observatories, please
 contact me.</p>
 </div>
@@ -116,13 +166,98 @@ contact me.</p>
 <span id="supported-catalogs"></span><h1>Supported Reference Catalogs<a class="headerlink" href="#supported-reference-catalogs" title="Permalink to this headline">¶</a></h1>
 <p>PP is currently able to use the following catalogs for astrometric and
 photometric calibration:</p>
-<ul class="simple">
-<li>SDSS-R9 [ugriz, BVR through transformations]</li>
-<li>URAT-1 [griBV, R through transformations]</li>
-<li>2MASS [JHKs, ZK through transformations]</li>
-</ul>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="17%" />
+<col width="10%" />
+<col width="17%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Catalog Name</th>
+<th class="head">Catalog Type</th>
+<th class="head">Registration?</th>
+<th class="head">Filter Bands</th>
+<th class="head">Comments</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>2MASS (<a class="reference external" href="http://www.ipac.caltech.edu/2mass/">2MASS</a>)</td>
+<td>astrometric/photometric</td>
+<td>yes</td>
+<td>J, H, Ks, K*</td>
+<td>all-sky NIR catalog, good astrometry</td>
+</tr>
+<tr class="row-odd"><td>URAT-1 (<a class="reference external" href="http://cdsads.u-strasbg.fr/cgi-bin/nph-bib_query?2015AJ....150..101Z&amp;db_key=AST&amp;nosetcookie=1">URAT-1</a>)</td>
+<td>astrometric/photometric</td>
+<td>yes (SCAMP
+&gt;= trunk.r345)</td>
+<td>g, r, i, U*, B, V, R*,
+I*</td>
+<td>good coverage over the Northern hemisphere, photometry from
+APASS (see below)</td>
+</tr>
+<tr class="row-even"><td>Sloan Digital Sky
+Survey Release 9
+(<a class="reference external" href="http://www.sdss3.org/dr9/">SDSS-R9</a>)</td>
+<td>astrometric/photometric</td>
+<td>yes</td>
+<td>u, g, r, i, z, U*, B*,
+V*, R*, I*</td>
+<td>excellent photometry, Northern hemisphere, patchy coverage</td>
+</tr>
+<tr class="row-odd"><td>AAVSO Photometric All
+Sky Survey Release 9
+(<a class="reference external" href="http://www.aavso.org/apass">APASS9</a>)</td>
+<td>photometric</td>
+<td>no</td>
+<td>g, r, i, U*, B, V, R*,
+I*</td>
+<td>good coverage, good photometry for stars with V&lt;17</td>
+</tr>
+<tr class="row-even"><td>Carlsberg Meridian
+Catalogue 15 (<a class="reference external" href="http://cdsarc.u-strasbg.fr/viz-bin/Cat?I/327">CMC15</a>)</td>
+<td>photometric</td>
+<td>no</td>
+<td>r, J, H, Ks</td>
+<td>-40 deg &lt; declination &lt; 50 deg; J, H, Ks from 2MASS (above)
+limiting magnitude r &lt; 17 mag</td>
+</tr>
+<tr class="row-odd"><td>PPMXL (<a class="reference external" href="http://cdsads.u-strasbg.fr/cgi-bin/nph-bib_query?2010AJ....139.2440R&amp;db_key=AST&amp;nosetcookie=1">PPMXL</a>)</td>
+<td>astrometric</td>
+<td>yes</td>
+<td>J, H, Ks, B, R</td>
+<td>accurate astrometry; J, H, Ks from 2MASS; B, R from USNO-B1
+(see below). Note that proper motions are not yet taken
+into account (this will be integrated in the future).</td>
+</tr>
+<tr class="row-even"><td>USNO-B1 (<a class="reference external" href="http://cdsads.u-strasbg.fr/cgi-bin/nph-bib_query?2003AJ....125..984M&amp;db_key=AST&amp;nosetcookie=1">USNO-B1</a>)</td>
+<td>astrometric</td>
+<td>yes</td>
+<td>B, R, I</td>
+<td>questionable photometric and astrometric accuracy, but
+deepest catalog available (V &lt; 21 mag)</td>
+</tr>
+</tbody>
+</table>
+<p>The catalog name in brackets is the identifier used by PP; e.g., if
+you want to use URAT-1 for the registration of your images, use option
+<cite>-cat URAT-1</cite> with the <code class="docutils literal"><span class="pre">pp_register</span></code> command. The &#8220;Registration?&#8221;
+column identifies if this catalog is supported by SCAMP in order to
+use it for image registration. All filter bands marked with an
+asterisk (*) are obtained through transformations from other bands.</p>
 <p>If you are interested in using catalogs other than those listed,
 please let me know.</p>
+<div class="section" id="supported-catalog-transformations">
+<h2>Supported Catalog Transformations<a class="headerlink" href="#supported-catalog-transformations" title="Permalink to this headline">¶</a></h2>
+<p>PP supports the following catalog transformations:</p>
+<ul class="simple">
+<li>ugriz -&gt; BVRI: <a class="reference external" href="http://adsabs.harvard.edu/abs/2008AJ....135..264C">Chonis &amp; Gaskell 2008</a></li>
+<li>JHKs (2MASS) -&gt; JHK (UKIRT): <a class="reference external" href="http://adsabs.harvard.edu/abs/2009MNRAS.394..675H">Hodgkin et al. 2009</a></li>
+</ul>
+<p>Independent checks indicate that these transformations are reliable and accurate. More quantitative results coming soon...</p>
+</div>
 </div>
 
 

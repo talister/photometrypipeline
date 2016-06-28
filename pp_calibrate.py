@@ -97,6 +97,8 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
               filtername not in {'u', 'g', 'r', 'i', 'z'}) or
              (catalogname.find('URAT') > -1 and
               filtername not in {'B', 'V', 'g', 'r', 'i'}) or
+             (catalogname.find('APASS') > -1 and
+              filtername not in {'B', 'V', 'g', 'r', 'i'}) or
              (catalogname.find('2MASS') > -1 and
               filtername not in {'J', 'H', 'Ks'}) ):
             n_transformed = cat.transform_filters(filtername)
@@ -433,7 +435,7 @@ if __name__ == '__main__':
     parser.add_argument('-minstars', help='min number of calibration stars '+\
                         'or fraction', default=0.5)
     parser.add_argument("-catalog",
-                        choices=['SDSS-R9', 'URAT-1', '2MASS'],
+                        choices=_pp_conf.allcatalogs.keys(),
                         help="use this catalog instead of default one")
     parser.add_argument("-filter", help="manual filter override")
     parser.add_argument('images', help='images to process', nargs='+')

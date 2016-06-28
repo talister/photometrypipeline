@@ -83,7 +83,7 @@ vatt4k_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 
@@ -146,7 +146,7 @@ dctlmi_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 
@@ -211,7 +211,7 @@ arc35arctic_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 
@@ -275,7 +275,7 @@ arc35agile_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 
@@ -352,7 +352,7 @@ magimacs_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 
@@ -416,7 +416,7 @@ ca123dlrmkiii_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 
@@ -478,7 +478,7 @@ lowell31_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 
@@ -543,7 +543,7 @@ lowell42_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 
@@ -606,7 +606,7 @@ ctio09_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 
@@ -669,7 +669,7 @@ ctio10_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 
@@ -731,7 +731,7 @@ ctio13ccd_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'URAT-1', '2MASS'],
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
 

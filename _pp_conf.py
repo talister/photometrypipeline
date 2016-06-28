@@ -91,6 +91,38 @@ filter_keys     = ['FILTER', 'CCDFLTID', 'FILTERS', 'FILTER2', 'FILTNAME',
                    'FILTERID']
 
 
+### available catalogs
+
+# translate PP catalog identifier to Vizier identifier
+# http://vizier.u-strasbg.fr/viz-bin/vizHelp?cats/U.htx
+allcatalogs = {'URAT-1'  : 'urat1',
+               '2MASS'   : '2mass-psc',
+               'SDSS-R9' : 'sdss9',
+               'APASS9'  : 'apass9',
+               'CMC15'   : 'cmc15',
+               'PPMXL'   : 'ppmxl',
+               'USNO-B1' : 'usno-b1'}
+
+# catalog magnitude systems
+allcatalogs_magsys = {'URAT-1'  : 'Vega',
+                      '2MASS'   : 'Vega',
+                      'SDSS-R9' : 'AB',
+                      'APASS9'  : 'Vega',
+                      'CMC15'   : 'Vega',
+                      'PPMXL'   : 'Vega',
+                      'USNO-B1' : 'Vega'}
+
+# catalog brightness fields for sorting
+allcatalogs_mag = {'URAT-1'  : 'Vmag',
+                   '2MASS'   : 'Jmag',
+                   'SDSS-R9' : 'gmag',
+                   'APASS9'  : 'Vmag',
+                   'CMC15'   : 'r_mag',
+                   'PPMXL'   : 'r1mag',
+                   'USNO-B1' : 'r1mag'}
+
+
+
 
 ##### pipeline preferences 
 # (if you don't know what you're doing, better don't mess around here)

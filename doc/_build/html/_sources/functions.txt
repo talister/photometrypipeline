@@ -4,7 +4,7 @@ Functions
 The individual pipeline functions are introduced and explained
 below. All functions presented here can be called from the terminal. 
 
-.. function:: pp_run ([-prefix string], [-target string],
+.. function:: pp_run ([-prefix string], [-target string], [-filter string],
               [-fixed_aprad float], images)
 
    serves as a wrapper for all the individual pipeline processes
@@ -15,6 +15,8 @@ below. All functions presented here can be called from the terminal.
                    images, this overrides the ``OBJECT`` keyword in the
                    FITS headers; note to replace blanks with
                    underscores if the target's name is a designation
+   :param -filter: (optional) manual filter name override for the photometric
+		   calibration step
    :param -fixed_aprad: (optional) use this fixed aperture radius for
                         all data instead of finding the aperture
                         radius in a curve-of-growth analysis

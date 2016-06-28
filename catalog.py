@@ -35,7 +35,7 @@ from astropy.io import fits
 import scipy.optimize as optimization
 
 # pipeline-related modules (only needed for testing)
-import _pp_conf
+import _pp_conf 
 
 # setup logging
 logging.basicConfig(filename = _pp_conf.log_filename, 
@@ -176,11 +176,12 @@ class catalog:
     ### online catalog access
         
     def download_catalog(self, ra_deg, dec_deg, rad_deg,
-                         max_sources, save_catalog=True,
+                         max_sources, sort=None, save_catalog=True,
                          display_progress=True):
         """ 
         download existing catalog from VIZIER server using self.catalogname
-        input: ra_deg, dec_deg, rad_deg, max_sources, (display_progress)
+        input: ra_deg, dec_deg, rad_deg, max_sources, (display_progress), 
+               (sort=['ascending', 'descending', None])
         return: number of sources downloaded
         """
 
@@ -189,17 +190,26 @@ class catalog:
         #server = 'http://vizier.cfa.harvard.edu'
         server = 'http://vizier.u-strasbg.fr'
 
+        # use "server + "/viz-bin/asu-txt?" for text file output
         url =  server + "/viz-bin/asu-binfits?"
-        url += "-source=" + {'URAT-1': 'urat1',
-                             '2MASS' : '2mass-psc',
-                             'SDSS-R9' : 'sdss9'}[self.catalogname]
+        url += "-source=" + _pp_conf.allcatalogs[self.catalogname]
         url += "&-c=%010.7f%+010.7f" % (ra_deg, dec_deg)
         url += "&-c.rd=%5.3f" % (rad_deg)
         # for mag uncertainties in URAT, pos uncertainties in 2MASS
-        if self.catalogname.find('URAT') > -1 or \
-           self.catalogname.find('2MASS') > -1:
+        if self.catalogname.find('SDSS') == -1:
             url += "&-out.all" 
         url += "&-out.max=%d" % max_sources 
+        # sort data
+        if sort is not None:
+            if sort == 'ascending':
+                url += "&-sort=" + _pp_conf.allcatalogs_mag[self.catalogname]
+            elif sort == 'descending':
+                url += "&-sort=-" + _pp_conf.allcatalogs_mag[self.catalogname]
+            else:
+                logging.warning('not sure how to sort catalog data (%s)' % sort)
+                print 'not sure how to sort catalog data (%s)' % sort
+
+        #print url
 
         logging.info('accessing %s on vizier: %s' % (self.catalogname, url))
 
@@ -264,25 +274,18 @@ class catalog:
         self.history = '%d sources downloaded' % self.shape[0]
 
         # set catalog magnitude system
-        self.magsystem = {'URAT-1': 'Vega',
-                          '2MASS' : 'Vega',
-                          'SDSS-R9' : 'AB'}[self.catalogname]
+        self.magsystem = _pp_conf.allcatalogs_magsys[self.catalogname]
 
         # set unified field names
-        self.fieldnames = {'2MASS':  {'ra.deg':'RAJ2000', 'dec.deg':'DEJ2000',
-                                      'e_ra.deg':'e_RAJ2000', 
-                                      'e_dec.deg':'e_DEJ2000',
-                                      'ident':'_2MASS'},  
-                           'URAT-1': {'ra.deg':'RAJ2000', 'dec.deg':'DEJ2000',
-                                      'e_ra.deg':'sigs', 
-                                      'e_dec.deg':'sigs',
-                                      'ident':'URAT1'}, 
-                           'SDSS-R9':{'ra.deg':'RAJ2000', 'dec.deg':'DEJ2000',
-                                      'e_ra.deg':'e_RAJ2000', 
-                                      'e_dec.deg':'e_DEJ2000',
-                                      'ident':'SDSS9'}
-                          }[self.catalogname]
-
+        self.fieldnames = {'ra.deg':'RAJ2000', 'dec.deg':'DEJ2000',
+                           'e_ra.deg':'e_RAJ2000', 'e_dec.deg':'e_DEJ2000'}
+        self.fieldnames['ident'] = {'2MASS'  : '_2MASS',
+                                    'URAT-1' : 'URAT1',
+                                    'SDSS-R9': 'SDSS9',
+                                    'APASS9' : 'recno',
+                                    'CMC15'  : 'CMC15',
+                                    'PPMXL'  : 'PPMXL',
+                                    'USNO-B1': 'USNO-B1.0'}[self.catalogname]
 
         ### catalog additions and corrections
 
@@ -659,7 +662,10 @@ class catalog:
                                 self.data['imag'],
                                 self.data['e_gmag'],
                                 self.data['e_rmag'],
-                                self.data['e_imag']])
+                                self.data['e_imag'],
+                                self.data['umag'],
+                                self.data['e_umag']])
+
             # lbl   = {'_Bmag':0 , '_e_Bmag': 1, '_Vmag': 2, '_e_Vmag': 3, 
             #          '_Rmag': 4, '_e_Rmag': 5, '_Imag': 6, '_e_Imag': 7}
             # nmags = [numpy.zeros(self.shape[0]) for i in range(len(lbl))]
@@ -695,7 +701,10 @@ class catalog:
             # transformed magnitudes; uncertainties through Gaussian and C&G2008
             nmags = numpy.array([numpy.empty(len(mags[0])), 
                                  numpy.empty(len(mags[0]))])
-            if targetfilter == 'B':
+            if targetfilter == 'U':
+                nmags[0] = mags[6] - 0.854
+                nmags[1] = numpy.sqrt(mags[7]**2 + 0.007**2)
+            elif targetfilter == 'B':
                 nmags[0]   = mags[0] + 0.327*(mags[0] - mags[1]) + 0.216
                 nmags[1] = numpy.sqrt(((1+0.327)*mags[3])**2 \
                                       + (0.327*mags[4])**2 \
@@ -733,8 +742,8 @@ class catalog:
                             (self.shape[0], targetfilter)
             self.magsystem = 'AB (ugriz), Vega (%s)' % targetfilter
 
-            logging.info('%d sources sucessfully transformed to %s' % \
-                         (self.shape[0], targetfilter))
+            logging.info(('%d sources sucessfully transformed to %s' % 
+                          (self.shape[0], targetfilter)))
 
 
             #print list(self['_Vmag'])
@@ -742,42 +751,62 @@ class catalog:
             return self.shape[0]
 
 
-        ### URAT to R
+        ### URAT/APASS to R/I
         # todo: include g magnitudes and account for color
-        elif self.catalogname.find('URAT') > -1 and targetfilter == 'R' \
-             and self.magsystem == 'Vega':
+        elif ((self.catalogname.find('URAT') > -1 or
+               self.catalogname.find('APASS') > -1) and 
+              (targetfilter == 'R' or targetfilter == 'I')
+              and self.magsystem == 'Vega'):
 
-            logging.info(('trying to transform %d URAT-1 sources to ' \
-                          + 'R') % self.shape[0])
+            logging.info('trying to transform %d %s sources to %s' % 
+                          (self.shape[0], self.catalogname, targetfilter))
 
-            # select sources for input catalog
-            mags  = [self.data['rmag'], self.data['e_rmag']]
-            lbl   = {'_Rmag': 0, '_e_Rmag': 1}
-            nmags = [numpy.zeros(self.shape[0]) for i in range(len(lbl))]
+            ### transformations based on Chonis & Gaskell 2008, AJ, 135 
+            if self.catalogname.find('URAT') > -1:
+                mags = numpy.array([self.data['rmag'],
+                                    self.data['imag'],
+                                    self.data['e_rmag'],
+                                    self.data['e_imag']])
+            elif self.catalogname.find('APASS') > -1:
+                mags = numpy.array([self.data['r_mag'],
+                                    self.data['i_mag'],
+                                    self.data['e_r_mag'],
+                                    self.data['e_i_mag']])
 
-            for idx in range(self.shape[0]):
-            # R is transformed from r based on comparison with Stetson fields
-                nmags[lbl['_Rmag']][idx]   = mags[0][idx] - 0.205
-                nmags[lbl['_e_Rmag']][idx] = numpy.sqrt(mags[1][idx]**2 \
-                                                        + 0.02**2)
-              
-            # append nmags arrays to catalog
-            for key, idx in lbl.items():
-                self.add_field(key, nmags[idx])
-                
+            # sort out sources that do not meet the C&G requirements
+            keep_idc = (mags[0]-mags[1] > 0.08) & (mags[0]-mags[1] < 0.5)
+
+            # transformed magnitudes; uncertainties through Gaussian and C&G2008
+            nmags = numpy.array([numpy.empty(len(mags[0])), 
+                                 numpy.empty(len(mags[0]))])
+
+            if targetfilter == 'R':
+                nmags[0]   = mags[0] - 0.272*(mags[0] - mags[1]) - 0.159 
+                nmags[1] = numpy.sqrt(((1-0.272)*mags[2])**2 \
+                                      + (0.272*mags[3])**2 \
+                                      + ((mags[0]-mags[1])*0.092)**2 \
+                                      + 0.022**2)
+            elif targetfilter == 'I':                    
+                nmags[0]   = mags[1] - 0.337*(mags[0] - mags[1]) - 0.370 
+                nmags[1] = numpy.sqrt(((1+0.337)*mags[3])**2 \
+                                      + (0.337*mags[2])**2 \
+                                      + ((mags[0]-mags[1])*0.191)**2 \
+                                      + 0.041**2)
+
+            # add new filter and according uncertainty to catalog
+            self.add_field('_'+targetfilter+'mag', nmags[0])
+            self.add_field('_e_'+targetfilter+'mag', nmags[1])
+
+            # get rid of sources that have not been transformed
+            self.data = self.data[keep_idc]            
+
             self.catalogname  += '_transformed'
-            self.history += ', %d transformed to R (Vega)' % \
-                            self.shape[0]
+            self.history += ', %d transformed to %s (Vega)' % \
+                            (self.shape[0], targetfilter)
             self.magsystem = 'Vega'
-
-            # reject sources with extreme colors
-            if self.shape[0] > 0:
-                self.reject_sources_other_than(
-                    abs(self['Vmag']-self['Rmag']-0.45) < 0.4)
-                
             
-            logging.info('%d sources sucessfully transformed to R' % \
-                         self.shape[0])
+            logging.info('%d sources sucessfully transformed to %s' % \
+                         (self.shape[0], targetfilter))
             
             return self.shape[0]
 
@@ -1090,9 +1119,15 @@ class catalog:
 # print cat2.fields
 
 # cat3 = catalog('SDSS-R9')
-# print cat3.download_catalog(80, 0, 0.05, 10000), 'sources grabbed from', cat3.catalogname
-# print cat3[305]
-# print cat3.fields
+# print cat3.download_catalog(80, 40, 0.05, 10000, sort='ascending'), 'sources grabbed from', cat3.catalogname
+# #print cat3[305]
+# #print cat3.fields
+
+# cat4 = catalog('USNO-B1')
+# print cat4.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat4.catalogname
+# print cat4[305]
+# print cat4.fields
+
 
 # print cat2.shape, cat2.history
 # print cat2.transform_filters('V'), 'sources transformed to V'      2MASS to BVRI
@@ -1107,8 +1142,12 @@ class catalog:
 # print cat3.shape, cat3.history
 
 # print cat1.shape, cat1.history
-# print cat1.transform_filters('R'), 'sources transformed to R'      #SDSS to BVRI
+# print cat1.transform_filters('I'), 'sources transformed to I'      #SDSS to BVRI
 # print cat1.shape, cat1.history
+# for i in cat1:
+#    print i['_Imag'], i['rmag'], i['imag']
+
+
 
 # print test.write_database('test.db'), 'sources written to database file'
 

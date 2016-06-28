@@ -91,7 +91,7 @@
 below. All functions presented here can be called from the terminal.</p>
 <dl class="function">
 <dt>
-<code class="descname">pp_run ([-prefix string], [-target string],</code></dt>
+<code class="descname">pp_run ([-prefix string], [-target string], [-filter string],</code></dt>
 <dt>
 <code class="descname">[-fixed_aprad float], images)</code></dt>
 <dd><p>serves as a wrapper for all the individual pipeline processes</p>
@@ -106,6 +106,8 @@ below. All functions presented here can be called from the terminal.</p>
 images, this overrides the <code class="docutils literal"><span class="pre">OBJECT</span></code> keyword in the
 FITS headers; note to replace blanks with
 underscores if the target&#8217;s name is a designation</li>
+<li><strong>-filter</strong> &#8211; (optional) manual filter name override for the photometric
+calibration step</li>
 <li><strong>-fixed_aprad</strong> &#8211; (optional) use this fixed aperture radius for
 all data instead of finding the aperture
 radius in a curve-of-growth analysis</li>
