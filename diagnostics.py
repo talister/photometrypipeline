@@ -277,7 +277,7 @@ def add_registration(data, extraction_data):
         # turn relevant header keys into floats
         # astropy.io.fits bug
         for key, val in header.items():
-            if 'CD1' in key or 'CD2' in key or \
+            if 'CD1_' in key or 'CD2_' in key or \
                'CRVAL' in key or 'CRPIX' in key or \
                'EQUINOX' in key:
                 header[key] = float(val)

@@ -547,6 +547,72 @@ lowell42_param = {
 }
 
 
+# Lowell90 (Perkins), PRISM
+lowell90_param = {
+    'telescope_instrument' : 'Lowell90/PRISM', # telescope/instrument name
+    'telescope_keyword'    : 'LOWELL90',      # telescope/instrument keyword
+    'observatory_code'     : '688',         # MPC observatory code
+    'secpix'               : (0.39, 0.39), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True,
+    'flipy'                : False,
+    'rotate'               : 0,
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('CRDELT1', 'CRDELT2'), 
+                           # binning in x/y, '_blankN' denotes that both axes
+                           # are listed in one keyword, sep. by blanks
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'TELRA',  # telescope pointing, RA
+    'dec'                  : 'TELDEC', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTNME3',  # filter keyword
+    'filter_translations'  : {'V': 'V', 'I': 'I', 'VR': None},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'aprad_default'        : 5, # default aperture radius in px 
+    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/lowell90.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/lowell90.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,CRDELT1, CRDELT2,FILTNME3,' +
+                              'EXPTIME,OBJECT,' +
+                              'DATE-OBS,TELRA,TELDEC,PIXSCAL,AIRMASS,' +
+                              'TEL_KEYW'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/lowell90.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
+}
+
+
+
 # CTIO 0.9m, CFCCD
 ctio09_param = {
     'telescope_instrument' : 'CTIO09/CFCCD', # telescope/instrument name
@@ -735,6 +801,67 @@ ctio13ccd_param = {
 }
 
 
+# UH 88inch, SNIFS (imaging mode)
+uh88snifs_param = {
+    'telescope_instrument' : 'UH88/SNIFS', # telescope/instrument name
+    'telescope_keyword'    : 'UH88SNIFS',        # telescope/instrument keyword
+    'observatory_code'     : '568',         # MPC observatory code
+    'secpix'               : (0.1365, 0.1365), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True, 
+    'flipy'                : True, 
+    'rotate'               : 0, 
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('CCDBIN1', 'CCDBIN2'), # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTER',  # filter keyword
+    'filter_translations'  : {'SDSS r': 'r'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 8, # default sextractor source minimum N_pixels
+    'aprad_default'        : 3, # default aperture radius in px 
+    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/uh88snifs.sex',
+    'mask_file'            : {}, #'2,2' : rootpath+'/setup/mask_snifs_2x2.fits'},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/uh88snifs.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJECT,' +
+                              'DATE-OBS,RA,DEC,SECPIX,AIRMASS,' +
+                              'TEL_KEYW'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/uh88snifs.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
+}
+
 
 
 ##### access functions for telescope configurations
@@ -742,7 +869,8 @@ ctio13ccd_param = {
 
 implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'ARC35AGILE', 'MAGIMACS', 'LOWELL31', 'LOWELL42',
-                          'CTIO09', 'CTIO10', 'CTIO13CCD']
+                          'LOWELL90',
+                          'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword 
@@ -754,9 +882,11 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'DLR-MKIII':         'CA123DLRMKIII',
                           'NASAcam':           'LOWELL31',
                           'nasa42':            'LOWELL42',
+                          'PRISM Instrument':  'LOWELL90',
                           'cfccd':             'CTIO09',
                           'Y4KCam':            'CTIO10',
-                          'ANDICAM-CCD':       'CTIO13CCD'}
+                          'ANDICAM-CCD':       'CTIO13CCD',
+                          'SNIFS':             'UH88SNIFS'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K' :       vatt4k_param, 
@@ -767,6 +897,8 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'CA123DLRMKIII': ca123dlrmkiii_param,
                         'LOWELL31':      lowell31_param,
                         'LOWELL42':      lowell42_param,
+                        'LOWELL90':      lowell90_param,
                         'CTIO09':        ctio09_param,
                         'CTIO10':        ctio10_param,
-                        'CTIO13CCD':     ctio13ccd_param}
+                        'CTIO13CCD':     ctio13ccd_param,
+                        'UH88SNIFS':     uh88snifs_param}

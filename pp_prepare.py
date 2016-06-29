@@ -143,11 +143,11 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
                 header.remove(key)
             elif key in ['CTYPE1', 'CRPIX1', 'CRVAL1', 'CROTA1', 
                        'CFINT1', 'CTYPE2', 'CRPIX2', 'CRVAL2', 
-                       'CRDELT2', 'CFINT2',  
+                       'CFINT2',  
                        'LTM1_1', 'LTM2_2', 'WAT0_001', 'LTV1', 
                          'LTV2', 'PIXXMIT', 'PIXOFFST']:
-                # removed 'CDELT1', 'CDELT2', from the list
-                # used by LOWELL31
+                # removed 'CDELT1', 'CDELT2', 'CRDELT1', 'CRDELT2' from list
+                # used by LOWELL31, LOWELL90
 
                 header.remove(key)
 

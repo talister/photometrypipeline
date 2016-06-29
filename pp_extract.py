@@ -107,13 +107,16 @@ class extractor(threading.Thread):
                 optionstring += ' -PARAMETERS_NAME %s' % \
                                 self.param['paramfile']
 
-            if self.param['ignore_saturation']:
-                optionstring += ' -SATUR_LEVEL 1000000'
-                optionstring += ' -SATUR_KEY NOPE'
+            if 'ignore_saturation' in self.param:
+                if self.param['ignore_saturation']:
+                    optionstring += ' -SATUR_LEVEL 1000000'
+                    optionstring += ' -SATUR_KEY NOPE'
 
             commandline = 'sex -c %s %s %s' % \
                           (self.param['obsparam']['sex-config-file'], 
                            optionstring, filename)
+            
+            logging.info('call Source Extractor as: %s' % commandline)
 
             # run SEXTRACTOR and wait for it to finish
             try:

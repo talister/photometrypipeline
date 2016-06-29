@@ -88,7 +88,7 @@ pp_process_idx = 0
 # any unique header keyword works as a potential identifier
 instrument_keys = ['INSTRUME', 'LCAMMOD']
 filter_keys     = ['FILTER', 'CCDFLTID', 'FILTERS', 'FILTER2', 'FILTNAME',
-                   'FILTERID']
+                   'FILTERID', 'FILTNME3']
 
 
 ### available catalogs
