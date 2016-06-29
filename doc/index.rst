@@ -27,9 +27,10 @@ intended to provide high-accuracy photometry, nor is it designed to
 work on extremely sparse or crowded fields. PP requires a field of
 view of a few arcminutes to ensure that sufficient background stars
 are available for registration and photometric calibration. For a
-7'x7' field, photometric uncertaintes are of the order of 0.03 mag (if
-sufficient SDSS-R9 or URAT-1 stars are in the field). Feel free to try
-PP on your data, but please be aware that it has its limits.
+field several arcminutes across, photometric uncertaintes are of the
+order of 0.03 mag, if sufficient cataloged background stars are
+available. Feel free to try PP on your data, but please be aware that
+it has its limits.
 
 
 

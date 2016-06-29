@@ -165,8 +165,12 @@ as they might cause confusion with those information generatd by
 </dd></dl>
 
 <dl class="function">
-<dt id="pp_extract">
-<code class="descname">pp_extract</code><span class="sig-paren">(</span><span class="optional">[</span><em>-snr float</em>, <span class="optional">]</span><span class="optional">[</span><em>-minarea integer</em>, <span class="optional">]</span><span class="optional">[</span><em>-paramfile path</em>, <span class="optional">]</span><span class="optional">[</span><em>-aprad float</em>, <span class="optional">]</span><span class="optional">[</span><em>-telescope name</em>, <span class="optional">]</span><span class="optional">[</span><em>-quiet</em>, <span class="optional">]</span><span class="optional">[</span><em>-write_cat</em>, <span class="optional">]</span><em>images</em><span class="sig-paren">)</span><a class="headerlink" href="#pp_extract" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">pp_extract ([-snr float], [-minarea integer],</code></dt>
+<dt>
+<code class="descname">[-paramfile path], [-aprad float], [-telescope name],</code></dt>
+<dt>
+<code class="descname">[-ignore_saturation], [-quiet], [-write_cat], images)</code></dt>
 <dd><p>wrapper for <a class="reference external" href="http://www.astromatic.net/software/sextractor">Source Extractor</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -186,6 +190,10 @@ telescope/instrument combination is used (see
 <a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> reference)</li>
 <li><strong>-telescope</strong> &#8211; (optional) manual override for the telescope
 identifier (see <a class="reference internal" href="supported.html#supported-observatories"><span>Supported Observatories</span></a>)</li>
+<li><strong>-ignore_saturation</strong> &#8211; (optional) using this option will not
+flag saturated sources; as a result,
+they are not rejected in the
+registration and calibration process</li>
 <li><strong>-quiet</strong> &#8211; (optional) suppress output on the screen</li>
 <li><strong>images</strong> &#8211; images to run <cite>pp_extract</cite> on</li>
 </ul>
@@ -228,7 +236,7 @@ catalog is requested, those listed in the
 </tr>
 </tbody>
 </table>
-<p>First of all, <cite>pp_register</cite> calls <a class="reference internal" href="#pp_extract" title="pp_extract"><code class="xref py py-func docutils literal"><span class="pre">pp_extract()</span></code></a> to identify
+<p>First of all, <cite>pp_register</cite> calls <code class="xref py py-func docutils literal"><span class="pre">pp_extract()</span></code> to identify
 sources in the field of view. ...</p>
 </dd></dl>
 

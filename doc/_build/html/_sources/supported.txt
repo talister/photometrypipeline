@@ -50,14 +50,14 @@ photometric calibration:
 +========================+==========================+===============+==========================+============================================================+
 | 2MASS (`2MASS`_)       | astrometric/photometric  | yes           | J, H, Ks, K*             | all-sky NIR catalog, good astrometry                       |
 +------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+
-| URAT-1 (`URAT-1`_)     | astrometric/photometric  | yes (SCAMP    | g, r, i, U*, B, V, R*,   | good coverage over the Northern hemisphere, photometry from|
+| URAT-1 (`URAT-1`_)     | astrometric/photometric  | yes (SCAMP    | g, r, i,  B, V, R*,      | good coverage over the Northern hemisphere, photometry from|
 |                        |                          | >= trunk.r345)| I*                       | APASS (see below)                                          |
 +------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+
 | Sloan Digital Sky      | astrometric/photometric  | yes           | u, g, r, i, z, U*, B*,   | excellent photometry, Northern hemisphere, patchy coverage |
 | Survey Release 9       |                          |               | V*, R*, I*               |                                                            | 
 | (`SDSS-R9`_)           |                          |               |                          |                                                            |
 +------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+
-| AAVSO Photometric All  | photometric              | no            | g, r, i, U*, B, V, R*,   | good coverage, good photometry for stars with V<17         | 
+| AAVSO Photometric All  | photometric              | no            | g, r, i, B, V, R*,       | good coverage, good photometry for stars with V<17         | 
 | Sky Survey Release 9   |                          |               | I*                       |                                                            |
 | (`APASS9`_)            |                          |               |                          |                                                            |
 +------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+

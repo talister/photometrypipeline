@@ -66,7 +66,9 @@ the logical order:
    `SCAMP`.
 	     
 
-.. function:: pp_extract ([-snr float], [-minarea integer], [-paramfile path], [-aprad float], [-telescope name], [-quiet], [-write_cat], images)
+.. function:: pp_extract ([-snr float], [-minarea integer],
+              [-paramfile path], [-aprad float], [-telescope name],
+              [-ignore_saturation], [-quiet], [-write_cat], images)
 	      
    wrapper for `Source Extractor`_
 
@@ -83,6 +85,10 @@ the logical order:
                   :ref:`telescope_setup` reference)
    :param -telescope: (optional) manual override for the telescope
                       identifier (see :ref:`supported_observatories`)
+   :param -ignore_saturation: (optional) using this option will not
+                              flag saturated sources; as a result,
+                              they are not rejected in the
+                              registration and calibration process
    :param -quiet: (optional) suppress output on the screen
    :param images: images to run `pp_extract` on
 

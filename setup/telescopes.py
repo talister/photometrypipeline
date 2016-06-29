@@ -82,7 +82,7 @@ vatt4k_param = {
     'swarp-config-file'    : rootpath+'/setup/vatt4k.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
@@ -145,7 +145,7 @@ dctlmi_param = {
     'swarp-config-file'    : rootpath+'/setup/dctlmi.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
@@ -210,7 +210,7 @@ arc35arctic_param = {
     'swarp-config-file'    : rootpath+'/setup/arc35arctic.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
@@ -274,7 +274,7 @@ arc35agile_param = {
     'swarp-config-file'    : rootpath+'/setup/arc35agile.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
@@ -351,7 +351,7 @@ magimacs_param = {
     'swarp-config-file'    : rootpath+'/setup/magimacs.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
@@ -415,7 +415,7 @@ ca123dlrmkiii_param = {
     'swarp-config-file'    : rootpath+'/setup/ca123dlrmkiii.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
@@ -477,7 +477,7 @@ lowell31_param = {
     'swarp-config-file'    : rootpath+'/setup/lowell31.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
@@ -542,7 +542,7 @@ lowell42_param = {
     'swarp-config-file'    : rootpath+'/setup/lowell42.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
@@ -605,7 +605,7 @@ ctio09_param = {
     'swarp-config-file'    : rootpath+'/setup/ctio09.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
@@ -668,7 +668,7 @@ ctio10_param = {
     'swarp-config-file'    : rootpath+'/setup/ctio10.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 
@@ -730,7 +730,7 @@ ctio13ccd_param = {
     'swarp-config-file'    : rootpath+'/setup/andicam.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
 

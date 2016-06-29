@@ -107,6 +107,10 @@ class extractor(threading.Thread):
                 optionstring += ' -PARAMETERS_NAME %s' % \
                                 self.param['paramfile']
 
+            if self.param['ignore_saturation']:
+                optionstring += ' -SATUR_LEVEL 1000000'
+                optionstring += ' -SATUR_KEY NOPE'
+
             commandline = 'sex -c %s %s %s' % \
                           (self.param['obsparam']['sex-config-file'], 
                            optionstring, filename)
@@ -322,6 +326,8 @@ if __name__ == '__main__':
                         default=0)
     parser.add_argument("-telescope", help='manual telescope override',
                         default=None)
+    parser.add_argument('-ignore_saturation', help='keep saturated sources',
+                        action="store_true")
     parser.add_argument('-quiet', help='no logging',
                         action="store_true")
     parser.add_argument('images', help='images to process', nargs='+')
@@ -332,12 +338,14 @@ if __name__ == '__main__':
     paramfile = args.paramfile
     aprad = args.aprad
     telescope = args.telescope
+    ignore_saturation = args.ignore_saturation
     quiet = args.quiet
     filenames = args.images 
 
     # prepare parameter dictionary
     parameters = {'sex_snr':sex_snr, 'source_minarea':source_minarea, \
-                  'aprad':aprad, 'telescope':telescope, 'quiet':quiet}
+                  'aprad':aprad, 'telescope':telescope, 
+                  'ignore_saturation':ignore_saturation, 'quiet':quiet}
 
     if paramfile is not None:
         parameters['paramfile'] = paramfile

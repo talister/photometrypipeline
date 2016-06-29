@@ -68,13 +68,16 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         return None
 
     ##### run extract routines
+    # ignore saturation: saturated stars are bright and might be necessary 
+    # for SCAMP
     if display:
         print '* extract sources from %d frames' % len(filenames)
 
     extractparameters = {'sex_snr':sex_snr,
                          'source_minarea':source_minarea, \
                          'aprad':aprad, 'telescope':telescope, \
-                         'quiet':False}
+                         'ignore_saturation':True, 'quiet':False}
+
     extraction = pp_extract.extract_multiframe(filenames, extractparameters)
 
     if extraction is None:
