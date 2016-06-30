@@ -49,7 +49,7 @@ logging.basicConfig(filename = _pp_conf.log_filename,
 version = '1.0'
 
 # threading definitions
-nThreads = 10
+nThreads = 100
 extractQueue = Queue.Queue(10000)
 threadLock = threading.Lock()   
 
@@ -130,17 +130,22 @@ class extractor(threading.Thread):
             sex.wait()
             
             # check output for error messages from Source Extractor
-            sex_output = sex.communicate()[1]
-            if 'not found, using internal defaults' in sex_output:
-                if not self.param['quiet']:
-                    print ('ERROR: no Source Extractor setup file ' +
-                           'available (should be in %s)') % \
-                           self.param['obsparam']['sex-config-file'] 
-                logging.error(('ERROR: no Source Extractor setup file ' +
+            try:
+                sex_output = sex.communicate()[1]
+                if 'not found, using internal defaults' in sex_output:
+                    if not self.param['quiet']:
+                        print ('ERROR: no Source Extractor setup file ' +
                                'available (should be in %s)') % \
-                              self.param['obsparam']['sex-config-file'])
-                extractQueue.task_done()  # inform queue that this task is done
-                return None
+                            self.param['obsparam']['sex-config-file'] 
+                        logging.error(('ERROR: no Source Extractor setup file'+
+                                       ' available (should be in %s)') % \
+                        self.param['obsparam']['sex-config-file'])
+
+                    extractQueue.task_done() # inform queue, this task is done
+                    return None
+            except ValueError:
+                logging.warning("Cannot read Source Extractor display output")
+                pass
                 
             # read in LDAC file
             ldac_filename = filename[:filename.find('.fit')]+'.ldac'
