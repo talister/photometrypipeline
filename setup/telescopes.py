@@ -580,7 +580,7 @@ lowell90_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTNME3',  # filter keyword
-    'filter_translations'  : {'V': 'V', 'I': 'I', 'VR': None},
+    'filter_translations'  : {'V': 'V', 'I': 'I', 'R': 'R', 'VR': None},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
