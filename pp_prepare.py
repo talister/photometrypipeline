@@ -141,7 +141,7 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
                 header.remove(key)
             elif 'PV' in key and '_' in key:
                 header.remove(key)
-            elif key in ['CTYPE1', 'CRPIX1', 'CRVAL1', 'CROTA1', 
+            elif key in ['CTYPE1', 'CRPIX1', 'CRVAL1', 'CROTA1', 'CROTA2', 
                        'CFINT1', 'CTYPE2', 'CRPIX2', 'CRVAL2', 
                        'CFINT2',  
                        'LTM1_1', 'LTM2_2', 'WAT0_001', 'LTV1', 
