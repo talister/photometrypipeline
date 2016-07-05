@@ -547,10 +547,10 @@ lowell42_param = {
 }
 
 
-# Lowell90 (Perkins), PRISM
-lowell90_param = {
-    'telescope_instrument' : 'Lowell90/PRISM', # telescope/instrument name
-    'telescope_keyword'    : 'LOWELL90',      # telescope/instrument keyword
+# Lowell72 (Perkins), PRISM
+lowell72_param = {
+    'telescope_instrument' : 'Lowell72/PRISM', # telescope/instrument name
+    'telescope_keyword'    : 'LOWELL72',      # telescope/instrument keyword
     'observatory_code'     : '688',         # MPC observatory code
     'secpix'               : (0.39, 0.39), # pixel size (arcsec)
                                                # before binning
@@ -590,12 +590,12 @@ lowell90_param = {
     'source_minarea'       : 12, # default sextractor source minimum N_pixels
     'aprad_default'        : 5, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
-    'sex-config-file'      : rootpath+'/setup/lowell90.sex',
+    'sex-config-file'      : rootpath+'/setup/lowell72.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
     # scamp settings
-    'scamp-config-file'    : rootpath+'/setup/lowell90.scamp', 
+    'scamp-config-file'    : rootpath+'/setup/lowell72.scamp', 
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,CRDELT1, CRDELT2,FILTNME3,' +
@@ -604,7 +604,7 @@ lowell90_param = {
                               'TEL_KEYW'),
     #                         keywords to be copied in image
     #                         combination using swarp
-    'swarp-config-file'    : rootpath+'/setup/lowell90.swarp',  
+    'swarp-config-file'    : rootpath+'/setup/lowell72.swarp',  
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
@@ -869,7 +869,7 @@ uh88snifs_param = {
 
 implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'ARC35AGILE', 'MAGIMACS', 'LOWELL31', 'LOWELL42',
-                          'LOWELL90',
+                          'LOWELL72',
                           'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
@@ -882,7 +882,7 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'DLR-MKIII':         'CA123DLRMKIII',
                           'NASAcam':           'LOWELL31',
                           'nasa42':            'LOWELL42',
-                          'PRISM Instrument':  'LOWELL90',
+                          'PRISM Instrument':  'LOWELL72',
                           'cfccd':             'CTIO09',
                           'Y4KCam':            'CTIO10',
                           'ANDICAM-CCD':       'CTIO13CCD',
@@ -897,7 +897,7 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'CA123DLRMKIII': ca123dlrmkiii_param,
                         'LOWELL31':      lowell31_param,
                         'LOWELL42':      lowell42_param,
-                        'LOWELL90':      lowell90_param,
+                        'LOWELL72':      lowell72_param,
                         'CTIO09':        ctio09_param,
                         'CTIO10':        ctio10_param,
                         'CTIO13CCD':     ctio13ccd_param,
