@@ -165,9 +165,28 @@ def create_index(filenames, directory, obsparam, display=False):
     # fill table and create frames
     filename = filenames
     for idx, filename in enumerate(filenames):
-        # fill table
+
+
+        ### fill table
         hdulist = fits.open(filename)
         header = hdulist[0].header
+
+        # read out image binning mode
+        if '_' in obsparam['binning'][0]:
+            if '_blank' in obsparam['binning'][0]:
+                binning_x = float(header[obsparam['binning'][0].\
+                                         split('_')[0]].split()[0])
+                binning_y = float(header[obsparam['binning'][1].\
+                                         split('_')[0]].split()[1])
+            if '_x' in obsparam['binning'][0]:
+                binning_x = float(header[obsparam['binning'][0].\
+                                         split('_')[0]].split('x')[0])
+                binning_y = float(header[obsparam['binning'][1].\
+                                         split('_')[0]].split('x')[1])
+        else:
+            binning_x = header[obsparam['binning'][0]]
+            binning_y = header[obsparam['binning'][1]]
+
         framefilename = _pp_conf.diagroot + '/' + filename + '.png'
         html += ("<TR><TD>%d</TD><TD><A HREF=\"%s\">%s</A></TD>" + \
                  "<TD>%16.8f</TD><TD>%s</TD>" + \
@@ -178,8 +197,8 @@ def create_index(filenames, directory, obsparam, display=False):
              header[obsparam['filter']],
              float(header[obsparam['airmass']]),
              float(header[obsparam['exptime']]),
-             header[obsparam['extent'][0]]*obsparam['secpix'][0]/60.,
-             header[obsparam['extent'][1]]*obsparam['secpix'][1]/60.)
+             header[obsparam['extent'][0]]*obsparam['secpix'][0]*binning_x/60.,
+             header[obsparam['extent'][1]]*obsparam['secpix'][1]*binning_y/60.)
     
         ### create frame image
         imgdat = hdulist[0].data
