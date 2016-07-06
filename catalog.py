@@ -334,6 +334,14 @@ class catalog:
         # load LDAC file
         hdulist  = fits.open(filename)
 
+        if len(hdulist) < 3:
+            print ('ERROR: %s seems to be empty; check LOG file if ' + 
+                   'Source Extractor ran properly') % filename
+            logging.error(('ERROR: %s seems to be empty; check LOG file if ' + 
+                   'Source Extractor ran properly') % filename)
+            return None
+        
+
         # load data array
         self.data = hdulist[2].data
 

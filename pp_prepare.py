@@ -204,7 +204,7 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
             dec_deg = float(man_dec)
 
         #### note to self: put this into code block below
-        if obsparam['telescope_instrument'] == 'UKIRTWFCAM':
+        if obsparam['telescope_keyword'] == 'UKIRTWFCAM':
             ra_deg = float(header['TELRA'])/24.*360. - \
                      float(header['JITTER_X'])/3600.
             dec_deg = float(header['TELDEC']) - \
@@ -254,6 +254,12 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
         header['CD2_2']  = (ynorm * numpy.cos(this_rotate/180.*numpy.pi) * \
                 obsparam['secpix'][1]*binning_y/3600., \
                                              'PP: fake Coordinate matrix')
+
+        #### crop center from LOWELL42 frames
+        if obsparam['telescope_keyword'] == 'LOWELL42': 
+            imdata = imdata[100:-100,100:-100]
+            hdulist[0].data = imdata
+            logging.info('cropping LOWELL42 data')
 
         hdulist.flush()
         hdulist.close()

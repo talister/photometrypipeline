@@ -150,7 +150,11 @@ class extractor(threading.Thread):
             # read in LDAC file
             ldac_filename = filename[:filename.find('.fit')]+'.ldac'
             ldac_data = catalog(ldac_filename)
-            ldac_data.read_ldac(ldac_filename, maxflag=None)
+
+            if ldac_data.read_ldac(ldac_filename, maxflag=None) is None:
+                extractQueue.task_done()
+                os.abort()
+
             out['catalog_data'] = ldac_data
 
             ### update image header with aperture radius and other information

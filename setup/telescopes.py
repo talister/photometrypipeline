@@ -526,7 +526,7 @@ lowell42_param = {
     'aprad_default'        : 5, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/lowell42.sex',
-    'mask_file'            : {'3,3' : rootpath+'/setup/mask_lowell42_3x3.fits'},
+    'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
     # scamp settings
