@@ -47,9 +47,9 @@ logging.basicConfig(filename = _pp_conf.log_filename,
 
 
 
-def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
-            man_ra=None, man_dec=None, diagnostics=False,
-            display=False):
+def prepare(filenames, obsparam, header_update, flipx=False,
+            flipy=False, rotate=0, man_ra=None, man_dec=None,
+            diagnostics=False, display=False):
     """
     prepare wrapper
     output: diagnostic properties
@@ -182,6 +182,13 @@ def prepare(filenames, obsparam, flipx=False, flipy=False, rotate=0,
         else:
             header['AIRMASS'] = (1, 'PP: fake airmass')
             
+        # perform header update
+        for key, value in header_update.items():
+            if key in header:
+                header['_'+key[:6]] = (header[key], 
+                                       'PP: old value for %s' % key)
+            header[key] = (value, 'PP: manually updated')
+
         ##### add fake wcs information that is necessary to run SCAMP
 
         if obsparam['radec_separator'] == 'XXX':
@@ -294,6 +301,8 @@ if __name__ == '__main__':
                         action="store_true")
     parser.add_argument('-rotate', help='rotate fake wcs by angle (deg)', 
                         default=0)
+    parser.add_argument("-target", 
+                        help='target name (will overwrite OBJECT keyword)')
     parser.add_argument("-telescope", help='manual telescope override',
                         default=None)
 
@@ -308,6 +317,7 @@ if __name__ == '__main__':
     man_flipx = args.flipx
     man_flipy = args.flipy
     man_rotate = float(args.rotate)
+    man_target = args.target
     telescope = args.telescope
     filenames = args.images
 
@@ -334,8 +344,13 @@ if __name__ == '__main__':
 
     obsparam = _pp_conf.telescope_parameters[telescope]
 
+    header_update = {}
+    if man_target is not '':
+        header_update['OBJECT'] = man_target
+
     # run prepare wrapper
-    preparation = prepare(filenames, obsparam, flipx=man_flipx, flipy=man_flipy,
+    preparation = prepare(filenames, obsparam, header_update, 
+                          flipx=man_flipx, flipy=man_flipy,
                           man_ra=man_ra, man_dec=man_dec, rotate=man_rotate,
                           diagnostics=True, display=True)
 

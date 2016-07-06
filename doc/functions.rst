@@ -12,7 +12,7 @@ below. All functions presented here can be called from the terminal.
    :param -prefix: (optional) the prefix of all science data images if
                    `pp_run` is called using ``images = all``
    :param -target: (optional) the target name to be used in all
-                   images, this overrides the ``OBJECT`` keyword in the
+                   images, this overwrites the ``OBJECT`` keyword in the
                    FITS headers; note to replace blanks with
                    underscores if the target's name is a designation
    :param -filter: (optional) manual filter name override for the photometric
@@ -40,7 +40,7 @@ The following functions describe the individual pipeline processes in
 the logical order:
 
 
-.. function:: pp_prepare ([-ra degrees], [-dec degrees], [-flipx], [-flipy], [-rotate degrees], images)
+.. function:: pp_prepare ([-ra degrees], [-dec degrees], [-flipx], [-flipy], [-rotate degrees], [-target string], images)
 
    prepares image files for use in the pipeline
 
@@ -55,6 +55,10 @@ the logical order:
    :param -rotate: (optional) rotates the image's orientation in the sky
 		   (East-of-North) relative to the respective
                    :ref:`telescope_setup` setting
+   :param -target: (optional) the target name to be used in all
+                   images, this overwrites the ``OBJECT`` keyword in the
+                   FITS headers; note to replace blanks with
+                   underscores if the target's name is a designation
    :param images: images on which `pp_prepare` is supposed to run
 
 		  

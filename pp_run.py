@@ -142,6 +142,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
 
     ### prepare fits files for photometry pipeline
     preparation = pp_prepare.prepare(filenames, obsparam,
+                                     {'OBJECT': man_targetname},
                                      diagnostics=True, display=True)
 
 
