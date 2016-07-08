@@ -115,9 +115,9 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         ra = float(hdulist[0].header['CRVAL1'])
         dec = float(hdulist[0].header['CRVAL2'])
         rad = max([float(hdulist[0].header[obsparam['extent'][0]])*
-                   obsparam['secpix'][0],
+                   float(hdulist[0].header['SECPIXX'])/3600.,
                    float(hdulist[0].header[obsparam['extent'][1]])*
-                   obsparam['secpix'][1]])/3600.
+                   float(hdulist[0].header['SECPIXY'])/3600.])
         checkrefcat = catalog(refcat)
         n_sources = checkrefcat.download_catalog(ra, dec, rad, 100, 
                                                  save_catalog=False)
@@ -215,10 +215,10 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
             ### if registration failed, try again with the same catalog!
             # this will make use of the .head files and improves results
             if not dont_run_registration_again:
-                logging.critical('Not all image matched ' \
+                logging.critical('Not all images matched ' \
                                  + '- try again with the same catalog')
                 if display:
-                    print 'Not all image matched ' \
+                    print 'Not all images matched ' \
                         + '- try again with the same catalog'
 
                 output = register(filenames, telescope, sex_snr,
@@ -235,11 +235,11 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                     continue
 
             else:
-                logging.critical('Not all image matched ' \
+                logging.critical('Not all images matched ' \
                                  + '- won\'t try again with this catalog, ' \
                                  + 'switch catalog') 
                 if display:
-                    print 'Not all image matched ' \
+                    print 'Not all images matched ' \
                         + '- won\'t try again with this catalog, switch catalog'
 
                 # try next catalog in the list

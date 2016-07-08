@@ -84,11 +84,9 @@ log_filename = diagroot+'LOG'
 pp_process_idx = 0
 
 
-### potential FITS header keywords for looking up the instrument and filter 
+### potential FITS header keywords for looking up the instrument
 # any unique header keyword works as a potential identifier
 instrument_keys = ['INSTRUME', 'LCAMMOD']
-filter_keys     = ['FILTER', 'CCDFLTID', 'FILTERS', 'FILTER2', 'FILTNAME',
-                   'FILTERID', 'FILTNME3']
 
 
 ### available catalogs

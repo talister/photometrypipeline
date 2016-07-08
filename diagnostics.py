@@ -689,7 +689,11 @@ def add_results(data):
     for target in data['targetnames']:
         data['thumbnailplots'][target] = []
         for dat in data[target]:
-            fitsfilename = dat[10][:dat[10].find('.ldac')]+'.fits'
+            for fitsfilename in ['.fits', '.fit']:
+                fitsfilename = dat[10][:dat[10].find('.ldac')]+fitsfilename
+                if os.path.isfile(fitsfilename):
+                    break
+                #= dat[10][:dat[10].find('.ldac')]+'.fits'
             hdulist = fits.open(fitsfilename)
 
             logging.info('create thumbnail image for %s/%s' % (target, 

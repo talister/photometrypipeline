@@ -72,12 +72,12 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
                         format   = _pp_conf.log_formatline, 
                         datefmt  = _pp_conf.log_datefmt)
 
-    ### read telescope and filter information from fits headers
+    ### read telescope information from fits headers
     # check that they are the same for all images
     logging.info('##### new pipeline process in %s #####' % _pp_conf.dataroot)
-    logging.info(('check for same telescope/instrument and filters for %d ' + \
+    logging.info(('check for same telescope/instrument for %d ' + \
                   'frames') % len(filenames))
-    instruments, filters = [], []
+    instruments = []
     for idx, filename in enumerate(filenames):
         try:
             hdulist = fits.open(filename)
@@ -92,10 +92,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
             if key in header:
                 instruments.append(header[key])
                 break
-        for key in _pp_conf.filter_keys:
-            if key in header:
-                filters.append(header[key])
-                break
+
     if len(filenames) == 0:
         raise IOError('cannot find any data...')
 
@@ -103,12 +100,8 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
         raise KeyError('cannot identify telescope/instrument; please update' + \
                        '_pp_conf.instrument_keys accordingly')
 
-    if len(filters) == 0:
-        raise KeyError('cannot identify filter; please update' + \
-                       '_pp_conf.filter_keys accordingly')
-
         
-    # check if there is only one unique instrument and filter
+    # check if there is only one unique instrument
     if len(set(instruments)) > 1:
         print 'ERROR: multiple instruments used in dataset: %s' % \
             str(set(instruemnts))
@@ -122,6 +115,28 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
     obsparam = _pp_conf.telescope_parameters[telescope]
     logging.info('%d %s frames identified' % (len(filenames), telescope))
 
+
+    ### read filter information from fits headers
+    # check that they are the same for all images
+    logging.info(('check for same filter for %d ' + \
+                  'frames') % len(filenames))
+    filters = []
+    for idx, filename in enumerate(filenames):
+        try:
+            hdulist = fits.open(filename)
+        except IOError:
+            logging.error('cannot open file %s' % filename)
+            print 'ERROR: cannot open file %s' % filename
+            filenames.pop(idx)
+            continue
+
+        header = hdulist[0].header
+        filters.append(header[obsparam['filter']])
+
+    if len(filters) == 0:
+        raise KeyError('cannot identify filter; please update' + \
+                       'setup/telescopes.py accordingly')
+
     if len(set(filters)) > 1:
         print 'ERROR: multiple filters used in dataset: %s' % str(set(filters))
         logging.error('multiple filters used in dataset: %s' % 
@@ -131,6 +146,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
         sys.exit()    
 
     if man_filtername is None:
+        print telescope, filters[0]
         filtername = obsparam['filter_translations'][filters[0]]
     else:
         filtername = man_filtername
@@ -265,7 +281,8 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
     ### distill photometry results
     print '\n----- distill photometry results\n'    
     distillate = pp_distill.distill(calibration['catalogs'],
-                                    man_targetname, [0,0], [0,0],
+                                    man_targetname, [0,0],
+                                    [0,0], None,
                                     display=True, diagnostics=True)
 
     targets = numpy.array(distillate['targetnames'].keys())

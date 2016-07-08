@@ -51,8 +51,122 @@ logging.basicConfig(filename = _pp_conf.log_filename,
                     datefmt  = _pp_conf.log_datefmt)
 
 
-def distill(catalogs, man_targetname, offset, fixed_coo,
+def manual_positions(posfile, catalogs):
+    """create targets for manually provided positions (using -positions
+    option)"""
+
+    print 'target positions manually provided'
+    logging.info('target positions manually provided')
+
+    positions = numpy.genfromtxt(posfile, dtype=[('filename', 'S50'), 
+                                                 ('MJD', float), 
+                                                 ('ra', float), 
+                                                 ('dec', float)])
+    try:
+        assert len(positions) == len(catalogs)
+    except AssertionError:
+        print (posfile + ' is not complete; has to provide a position ' +
+               'for each frame')
+        logging.error(posfile+' is not complete; has to provide position ' +
+                      'for each frame')
+        return []
+
+    objects = []
+    for cat_idx, cat in enumerate(catalogs):
+        objects.append({'ident'      : 'manual_target',
+                        'obsdate.jd' :  cat.obstime,
+                        'cat_idx'    :  cat_idx,
+                        'ra.deg'     :  positions[cat_idx]['ra'],
+                        'dec.deg'    :  positions[cat_idx]['dec']})
+        
+    return objects
+
+
+def pick_controlstar(catalogs):
+    """match the first and the last catalog and pick a bright star"""
+
+    print 'pick control star'
+
+    match = catalogs[0].match_with(catalogs[-1],
+            match_keys_this_catalog=['ra.deg', 'dec.deg'],
+            match_keys_other_catalog=['ra.deg', 'dec.deg'],
+            extract_this_catalog=['ra.deg', 'dec.deg', 'FLAGS'],
+            extract_other_catalog=['ra.deg', 'dec.deg', 'FLAGS', 'MAG_APER'],
+            tolerance=1./3600.)
+
+    objects = []
+    if len(match[0][0]) > 0:
+
+        ctlstar_idx = numpy.argsort(match[1][3])[int(0.1*len(match[1][3]))]
+
+        for cat_idx, cat in enumerate(catalogs):
+            objects.append({'ident'      : 'control_star',
+                            'obsdate.jd' :  cat.obstime,
+                            'cat_idx'    :  cat_idx,
+                            'ra.deg'     :  match[1][0][ctlstar_idx],
+                            'dec.deg'    :  match[1][1][ctlstar_idx]})
+    else:
+        print '  no common control star found in first and last frame'
+        logging.info('no common control star found in first and last frame')
+
+    return objects
+
+
+def moving_primary_target(catalogs, man_targetname, offset):
+
+    print 'check JPL Horizons for primary target'
+
+    obsparam = _pp_conf.telescope_parameters[
+                        catalogs[0].origin.split(';')[0].strip()]
+
+    objects = []
+    for cat_idx, cat in enumerate(catalogs):
+        targetname = cat.obj.replace('_', ' ')
+        if man_targetname is not None:
+            targetname = man_targetname.replace('_', ' ')
+            cat.obj = targetname
+        eph = callhorizons.query(targetname)
+        eph.set_discreteepochs(cat.obstime[0])
+        n = eph.get_ephemerides(obsparam['observatory_code'])
+
+        if n is None or n == 0:
+            logging.warning('WARNING: No position from Horizons! '+\
+                            'Name (%s) correct?' % cat.obj.replace('_', ' '))
+            logging.warning('HORIZONS call: %s' % eph.url)
+            print ('WARNING: No position from Horizons! '+\
+                   'Name (%s) correct?' % cat.obj.replace('_', ' '))
+        else:
+            objects.append({'ident': cat.obj,
+                            'obsdate.jd': cat.obstime[0],
+                            'cat_idx'   : cat_idx,
+                            'ra.deg'    : eph[0]['RA']+offset[0]/3600.,
+                            'dec.deg'   : eph[0]['DEC']+offset[1]/3600.})
+            logging.info('Successfully grabbed Horizons position for %s ' %
+                         cat.obj.replace('_', ' '))
+            logging.info('HORIZONS call: %s' % eph.url)
+
+    return objects
+
+
+def fixed_target(fixed_coo, catalogs):
+    """add fixed target position to object catalog (if different from [0,0])"""
+
+    objects = []
+    for cat_idx, cat in enumerate(catalogs):
+        objects.append({'ident': 'fixed_target',
+                        'obsdate.jd': cat.obstime[0],
+                        'cat_idx'   : cat_idx,
+                        'ra.deg'    : fixed_coo[0],
+                        'dec.deg'   : fixed_coo[1]})
+    return objects
+
+
+### -------------------
+
+
+def distill(catalogs, man_targetname, offset, fixed_coo, posfile,
             display=False, diagnostics=False):
+
     """
     distill wrapper
     """
@@ -88,75 +202,26 @@ def distill(catalogs, man_targetname, offset, fixed_coo,
 
     objects = [] # one dictionary for each target
 
+    ### check for positions file
+    if posfile is not None:
+        objects += manual_positions(posfile, catalogs)
+
     ### select a sufficiently bright star as control star
-    # match the first and the last catalog and pick a bright star
-    match = catalogs[0].match_with(catalogs[-1],
-            match_keys_this_catalog=['ra.deg', 'dec.deg'],
-            match_keys_other_catalog=['ra.deg', 'dec.deg'],
-            extract_this_catalog=['ra.deg', 'dec.deg', 'FLAGS'],
-            extract_other_catalog=['ra.deg', 'dec.deg', 'FLAGS', 'MAG_APER'],
-            tolerance=1./3600.)
+    objects += pick_controlstar(catalogs)
 
-    if len(match[0][0]) > 0:
+    ### check Horizons for primary target (if a moving target)
+    objects += moving_primary_target(catalogs, man_targetname, offset)
 
-        ctlstar_idx = numpy.argsort(match[1][3])[int(0.1*len(match[1][3]))]
-
-        for cat_idx, cat in enumerate(catalogs):
-            objects.append({'ident'      : 'control_star',
-                            'obsdate.jd' :  cat.obstime,
-                            'cat_idx'    :  cat_idx,
-                            'ra.deg'     :  match[1][0][ctlstar_idx],
-                            'dec.deg'    :  match[1][1][ctlstar_idx]})
-
-
-    ### check for moving targets
-    if display:
-        print 'checking JPL Horizons for moving targets'
-
-    obsparam = _pp_conf.telescope_parameters[\
-                        catalogs[0].origin\
-                                             .split(';')[0].strip()]
-
-    for cat_idx, cat in enumerate(catalogs):
-        targetname = cat.obj.replace('_', ' ')
-        if man_targetname is not None:
-            targetname = man_targetname.replace('_', ' ')
-            cat.obj = targetname
-        eph = callhorizons.query(targetname)
-        eph.set_discreteepochs(cat.obstime[0])
-        n = eph.get_ephemerides(obsparam['observatory_code'])
-        if n is None or n == 0:
-            logging.warning('WARNING: No position from Horizons! '+\
-                            'Name (%s) correct?' % cat.obj.replace('_', ' '))
-            logging.warning('HORIZONS call: %s' % eph.url)
-            print ('WARNING: No position from Horizons! '+\
-                   'Name (%s) correct?' % cat.obj.replace('_', ' '))
-
-        else:
-            objects.append({'ident': cat.obj,
-                            'obsdate.jd': cat.obstime[0],
-                            'cat_idx'   : cat_idx,
-                            'ra.deg'    : eph[0]['RA']+offset[0]/3600.,
-                            'dec.deg'   : eph[0]['DEC']+offset[1]/3600.})
-            logging.info('Successfully grabbed Horizons position for %s ' %
-                         cat.obj.replace('_', ' '))
-            logging.info('HORIZONS call: %s' % eph.url)
+    ### add fixed target
+    if fixed_coo is not [0,0]:
+        objects += fixed_target(fixed_coo, catalogs)
 
     if display:
         print len(objects)/len(catalogs), \
-            'targets per frame identified'
-    logging.info('%d targets per frame identified' %
+            'potential targets per frame identified'
+    logging.info('%d potential targets per frame identified' %
                  int(len(objects)/len(catalogs)))
 
-
-    ### add fixed target position to object catalog (if different from [0,0])
-    if fixed_coo is not [0,0]:
-        for cat_idx, cat in enumerate(catalogs):
-            objects.append({'ident': 'fixed_target',
-                            'obsdate.jd': cat.obstime[0],
-                            'cat_idx'   : cat_idx,
-                            'ra.deg'    : fixed_coo[0],
-                            'dec.deg'   : fixed_coo[1]})
 
 
     ##### extract source data for identified targets
@@ -184,9 +249,10 @@ def distill(catalogs, man_targetname, offset, fixed_coo,
             if 'mag' in key:
                 mag_keys.append(key)
 
-        # build field lists
+
+        # build field lists for observed catalogs
         match_keys_other_catalog, extract_other_catalog = [], []        
-        for key in ['ra.deg', 'dec.deg', 'XWIN_IMAGE', 'YWIN_IMAGE']:
+        for key in ['ra.deg', 'dec.deg', 'XWIN_IMAGE', 'YWIN_IMAGE', 'FLAGS']:
             if key in cat.fieldnames.keys():
                 match_keys_other_catalog.append(cat.fieldnames[key])
                 extract_other_catalog.append(cat.fieldnames[key])
@@ -220,10 +286,10 @@ def distill(catalogs, man_targetname, offset, fixed_coo,
                          cal_mag, cal_magerr, 
                          cat.obstime, cat.catalogname,
                          match[1][2][i], match[1][3][i],
-                         cat.origin])
+                         cat.origin, match[1][4][i]])
             # format: ident, RA_exp, Dec_exp, RA_img, Dec_img,
             #         mag_inst, sigmag_instr, mag_cal, sigmag_cal
-            #         obstime, filename, img_x, img_y, origin
+            #         obstime, filename, img_x, img_y, origin, flags
 
             targetnames[match[0][2][i]] = 1
 
@@ -238,10 +304,10 @@ def distill(catalogs, man_targetname, offset, fixed_coo,
         if display:
             print 'write photometry results for %s' % target
         outf = open('photometry_%s.dat' % target.replace(' ', '_'), 'w')
-        outf.writelines('#                filename     julian_date  ' + \
-                        'ast_mag ast_sig          ast_ra      ast_dec    ' + \
-                        '[1]   [2]    [3]   [4]    [5]      ZP ZP_sig  ' + \
-                        'inst_mag in_sig                 [6] [7]    [8]\n')
+        outf.writelines('#                          filename     julian_date' +
+                        'ast_mag ast_sig        ast_ra       ast_dec    ' +
+                        '[1]   [2]    [3]   [4]    [5]       ZP ZP_sig ' +
+                        'inst_mag in_sig   [6] [7] [8] [9]\n')
 
         for dat in data:
 
@@ -257,9 +323,9 @@ def distill(catalogs, man_targetname, offset, fixed_coo,
                     catalogname = dat[13].split(';')[1]
 
                 output[target].append(dat)
-                outf.write(('%26.26s ' % dat[10].replace(' ', '_')) + 
+                outf.write(('%35.35s ' % dat[10].replace(' ', '_')) + 
                            ('%15.7f  ' % dat[9][0]) +
-                           ('%7.4f '   % dat[7]) +
+                           ('%8.4f '   % dat[7]) +
                            ('%6.4f '   % dat[8]) +
                            ('%13.8f '  % dat[3]) +
                            ('%+13.8f  '% dat[4]) +
@@ -268,12 +334,13 @@ def distill(catalogs, man_targetname, offset, fixed_coo,
                            ('%5.2f '   % offset[0]) +
                            ('%5.2f  '  % offset[1]) +
                            ('%5.2f '   % dat[9][1]) +
-                           ('%7.4f '   % (dat[7]-dat[5])) +
+                           ('%8.4f '   % (dat[7]-dat[5])) +
                            ('%6.4f '   % numpy.sqrt(dat[8]**2-dat[6]**2)) +
-                           ('%7.4f '   % dat[5]) +
+                           ('%8.4f '   % dat[5]) +
                            ('%6.4f  '  % dat[6]) +
                            ('%s  '   % catalogname) + 
-                           ('%s  '   % filtername) + 
+                           ('%s  '   % filtername) +
+                           ('%3d  '  % dat[14]) + 
                            ('%s\n'   % dat[13].split(';')[0]))
                 
         outf.writelines('#\n# [1]: Horizons_RA - image_RA [arcsec]\n'+
@@ -283,7 +350,8 @@ def distill(catalogs, man_targetname, offset, fixed_coo,
                         '# [5]: exposure time (s)\n'+
                         '# [6]: photometric catalog\n' + 
                         '# [7]: photometric band\n' +
-                        '# [8]: telescope/instrument\n')
+                        '# [8]: Source Extractor flag\n' + 
+                        '# [9]: telescope/instrument\n')
         outf.close()
 
            
@@ -316,11 +384,13 @@ if __name__ == '__main__':
                         nargs=2, default=[0,0])
     parser.add_argument('-fixed_coo', help='target RA and DEC (degrees)', 
                         nargs=2, default=[0,0])
+    parser.add_argument('-positions', help='positions file', default=None)
     parser.add_argument('images', help='images to process', nargs='+')
     args = parser.parse_args()
     man_targetname = args.target
     man_offset = [float(coo) for coo in args.offset]
     fixed_coo = [float(coo) for coo in args.fixed_coo]
+    posfile = args.positions
     filenames = args.images
 
     # check if input filenames is actually a list
@@ -330,6 +400,6 @@ if __name__ == '__main__':
                          readlines()]
 
     distillate = distill(filenames, man_targetname, man_offset, fixed_coo,
-                         display=True, diagnostics=True)
+                         posfile, display=True, diagnostics=True)
 
 

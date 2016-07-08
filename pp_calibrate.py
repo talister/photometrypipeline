@@ -67,9 +67,8 @@ def skycenter(catalogs, ra_key='XWIN_WORLD', dec_key='YWIN_WORLD'):
 
 def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                              preferred_catalogs,
-                        min_sources=_pp_conf.min_sources_photometric_catalog,
-                             max_sources=1e4,
-                             display=False):
+                min_sources=_pp_conf.min_sources_photometric_catalog,
+                             max_sources=1e4, display=False):
     """create a photometric catalog of the field of view"""
 
     for catalogname in preferred_catalogs:
@@ -222,7 +221,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                 'success': False })
                 continue
 
-
+                
         # if minstars is a fraction, use minstars*len(match[0][0])
         if minstars_external < 1:
             minstars = int(minstars_external*len(match[0][0]))
@@ -332,7 +331,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
 
 
 def calibrate(filenames, minstars, manfilter, manualcatalog,
-              obsparam, display=False, diagnostics=False):
+              obsparam, maxflag=3, display=False, diagnostics=False):
     """
     wrapper for photometric calibration
     """
@@ -356,7 +355,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         ldac_filename = filename[:filename.find('.fit')]+'.ldac'
         cat = catalog(filename)
         if display:
-            print cat.read_ldac(ldac_filename, filename, maxflag=3,
+            print cat.read_ldac(ldac_filename, filename, maxflag=maxflag,
                                 object_keyword=obsparam['object'],
                                 exptime_keyword=obsparam['exptime'],
                                 time_keyword=obsparam['obsmidtime_jd']), \
@@ -391,13 +390,27 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         preferred_catalogs = [manualcatalog]
     else:
         preferred_catalogs = obsparam['photometry_catalogs']
-            
-    ref_cat = create_photometrycatalog(ra_deg, dec_deg, rad_deg,
-                                       filtername, preferred_catalogs,
-                                       max_sources=2e4, display=display)
-    
+
+    if filtername is not None:    
+        ref_cat = create_photometrycatalog(ra_deg, dec_deg, rad_deg,
+                                           filtername, preferred_catalogs,
+                                           max_sources=2e4, display=display)
+    else:
+        ref_cat = None
+
     if ref_cat == None:
-        logging.error('No reference catalog available')
+        print 'Skip calibration - report instrumental magnitudes'
+        logging.error('Skip calibration - report instrumental magnitudes')
+
+        ### write calibrated database files
+        logging.info('write calibrated data into database files')
+        if display:
+            print 'write calibrated data into database files'
+        for cat in catalogs:
+            cat.write_database(cat.catalogname+'.db')
+
+        logging.info('Done! ------------------------------------------------')
+
         return None
     
     ### match catalogs and derive magnitude zeropoint
@@ -438,12 +451,23 @@ if __name__ == '__main__':
                         choices=_pp_conf.allcatalogs.keys(),
                         help="use this catalog instead of default one")
     parser.add_argument("-filter", help="manual filter override")
+    parser.add_argument("-maxflag", help="maximum flag for all sources", 
+                        default=3)
+    parser.add_argument('-instrumental', 
+                        help='skip calibration, ' + \
+                             'only report instrumental magnitudes',
+                        action="store_true")
     parser.add_argument('images', help='images to process', nargs='+')
     args = parser.parse_args()
     minstars = float(args.minstars)
     manfilter = args.filter
+    maxflag = int(float(args.maxflag))
     manualcatalog = args.catalog
+    instrumental = args.instrumental
     filenames = args.images
+
+    if instrumental:
+        manfilter = None
 
     # check if input filenames is actually a list
     if len(filenames) == 1:
@@ -462,8 +486,8 @@ if __name__ == '__main__':
     obsparam = _pp_conf.telescope_parameters[telescope]
 
     calibration = calibrate(filenames, minstars, manfilter,
-                            manualcatalog, obsparam, display=True,
-                            diagnostics=True)
+                            manualcatalog, obsparam, maxflag=maxflag,
+                            display=True, diagnostics=True)
 
 
 

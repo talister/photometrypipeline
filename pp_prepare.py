@@ -60,6 +60,55 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                  (', '.join([('%s: %s' % (var, str(val))) for 
                              var, val in locals().items()])))
 
+
+    ##### identify keywords for GENERIC telescopes
+
+    # open one sample image file
+    hdulist = fits.open(filenames[0])
+    header = hdulist[0].header
+    
+    # keywords that have to be implanted into each image
+    implants = {}    
+
+    # if GENERIC telescope, ask user for header keywords
+    if obsparam['telescope_keyword'] is 'GENERIC':
+        keywords = {'pixel scale in arcsec/px before binning': 'secpix',
+                    'binning factor in both axes'            : 'binning',
+                    'image center RA (keyword or degrees)'   : 'ra',
+                    'image center DEC (keyword or degrees)'  : 'dec',
+                    'filter used (clear if none was used)'   : 'filter'}
+
+        for description, keyword in keywords.items():
+
+            try:
+                if obsparam[keyword] in header:
+                    continue
+            except:
+                pass
+
+            inp = raw_input('%s? > ' % description)
+
+            if keyword is 'secpix':
+                obsparam[keyword] = (float(inp), float(inp))
+            if keyword is 'binning':
+                implants['BINX'] = (float(inp), 'PP: user-defined')
+                implants['BINY'] = (float(inp), 'PP: user-defined')
+            if keyword is 'ra':
+                obsparam['ra'] = inp
+                # check for separator
+                try:
+                    dummy = float(header[inp])
+                    obsparam['radec_separator'] = 'XXX'
+                except ValueError:
+                    if ':' in header[inp]:
+                        obsparam['radec_separator'] = ':'
+                    if ' ' in header[inp].strip():
+                        obsparam['radec_separator'] = ' '
+            if keyword is 'dec':
+                obsparam['dec'] = inp
+            if keyword is 'filter':
+                implants[obsparam['filter']] = (inp, 'PP: user-defined')
+
     ##### prepare image headers for photometry pipeline
 
     for filename in filenames:
@@ -108,32 +157,9 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         if 'EQUINOX' not in header:
             header['EQUINOX'] = (2000, 'PP: required for registration')
 
-        # read out image binning mode
-        if '_' in obsparam['binning'][0]:
-            if '_blank' in obsparam['binning'][0]:
-                binning_x = float(header[obsparam['binning'][0].\
-                                         split('_')[0]].split()[0])
-                binning_y = float(header[obsparam['binning'][1].\
-                                         split('_')[0]].split()[1])
-            if '_x' in obsparam['binning'][0]:
-                binning_x = float(header[obsparam['binning'][0].\
-                                         split('_')[0]].split('x')[0])
-                binning_y = float(header[obsparam['binning'][1].\
-                                         split('_')[0]].split('x')[1])
-        else:
-            binning_x = header[obsparam['binning'][0]]
-            binning_y = header[obsparam['binning'][1]]
-
-        # add pixel resolution keyword
-        header['SECPIX'] = (\
-        numpy.average([obsparam['secpix'][0]*binning_x,
-                       obsparam['secpix'][1]*binning_y]), 
-        'PP: pixel size in arcsec (after binning)')
-
-        # # set NAXIS1 and NAXIS2 based on data array size
-        # # (might be set improperly after cropping)
-        # header['NAXIS1'] = (imdata.shape[1], 'PP: based on data array shape')
-        # header['NAXIS2'] = (imdata.shape[0], 'PP: based on data array shape')
+        # add header keywords for SCAMP
+        header['PHOTFLAG']  = ('F', 'PP: data is not photometric (SCAMP)')
+        header['PHOT_K']  = (0.05, 'PP: assumed extinction coefficient')
 
         # remove keywords that might collide with fake wcs
         for key in header.keys():
@@ -151,9 +177,34 @@ def prepare(filenames, obsparam, header_update, flipx=False,
 
                 header.remove(key)
 
-        # add header keywords for SCAMP
-        header['PHOTFLAG']  = ('F', 'PP: data is not photometric (SCAMP)')
-        header['PHOT_K']  = (0.05, 'PP: assumed extinction coefficient')
+
+        # if GENERIC telescope, add implants to header
+        if obsparam['telescope_keyword'] is 'GENERIC':
+            for key, val in implants.items():
+                header[key] = (val[0], val[1])
+
+
+        # read out image binning mode
+        if '_' in obsparam['binning'][0]:
+            if '_blank' in obsparam['binning'][0]:
+                binning_x = float(header[obsparam['binning'][0].\
+                                         split('_')[0]].split()[0])
+                binning_y = float(header[obsparam['binning'][1].\
+                                         split('_')[0]].split()[1])
+            if '_x' in obsparam['binning'][0]:
+                binning_x = float(header[obsparam['binning'][0].\
+                                         split('_')[0]].split('x')[0])
+                binning_y = float(header[obsparam['binning'][1].\
+                                         split('_')[0]].split('x')[1])
+        else:
+            binning_x = header[obsparam['binning'][0]]
+            binning_y = header[obsparam['binning'][1]]
+
+        # add pixel resolution keyword
+        header['SECPIXX'] = (obsparam['secpix'][0]*binning_x, 
+                             'PP: x pixscale after binning')
+        header['SECPIXY'] = (obsparam['secpix'][1]*binning_y, 
+                             'PP: y pixscale after binning')
 
         # create observation midtime jd 
         if obsparam['date_keyword'].find('|') == -1:
@@ -168,7 +219,6 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             header['MIDTIMJD'] = (toolbox.dateobs_to_jd(datetime) + \
                                   float(header[obsparam['exptime']])/2./86400.,
                                   'PP: obs midtime')
-
 
         # other keywords
         header['TELINSTR'] = (obsparam['telescope_instrument'],

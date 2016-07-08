@@ -645,7 +645,8 @@ ctio09_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTERS',  # filter keyword
-    'filter_translations'  : {'dia v': 'V', 'dia ov': 'V','dia i': 'I'},
+    'filter_translations'  : {'dia v': 'V', 'dia ov': 'V','dia i': 'I',
+                              'dia r': 'R'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -707,8 +708,8 @@ ctio10_param = {
                                          # (usually provided by
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
-    'filter'               : 'FILTER',  # filter keyword
-    'filter_translations'  : {3: 'V'},
+    'filter'               : 'FILTERID',  # filter keyword
+    'filter_translations'  : {'V': 'V', 'I': 'I'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -863,6 +864,69 @@ uh88snifs_param = {
 }
 
 
+# Generic telescope (e.g., amateur telescope)
+generic_param = {
+    'telescope_instrument' : 'Generic', # telescope/instrument name
+    'telescope_keyword'    : 'GENERIC',     # telescope/instrument keyword
+    'observatory_code'     : None,         # MPC observatory code
+    'secpix'               : (None, None), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True, 
+    'flipy'                : True, 
+    'rotate'               : 0, 
+
+    # instrument-specific FITS header keywords
+    # in this GENERIC setup, all keywords are suggested
+    # and will be checked in pp_prepare
+    'binning'              : ('BINX', 'BINY'), # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'OBJCTRA',  # telescope pointing, RA
+    'dec'                  : 'OBJCTDEC', # telescope pointin, Dec 
+    'radec_separator'      : ' ',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTER',  # filter keyword
+    'filter_translations'  : {'V': 'V', 'R': 'R', 'clear': None, '': None},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 8, # default sextractor source minimum N_pixels
+    'aprad_default'        : 3, # default aperture radius in px 
+    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/generic.sex',
+    'mask_file'            : {}, #'2,2' : rootpath+'/setup/mask_snifs_2x2.fits'},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/generic.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
+                              'DATE-OBS,TEL_KEYW'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/generic.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
+}
+
+
 
 ##### access functions for telescope configurations
 
@@ -870,7 +934,8 @@ uh88snifs_param = {
 implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'ARC35AGILE', 'MAGIMACS', 'LOWELL31', 'LOWELL42',
                           'LOWELL72',
-                          'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS']
+                          'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS',
+                          'GENERIC']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword 
@@ -886,7 +951,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'cfccd':             'CTIO09',
                           'Y4KCam':            'CTIO10',
                           'ANDICAM-CCD':       'CTIO13CCD',
-                          'SNIFS':             'UH88SNIFS'}
+                          'SNIFS':             'UH88SNIFS',
+                          'ArtemisHSC':        'GENERIC'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K' :       vatt4k_param, 
@@ -901,4 +967,5 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'CTIO09':        ctio09_param,
                         'CTIO10':        ctio10_param,
                         'CTIO13CCD':     ctio13ccd_param,
-                        'UH88SNIFS':     uh88snifs_param}
+                        'UH88SNIFS':     uh88snifs_param,
+                        'GENERIC':       generic_param}
