@@ -108,16 +108,16 @@
   <div class="section" id="diagnostics">
 <span id="id1"></span><h1>Diagnostics<a class="headerlink" href="#diagnostics" title="Permalink to this headline">¶</a></h1>
 <p>By default, PP creates extensive diagnostic output to provide the user
-with a comfortable way to assess the quality of the derived
+with a comfortable way to verify the quality of the derived
 results. Focusing on human readability, the diagnostic output is in
-the form of a html website that is accessible with any web browser.</p>
+the form of a HTML website that is accessible with any web browser.</p>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="html-output">
 <h3>HTML Output<a class="headerlink" href="#html-output" title="Permalink to this headline">¶</a></h3>
 <p>The diagnostic output for one specific data set can be accessed by
-opening the <code class="docutils literal"><span class="pre">diagnostics.html</span></code> website that is created in that
-directory, e.g., using:</p>
+opening the <code class="docutils literal"><span class="pre">diagnostics.html</span></code> website that is created in the
+respective data directory, e.g., using:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span>firefox diagnostics.html
 </pre></div>
 </div>
@@ -146,7 +146,7 @@ went wrong.</p>
 </div>
 <div class="section" id="diagnostics-details">
 <h2>Diagnostics Details<a class="headerlink" href="#diagnostics-details" title="Permalink to this headline">¶</a></h2>
-<p>The following section discuss the output of a successful pipeline run
+<p>The following sections discuss the output of a successful pipeline run
 in detail based on <a class="reference external" href="http://phy54.phy.nau.edu/photometrypipeline/example_7813/diagnostics.html">this</a> example page.</p>
 <div class="section" id="data-overview">
 <h3>Data Overview<a class="headerlink" href="#data-overview" title="Permalink to this headline">¶</a></h3>
@@ -174,8 +174,8 @@ solution. Furthermore, the quantifiers <code class="docutils literal"><span clas
 and scale, and the frame&#8217;s shift, respectively. <code class="docutils literal"><span class="pre">RA_sig</span></code> and
 <code class="docutils literal"><span class="pre">DEC_sig</span></code> provide a sense for positional uncertainties in arcsecs;
 <code class="docutils literal"><span class="pre">Chi2_Reference</span></code> and <code class="docutils literal"><span class="pre">Chi2_Internal</span></code> quantify the goodness of
-fit. For additional information on these parameters, please refer the
-<a class="reference external" href="http://astromatic.iap.fr/wordpress/wp-content/uploads/2009/01/pdf-dist.png">SCAMP manual</a>.</p>
+fit. For additional information on these parameters, please refer to
+the <a class="reference external" href="http://astromatic.iap.fr/wordpress/wp-content/uploads/2009/01/pdf-dist.png">SCAMP manual</a>.</p>
 </div>
 <div class="section" id="photometric-calibration-aperture-size">
 <h3>Photometric Calibration - Aperture Size<a class="headerlink" href="#photometric-calibration-aperture-size" title="Permalink to this headline">¶</a></h3>
@@ -184,24 +184,24 @@ curve-of-growth analysis.</p>
 <div class="align-center figure">
 <a class="reference internal image-reference" href="_images/aperture_size.png"><img alt="aperture size diagnostics" src="_images/aperture_size.png" style="width: 800px; height: 347px;" /></a>
 </div>
-<p>The <strong>left plot</strong> documents this analysis. For a range of aperture
-sizes, the flux and SNR of both the target (red line) and the average
-over all background sources (black line) are determined. Note that
-both the flux and the SNR are fractional values - they are relative to
-the maximum flux (of either the target or the background stars) or the
-maximum SNR. In order to obtain reliable photometry, you want to
-include as much flux as possible but at the same time keep the
-aperture as small as possible, in order to minimize noise introduced
-by the background - this is reflected by the SNR&#8217;s peak (see, e.g,
-Howell&#8217;s <em>Handbook of CCD Astronomy</em> for a discussion). PP
-deliberately does not use the aperture radius that provides the
-highest SNR. The optimum aperture radius is required to include at
-least 70% of the both the target&#8217;s and background sources&#8217; flux - at
-the same time, the fractional flux difference between the target and
-background sources has to be smaller than 5%. Both conditions minimize
-the effect of potential trailing on the photometry results. The
-optimum aperture radius is chosen as the smallest aperture radius that
-meets the conditions listed above.</p>
+<p>The <strong>left plot</strong> documents the curve-of-growth analysis. For a range
+of aperture sizes, the flux and SNR of both the target (red line) and
+the average over all background sources (black line) are
+determined. Note that both the flux and the SNR are fractional
+values - they are relative to the maximum flux (of either the target
+or the background stars) or the maximum SNR. In order to obtain
+reliable photometry, you want to include as much flux as possible but
+at the same time keep the aperture as small as possible, in order to
+minimize noise introduced by the background - this is reflected by the
+SNR&#8217;s peak (see, e.g, Howell&#8217;s <em>Handbook of CCD Astronomy</em> for a
+discussion). PP deliberately does not use the aperture radius that
+provides the highest SNR. The optimum aperture radius is required to
+include at least 70% of the both the target&#8217;s and background sources&#8217;
+flux - at the same time, the fractional flux difference between the
+target and background sources has to be smaller than 5%. Both
+conditions minimize the effect of potential trailing on the photometry
+results. The optimum aperture radius is chosen as the smallest
+aperture radius that meets the conditions listed above.</p>
 <p>The <strong>right plot</strong> shows the median PSF full-width-half-max (FWHM)
 based on all sources in the field as a function of time. The red line
 indicates the optimum aperture diameter for comparison. The measured
@@ -232,7 +232,7 @@ on every single frame as shown below:</p>
 <p>The top panel in the <strong>left plot</strong> shows the magnitude zeropoint (red
 line) as a function of the number of background catalog stars used in
 the calibration.  The number of background stars is reduced by
-rejecting the most significant outlier one at a time. The blue line
+rejecting the most significant outlier at a time. The blue line
 shows the reduced Chi2 of the remaining data points. Currently, 50% of
 all background stars are rejected (vertical line) based on their
 weighted residuals; weights account for photometric uncertainties and
@@ -244,15 +244,35 @@ only those stars used in the final calibration are shown. The
 rejection of 50% of all background stars is purely empirical and
 usually leads to robust results.</p>
 <p>The <strong>right plot</strong> shows the actual image overplotted with those stars
-that were used in the final calibration. This map allows to check that
-the background stars used are evenly scattered across the whole field
-of view.</p>
+that were used in the final calibration. This map allows to verify
+that calibration stars are evenly scattered across the whole field of
+view.</p>
 <p>Finally, all background stars used in the final calibration of each
 frame are listed in a <strong>table</strong>, providing additional information.</p>
 </div>
 <div class="section" id="photometry-results">
 <h3>Photometry Results<a class="headerlink" href="#photometry-results" title="Permalink to this headline">¶</a></h3>
-<p>TBD</p>
+<div class="align-center figure">
+<a class="reference internal image-reference" href="_images/phot_results.png"><img alt="photometry results" src="_images/phot_results.png" style="width: 700px; height: 384px;" /></a>
+</div>
+<p>PP provides final photometry for the actual target(s) in the field, as
+well as for one reasonably bright star that acts as a <strong>comparison
+star</strong>. The comparison star photometry is derived using the exact same
+calibrations and routines as the target, providing a good verification
+of the whole process. Usually, the comparison star should have a flat
+lightcurve that does not show significant variations. However, it
+cannot be ruled out that the comparison star shows intrinsic
+variability, or is subject to detector effects, leading to photometric
+variability. The comparison star is required to be present in the
+first and the last image of the sequence of images provided.</p>
+<p>For each target, PP
+provides a GIF animation and a lightcurve showing calibrated
+photometry. The individual frames in the GIF show the expected target
+position (green cross) and the actual aperture placement and size used
+(red circle). The GIF allows for identifying target mismatches and
+contaminations of the photometry aperture. A <a class="reference external" href="http://phy54.phy.nau.edu/photometrypipeline/example_7813/.diagnostics/7813_results.html">dedicated photometry page</a>
+is featured for each target, allowing for a quick and easy
+identification of corrupted frames.</p>
 </div>
 </div>
 </div>

@@ -103,7 +103,7 @@ below. All functions presented here can be called from the terminal.</p>
 <li><strong>-prefix</strong> &#8211; (optional) the prefix of all science data images if
 <cite>pp_run</cite> is called using <code class="docutils literal"><span class="pre">images</span> <span class="pre">=</span> <span class="pre">all</span></code></li>
 <li><strong>-target</strong> &#8211; (optional) the target name to be used in all
-images, this overrides the <code class="docutils literal"><span class="pre">OBJECT</span></code> keyword in the
+images, this overwrites the <code class="docutils literal"><span class="pre">OBJECT</span></code> keyword in the
 FITS headers; note to replace blanks with
 underscores if the target&#8217;s name is a designation</li>
 <li><strong>-filter</strong> &#8211; (optional) manual filter name override for the photometric
@@ -132,7 +132,7 @@ the possibility to manually tweak the process parameters.</p>
 the logical order:</p>
 <dl class="function">
 <dt id="pp_prepare">
-<code class="descname">pp_prepare</code><span class="sig-paren">(</span><span class="optional">[</span><em>-ra degrees</em>, <span class="optional">]</span><span class="optional">[</span><em>-dec degrees</em>, <span class="optional">]</span><span class="optional">[</span><em>-flipx</em>, <span class="optional">]</span><span class="optional">[</span><em>-flipy</em>, <span class="optional">]</span><span class="optional">[</span><em>-rotate degrees</em>, <span class="optional">]</span><em>images</em><span class="sig-paren">)</span><a class="headerlink" href="#pp_prepare" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pp_prepare</code><span class="sig-paren">(</span><span class="optional">[</span><em>-ra degrees</em>, <span class="optional">]</span><span class="optional">[</span><em>-dec degrees</em>, <span class="optional">]</span><span class="optional">[</span><em>-flipx</em>, <span class="optional">]</span><span class="optional">[</span><em>-flipy</em>, <span class="optional">]</span><span class="optional">[</span><em>-rotate degrees</em>, <span class="optional">]</span><span class="optional">[</span><em>-target string</em>, <span class="optional">]</span><em>images</em><span class="sig-paren">)</span><a class="headerlink" href="#pp_prepare" title="Permalink to this definition">¶</a></dt>
 <dd><p>prepares image files for use in the pipeline</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -150,6 +150,10 @@ in wcs coordinates relative to the respective
 <li><strong>-rotate</strong> &#8211; (optional) rotates the image&#8217;s orientation in the sky
 (East-of-North) relative to the respective
 <a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> setting</li>
+<li><strong>-target</strong> &#8211; (optional) the target name to be used in all
+images, this overwrites the <code class="docutils literal"><span class="pre">OBJECT</span></code> keyword in the
+FITS headers; note to replace blanks with
+underscores if the target&#8217;s name is a designation</li>
 <li><strong>images</strong> &#8211; images on which <cite>pp_prepare</cite> is supposed to run</li>
 </ul>
 </td>
