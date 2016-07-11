@@ -370,6 +370,8 @@ class catalog:
         logging.info('read %d sources in %d columns from LDAC file %s' % 
                      (self.shape[0], self.shape[1], filename))
 
+        hdulist.close()
+
         return self.shape
 
     
