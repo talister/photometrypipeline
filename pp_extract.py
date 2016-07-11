@@ -49,7 +49,7 @@ logging.basicConfig(filename = _pp_conf.log_filename,
 version = '1.0'
 
 # threading definitions
-nThreads = 20
+nThreads = 10
 extractQueue = Queue.Queue(2000)
 threadLock = threading.Lock()   
 
@@ -118,14 +118,18 @@ class extractor(threading.Thread):
 
             logging.info('call Source Extractor as: %s' % commandline)
 
-            # run SEXTRACTOR and wait for it to finish
+
+            ### run SEXTRACTOR and wait for it to finish
             try:
                 sex = subprocess.Popen(shlex.split(commandline), 
                                        stdout=subprocess.PIPE, 
                                        stderr=subprocess.PIPE, 
                                        universal_newlines=True)
-            except:
-                logging.error('cannot call Source Extractor')
+            except Exception, e:
+                print 'Source Extractor call:', (e)
+                logging.error('Source Extractor call:', (e))
+                extractQueue.task_done() # inform queue, this task is done
+                return None
 
             sex.wait()
             
@@ -147,11 +151,13 @@ class extractor(threading.Thread):
                 logging.warning("Cannot read Source Extractor display output")
                 pass
                 
+            del sex
+                
             # read in LDAC file
             ldac_filename = filename[:filename.find('.fit')]+'.ldac'
-            if os.path.exists(ldac_filename):
-                ldac_data = catalog(ldac_filename)
-            else:
+            ldac_data = catalog(ldac_filename)
+
+            if not os.path.exists(ldac_filename):
                 threadLock.acquire()
                 print 'No Source Extractor output for frame', filename, \
                     '\nplease check output:\n', sex_output
@@ -213,6 +219,8 @@ class extractor(threading.Thread):
                 print "%d sources extracted from frame %s" % \
                     (len(ldac_data.data), filename)
             threadLock.release()
+
+            del ldac_data
             
             extractQueue.task_done()  # inform queue that this task is done
                 
@@ -290,6 +298,7 @@ def extract_multiframe(filenames, parameters):
         mask_file = parameters['obsparam']['mask_file'][bin_string]
         parameters['mask_file'] = mask_file
 
+    hdu.close()
 
     ### thread and queue handling
 

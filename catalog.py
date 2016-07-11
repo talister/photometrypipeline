@@ -317,6 +317,8 @@ class catalog:
         logging.info('downloaded %d stars from %s' % (self.shape[0],
                                                       self.catalogname))
 
+        hdulist.close()
+
         return self.shape[0]
 
     
