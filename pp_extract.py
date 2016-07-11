@@ -49,8 +49,8 @@ logging.basicConfig(filename = _pp_conf.log_filename,
 version = '1.0'
 
 # threading definitions
-nThreads = 100
-extractQueue = Queue.Queue(10000)
+nThreads = 20
+extractQueue = Queue.Queue(2000)
 threadLock = threading.Lock()   
 
 
@@ -115,7 +115,7 @@ class extractor(threading.Thread):
             commandline = 'sex -c %s %s %s' % \
                           (self.param['obsparam']['sex-config-file'], 
                            optionstring, filename)
-            
+
             logging.info('call Source Extractor as: %s' % commandline)
 
             # run SEXTRACTOR and wait for it to finish
@@ -149,11 +149,25 @@ class extractor(threading.Thread):
                 
             # read in LDAC file
             ldac_filename = filename[:filename.find('.fit')]+'.ldac'
-            ldac_data = catalog(ldac_filename)
+            if os.path.exists(ldac_filename):
+                ldac_data = catalog(ldac_filename)
+            else:
+                threadLock.acquire()
+                print 'No Source Extractor output for frame', filename, \
+                    '\nplease check output:\n', sex_output
+                logging.error('No Source Extractor output, ' + 
+                              'please check output:' + sex_output)
+                threadLock.release()
+                extractQueue.task_done() # inform queue, this task is done
+                return None
 
+
+            # make sure ldac file contains data
             if ldac_data.read_ldac(ldac_filename, maxflag=None) is None:
                 extractQueue.task_done()
-                os.abort()
+                print 'LDAC file empty', filename, 
+                logging.error('LDAC file empty: ' + sex_output)
+                return None
 
             out['catalog_data'] = ldac_data
 

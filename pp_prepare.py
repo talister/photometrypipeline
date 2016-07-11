@@ -389,8 +389,11 @@ if __name__ == '__main__':
         try:
             telescope = _pp_conf.instrument_identifiers[instruments[0]]
         except KeyError:
-            raise KeyError('cannot identify telescope/instrument; please ' + \
-                           'update _pp_conf.instrument_identifiers accordingly')
+            print 'cannot identify telescope/instrument; use GENERIC telescope'
+            logging.warning('cannot identify telescope/instrument; ' + 
+                            'use GENERIC telescope')
+            telescope = 'GENERIC'
+
 
     obsparam = _pp_conf.telescope_parameters[telescope]
 
