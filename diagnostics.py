@@ -721,7 +721,6 @@ def add_results(data):
             composite = numpy.zeros((hdulist[0].data.shape[0]+2*boxsize, 
                                      hdulist[0].data.shape[1]+2*boxsize))
 
-            print composite.shape, hdulist[0].data.shape, boxsize
             composite[boxsize:boxsize+hdulist[0].data.shape[0], 
                       boxsize:boxsize+hdulist[0].data.shape[1]] = \
                                                             hdulist[0].data
