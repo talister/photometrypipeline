@@ -199,7 +199,8 @@ def create_index(filenames, directory, obsparam, display=False):
              float(header[obsparam['exptime']]),
              header[obsparam['extent'][0]]*obsparam['secpix'][0]*binning_x/60.,
              header[obsparam['extent'][1]]*obsparam['secpix'][1]*binning_y/60.)
-    
+
+   
         ### create frame image
         imgdat = hdulist[0].data
         median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
@@ -226,6 +227,7 @@ def create_index(filenames, directory, obsparam, display=False):
         plt.savefig(framefilename, format='png', bbox_inches='tight', 
                     pad_inches=0)
         plt.close()
+        hdulist.close()
 
     html += '</TABLE>\n'
    
@@ -715,10 +717,11 @@ def add_results(data):
                                            True)
             exp_x, exp_y = image_coords[0][0], image_coords[0][1]
 
-
             # create margin around image allowing for any cropping 
-            composite = numpy.zeros((hdulist[0].data.shape[1]+2*boxsize, 
-                                     hdulist[0].data.shape[0]+2*boxsize))
+            composite = numpy.zeros((hdulist[0].data.shape[0]+2*boxsize, 
+                                     hdulist[0].data.shape[1]+2*boxsize))
+
+            print composite.shape, hdulist[0].data.shape, boxsize
             composite[boxsize:boxsize+hdulist[0].data.shape[0], 
                       boxsize:boxsize+hdulist[0].data.shape[1]] = \
                                                             hdulist[0].data
@@ -798,6 +801,7 @@ def add_results(data):
             plt.savefig(thumbfilename, format='png', bbox_inches='tight', 
                         pad_inches=0)
             plt.close()
+            hdulist.close()
             data['thumbnailplots'][target].append((fitsfilename, 
                                                      thumbfilename))
 
