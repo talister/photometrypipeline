@@ -155,10 +155,13 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
     print 'run photometry pipeline on %d %s %s frames' % \
           (len(filenames), telescope, filtername)
 
+    change_header = {}
+    if man_targetname is not None:
+        change_header['OBJECT'] = man_targetname
 
     ### prepare fits files for photometry pipeline
     preparation = pp_prepare.prepare(filenames, obsparam,
-                                     {'OBJECT': man_targetname},
+                                     change_header,
                                      diagnostics=True, display=True)
 
 
