@@ -398,7 +398,7 @@ if __name__ == '__main__':
     obsparam = _pp_conf.telescope_parameters[telescope]
 
     header_update = {}
-    if man_target is not '':
+    if man_target is not None:
         header_update['OBJECT'] = man_target
 
     # run prepare wrapper
