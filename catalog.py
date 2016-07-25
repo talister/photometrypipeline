@@ -209,11 +209,9 @@ class catalog:
                 logging.warning('not sure how to sort catalog data (%s)' % sort)
                 print 'not sure how to sort catalog data (%s)' % sort
 
-        #print url
-
         logging.info('accessing %s on vizier: %s' % (self.catalogname, url))
 
-        #print url
+        print url
         
         ### call server
         call = urllib2.urlopen(url)
@@ -1032,6 +1030,7 @@ class catalog:
         """ match sources from different catalogs based on two fields 
             (e.g., postions)
             return: requested fields for matched sources 
+            note: will only match exclusive pairs
         """
 
         # replace unified fieldnames with actual field names
@@ -1122,7 +1121,6 @@ class catalog:
 
 # cat1 = catalog('URAT-1')
 # print cat1.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat1.catalogname
-# print cat1[305]
 # print cat1.fields
                                                    
 # cat2 = catalog('2MASS')

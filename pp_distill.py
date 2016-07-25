@@ -161,6 +161,41 @@ def fixed_target(fixed_coo, catalogs):
     return objects
 
 
+def serendipitous_asteroids():
+    return []
+#     return [{'obsdate.jd': 2457424.85799478, 'cat_idx': 0, 'ident': u'Don Quixote', 'dec.deg': 19.98252, 'ra.deg': 162.83076999999997}, {'obsdate.jd': 2457424.859032847, 'cat_idx': 1, 'ident': u'Don Quixote', 'dec.deg': 19.98256920278544, 'ra.deg': 162.83061959474216}, {'obsdate.jd': 2457424.860031736, 'cat_idx': 2, 'ident': u'Don Quixote', 'dec.deg': 19.982617089712576, 'ra.deg': 162.83047486869475}, {'obsdate.jd': 2457424.861028183, 'cat_idx': 3, 'ident': u'Don Quixote', 'dec.deg': 19.98266527121123, 'ra.deg': 162.8303304985934}, {'obsdate.jd': 2457424.862025498, 'cat_idx': 4, 'ident': u'Don Quixote', 'dec.deg': 19.982713790857105, 'ra.deg': 162.83018600415772}, {'obsdate.jd': 2457424.863024225, 'cat_idx': 5, 'ident': u'Don Quixote', 'dec.deg': 19.982762560275024, 'ra.deg': 162.8300413060749}, {'obsdate.jd': 2457424.864022882, 'cat_idx': 6, 'ident': u'Don Quixote', 'dec.deg': 19.982811391489893, 'ra.deg':162.82989661843877}, {'obsdate.jd': 2457424.865020752, 'cat_idx': 7, 'ident': u'Don Quixote', 'dec.deg': 19.982860133465163, 'ra.deg': 162.82975204462963}, {'obsdate.jd': 2457424.866018148, 'cat_idx': 8, 'ident': u'Don Quixote', 'dec.deg': 19.982908685942125, 'ra.deg': 162.8296075385919}, {'obsdate.jd': 2457424.86701478, 'cat_idx': 9, 'ident': u'Don Quixote', 'dec.deg': 19.98295691963855, 'ra.deg': 162.8294631418439}, {'obsdate.jd': 2457424.917261586, 'cat_idx': 10, 'ident': u'Don Quixote', 'dec.deg': 19.98536328910356, 'ra.deg': 162.82216337024497}, {'obsdate.jd': 2457424.918299514, 'cat_idx': 11, 'ident': u'Don Quixote', 'dec.deg': 19.985413269426164, 'ra.deg': 162.8220132015485}, {'obsdate.jd': 2457424.91929824, 'cat_idx': 12, 'ident': u'Don Quixote', 'dec.deg': 19.985460853078855, 'ra.deg': 162.82186818284}, {'obsdate.jd': 2457424.920296933, 'cat_idx': 13, 'ident': u'Don Quixote', 'dec.deg': 19.985507802511076, 'ra.deg': 162.82172239051937}, {'obsdate.jd': 2457424.921293959, 'cat_idx': 14, 'ident': u'Don Quixote', 'dec.deg': 19.985554169563997, 'ra.deg': 162.8215761915903}, {'obsdate.jd': 2457424.922292118, 'cat_idx': 15, 'ident': u'Don Quixote', 'dec.deg': 19.985600325767813, 'ra.deg': 162.82142947380476}, {'obsdate.jd': 2457424.923296319, 'cat_idx': 16, 'ident': u'Don Quixote', 'dec.deg': 19.985646739461135, 'ra.deg': 162.8212818137833}, {'obsdate.jd': 2457424.924294086, 'cat_idx': 17, 'ident': u'Don Quixote', 'dec.deg': 19.985693076679222, 'ra.deg': 162.8211353460674}, {'obsdate.jd': 2457424.925291817, 'cat_idx': 18, 'ident': u'Don Quixote', 'dec.deg': 19.985739873626958, 'ra.deg':162.82098942746939}, {'obsdate.jd': 2457424.92628912, 'cat_idx': 19, 'ident': u'Don Quixote', 'dec.deg': 19.985787248865247, 'ra.deg': 162.82084426951843}, {'obsdate.jd': 2457424.927285694, 'cat_idx': 20, 'ident': u'Don Quixote', 'dec.deg': 19.98583510021966, 'ra.deg': 162.8206997598177}, {'obsdate.jd': 2457424.928284629, 'cat_idx': 21, 'ident': u'Don Quixote', 'dec.deg': 19.985883460727468, 'ra.deg': 162.8205552552979}, {'obsdate.jd': 2457424.929280961, 'cat_idx': 22, 'ident': u'Don Quixote', 'dec.deg': 19.985931973715015, 'ra.deg':162.82041127812988}, {'obsdate.jd': 2457424.93027728, 'cat_idx': 23, 'ident': u'Don Quixote', 'dec.deg':19.985980648101318, 'ra.deg': 162.82026725807398}, {'obsdate.jd': 2457424.931275266, 'cat_idx': 24, 'ident': u'Don Quixote', 'dec.deg': 19.986029450042764, 'ra.deg':162.82012275629015}, {'obsdate.jd': 2457424.932273055,'cat_idx': 25, 'ident': u'Don Quixote', 'dec.deg': 19.98607817201905, 'ra.deg': 162.81997784614833}, {'obsdate.jd': 2457424.933271829, 'cat_idx': 26, 'ident': u'Don Quixote', 'dec.deg': 19.986126754998274, 'ra.deg':162.81983215885538}, {'obsdate.jd': 2457424.93426838,'cat_idx': 27, 'ident': u'Don Quixote', 'dec.deg': 19.98617492694687, 'ra.deg': 162.819685967741}, {'obsdate.jd': 2457424.935264861, 'cat_idx': 28, 'ident': u'Don Quixote', 'dec.deg': 19.986222676870085, 'ra.deg': 162.81953876426968}, {'obsdate.jd': 2457424.936263634, 'cat_idx': 29, 'ident': u'Don Quixote', 'dec.deg': 19.98627, 'ra.deg': 162.81939}, {'obsdate.jd': 2457424.85799478, 'cat_idx': 0, 'ident': u'2001 MR12', 'dec.deg': 20.024220000000003, 'ra.deg': 162.89035000000004},
+# {'obsdate.jd': 2457424.859032847, 'cat_idx': 1, 'ident': u'2001 MR12', 'dec.deg': 20.024349827404578, 'ra.deg': 162.8901306835853},
+# {'obsdate.jd': 2457424.860031736, 'cat_idx': 2, 'ident': u'2001 MR12', 'dec.deg': 20.024475806710104, 'ra.deg': 162.8899207345458},
+# {'obsdate.jd': 2457424.861028183, 'cat_idx': 3, 'ident': u'2001 MR12', 'dec.deg': 20.02460234855395, 'ra.deg': 162.8897121986007},
+# {'obsdate.jd': 2457424.862025498, 'cat_idx': 4, 'ident': u'2001 MR12', 'dec.deg': 20.024729716259028, 'ra.deg': 162.88950421746517},
+# {'obsdate.jd': 2457424.863024225, 'cat_idx': 5, 'ident': u'2001 MR12', 'dec.deg': 20.024857826223712, 'ra.deg': 162.8892965166712},
+# {'obsdate.jd': 2457424.864022882, 'cat_idx': 6, 'ident': u'2001 MR12', 'dec.deg': 20.0249863338468, 'ra.deg': 162.88908924163866},
+# {'obsdate.jd': 2457424.865020752, 'cat_idx': 7, 'ident': u'2001 MR12', 'dec.deg': 20.025114990759327, 'ra.deg': 162.88888237705615},
+# {'obsdate.jd': 2457424.866018148, 'cat_idx': 8, 'ident': u'2001 MR12', 'dec.deg': 20.025243681686728, 'ra.deg': 162.8886756939257},
+# {'obsdate.jd': 2457424.86701478, 'cat_idx': 9, 'ident': u'2001 MR12', 'dec.deg': 20.02537221401495, 'ra.deg': 162.88846908917702},
+# {'obsdate.jd': 2457424.917261586, 'cat_idx': 10, 'ident': u'2001 MR12', 'dec.deg': 20.031776835057908, 'ra.deg': 162.87794161301122},
+# {'obsdate.jd': 2457424.918299514, 'cat_idx': 11, 'ident': u'2001 MR12', 'dec.deg': 20.031908621766053, 'ra.deg': 162.87772211722833},
+# {'obsdate.jd': 2457424.91929824, 'cat_idx': 12, 'ident': u'2001 MR12', 'dec.deg': 20.032035430673123, 'ra.deg': 162.87751090678276},
+# {'obsdate.jd': 2457424.920296933, 'cat_idx': 13, 'ident': u'2001 MR12', 'dec.deg': 20.03216224514496, 'ra.deg': 162.87729984979623},
+# {'obsdate.jd': 2457424.921293959, 'cat_idx': 14, 'ident': u'2001 MR12', 'dec.deg': 20.032288858678815, 'ra.deg': 162.8770893063405},
+# {'obsdate.jd': 2457424.922292118, 'cat_idx': 15, 'ident': u'2001 MR12', 'dec.deg': 20.032415623930707, 'ra.deg': 162.87687864128247},
+# {'obsdate.jd': 2457424.923296319, 'cat_idx': 16, 'ident': u'2001 MR12', 'dec.deg': 20.03254316145965, 'ra.deg': 162.87666677534884},
+# {'obsdate.jd': 2457424.924294086, 'cat_idx': 17, 'ident': u'2001 MR12', 'dec.deg': 20.0326698838749, 'ra.deg': 162.87645629637967},
+# {'obsdate.jd': 2457424.925291817, 'cat_idx': 18, 'ident': u'2001 MR12', 'dec.deg': 20.03279660071685, 'ra.deg': 162.87624581061942},
+# {'obsdate.jd': 2457424.92628912, 'cat_idx': 19, 'ident': u'2001 MR12', 'dec.deg': 20.03292326034159, 'ra.deg': 162.87603537208778},
+# {'obsdate.jd': 2457424.927285694, 'cat_idx': 20, 'ident': u'2001 MR12', 'dec.deg': 20.03304982478575, 'ra.deg': 162.87582504887487},
+# {'obsdate.jd': 2457424.928284629, 'cat_idx': 21, 'ident': u'2001 MR12', 'dec.deg': 20.033176687073606, 'ra.deg': 162.87561419752717},
+# {'obsdate.jd': 2457424.929280961, 'cat_idx': 22, 'ident': u'2001 MR12', 'dec.deg': 20.033303217439354, 'ra.deg': 162.87540387450363},
+# {'obsdate.jd': 2457424.93027728, 'cat_idx': 23, 'ident': u'2001 MR12', 'dec.deg': 20.03342974533349, 'ra.deg': 162.87519354200376},
+# {'obsdate.jd': 2457424.931275266, 'cat_idx': 24, 'ident': u'2001 MR12', 'dec.deg': 20.03355648470393, 'ra.deg': 162.8749828540921},
+# {'obsdate.jd': 2457424.932273055, 'cat_idx': 25, 'ident': u'2001 MR12', 'dec.deg': 20.033683199351685, 'ra.deg': 162.87477221317346},
+# {'obsdate.jd': 2457424.933271829, 'cat_idx': 26, 'ident': u'2001 MR12', 'dec.deg': 20.033810040071014, 'ra.deg': 162.87456137836995},
+# {'obsdate.jd': 2457424.93426838, 'cat_idx': 27, 'ident': u'2001 MR12', 'dec.deg': 20.03393659998836, 'ra.deg': 162.87435103571},
+# {'obsdate.jd': 2457424.935264861, 'cat_idx': 28, 'ident': u'2001 MR12', 'dec.deg': 20.03406315313596, 'ra.deg': 162.87414073939965},
+# {'obsdate.jd': 2457424.936263634, 'cat_idx': 29, 'ident': u'2001 MR12', 'dec.deg': 20.03419, 'ra.deg': 162.87393}]
+
+
+
 ### -------------------
 
 
@@ -213,14 +248,20 @@ def distill(catalogs, man_targetname, offset, fixed_coo, posfile,
     objects += moving_primary_target(catalogs, man_targetname, offset)
 
     ### add fixed target
-    if fixed_coo is not [0,0]:
+    if fixed_coo[0] != 0 and fixed_coo[1] != 0.0:
         objects += fixed_target(fixed_coo, catalogs)
+
+    ### seredipitous asteroids
+    objects += serendipitous_asteroids()
+
 
     if display:
         print len(objects)/len(catalogs), \
-            'potential targets per frame identified'
-    logging.info('%d potential targets per frame identified' %
-                 int(len(objects)/len(catalogs)))
+            'potential targets per frame identified:', \
+            ", ".join(set([obj['ident'] for obj in objects]))
+    logging.info('%d potential targets per frame identified: %s' %
+                 (int(len(objects)/len(catalogs)), 
+                  ", ".join(set([obj['ident'] for obj in objects]))))
 
 
 
@@ -242,6 +283,7 @@ def distill(catalogs, man_targetname, offset, fixed_coo, posfile,
                                [obj['ra.deg'] for obj in objects_thiscat],
                                [obj['dec.deg'] for obj in objects_thiscat]],
                               ['20A', 'D', 'D'])
+
 
         # identify magnitudes
         mag_keys = ['MAG_APER', 'MAGERR_APER']
@@ -292,6 +334,7 @@ def distill(catalogs, man_targetname, offset, fixed_coo, posfile,
             #         obstime, filename, img_x, img_y, origin, flags
 
             targetnames[match[0][2][i]] = 1
+
 
     output['targetnames'] = targetnames
 
