@@ -211,7 +211,7 @@ class catalog:
 
         logging.info('accessing %s on vizier: %s' % (self.catalogname, url))
 
-        print url
+        #print url
         
         ### call server
         call = urllib2.urlopen(url)
