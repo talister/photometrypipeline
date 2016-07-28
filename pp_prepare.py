@@ -60,7 +60,14 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                  (', '.join([('%s: %s' % (var, str(val))) for 
                              var, val in locals().items()])))
 
-
+    ##### change FITS file extensions to .fits
+    for idx, filename in enumerate(filenames):
+        if filename.split('.')[-1] in ['fts', 'FTS', 'FITS', 'fit', 'FIT']:
+            os.rename(filename, '.'.join(filename.split('.')[:-1])+'.fits')
+            filenames[idx] = '.'.join(filename.split('.')[:-1])+'.fits'
+            logging.info('change filename from "%s" to "%s"' %
+                         (filename, filenames[idx]))
+            
     ##### identify keywords for GENERIC telescopes
 
     # open one sample image file

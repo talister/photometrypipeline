@@ -60,7 +60,10 @@ def dateobs_to_jd(date):
     """convert a string of the format YYYY-MM-DDTHH:MM:SS into a julian
         date; 'T' is used as a separator between date and time
     """
-    date = date.split('T')
+    if 'T' in date:
+      date = date.split('T')
+    if ' ' in date:
+      date = date.split(' ')
     time = date[1].split(':')
     date = date[0].split('-')
     a = (14 - float(date[1]))//12

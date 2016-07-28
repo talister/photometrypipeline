@@ -146,8 +146,16 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
         sys.exit()    
 
     if man_filtername is None:
-        print telescope, filters[0]
-        filtername = obsparam['filter_translations'][filters[0]]
+        try:
+            filtername = obsparam['filter_translations'][filters[0]]
+        except KeyError:
+            print ('Cannot translate filter name (%s); please adjust ' + \
+                   'keyword "filter_translations" for %s in ' + \
+                   'setup/telescopes.py') % (filters[0], telescope)
+            logging.error(('Cannot translate filter name (%s); please adjust '+\
+                   'keyword "filter_translations" for %s in ' + \
+                   'setup/telescopes.py') % (filters[0], telescope))
+            return None
     else:
         filtername = man_filtername
     logging.info('%d %s frames identified' % (len(filenames), filtername))
@@ -204,14 +212,14 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
         logging.info('Nothing else to do for this filter (%s)' %
                      filtername)
         print 'Nothing else to do for this filter (%s)' % filtername
-        return 0
+        return None
 
     # stop here if registration failed for all images
     if len(filenames) == 0:
         logging.info('Nothing else to do for this image set')
         print 'Nothing else to do for this image set'
         diag.abort('pp_registration')
-        return 0
+        return None
 
 
 

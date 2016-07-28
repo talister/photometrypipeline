@@ -833,18 +833,21 @@ uh88snifs_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
-    'filter_translations'  : {'SDSS r': 'r'},
+    'filter_translations'  : {'SDSS u': 'u', 'SDSS g': 'g', 'SDSS r': 'r',
+                              'SDSS i': 'i', 'SDSS z': 'z', 'Bessell B': 'B',
+                              'Bessell V': 'V', 'Bessell R': 'R',
+                              'Bessell I': 'I'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
 
 
     # source extractor settings
-    'source_minarea'       : 8, # default sextractor source minimum N_pixels
+    'source_minarea'       : 12, # default sextractor source minimum N_pixels
     'aprad_default'        : 3, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/uh88snifs.sex',
-    'mask_file'            : {}, #'2,2' : rootpath+'/setup/mask_snifs_2x2.fits'},
+    'mask_file'            : {'2,2' : rootpath+'/setup/mask_snifs_2x2.fits'},
     #                        mask files as a function of x,y binning
 
     # scamp settings
@@ -862,6 +865,69 @@ uh88snifs_param = {
     'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
 }
+
+# WIYN 0.9m, Half Degree Imager (HDI)
+wiyn09hdi_param = {
+    'telescope_instrument' : 'WIYN09/HDI', # telescope/instrument name
+    'telescope_keyword'    : 'WIYN09HDI',  # telescope/instrument keyword
+    'observatory_code'     : '695',         # MPC observatory code
+    'secpix'               : (0.43, 0.43), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : False, 
+    'flipy'                : False, 
+    'rotate'               : 0, 
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('CCDBIN1', 'CCDBIN2'), # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RASTRNG',  # telescope pointing, RA
+    'dec'                  : 'DECSTRNG', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTER1',  # filter keyword
+    'filter_translations'  : {'u': 'u', 'g': 'g', 'r': 'r',
+                              'i': 'i', 'z': 'z'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 9, # default sextractor source minimum N_pixels
+    'aprad_default'        : 3, # default aperture radius in px 
+    'aprad_range'          : [2, 8], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/wiyn09hdi.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/wiyn09hdi.scamp', 
+
+    # swarp settings
+    'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER1,EXPTIME,OBJECT,' +
+                              'DATE-OBS,RASTRNG,DECSTRNG,SECPIX,AIRMASS,' +
+                              'TEL_KEYW'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/wiyn09hdi.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS'],
+}
+
 
 
 # Generic telescope (e.g., amateur telescope)
@@ -935,6 +1001,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'ARC35AGILE', 'MAGIMACS', 'LOWELL31', 'LOWELL42',
                           'LOWELL72',
                           'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS',
+                          'WIYN09HDI',
                           'GENERIC']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
@@ -952,6 +1019,7 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'Y4KCam':            'CTIO10',
                           'ANDICAM-CCD':       'CTIO13CCD',
                           'SNIFS':             'UH88SNIFS',
+                          'hdi':               'WIYN09HDI',
                           'ArtemisHSC':        'GENERIC'}
 
 # translate telescope keyword into parameter set defined here
@@ -968,4 +1036,5 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'CTIO10':        ctio10_param,
                         'CTIO13CCD':     ctio13ccd_param,
                         'UH88SNIFS':     uh88snifs_param,
+                        'WIYN09HDI':     wiyn09hdi_param,
                         'GENERIC':       generic_param}

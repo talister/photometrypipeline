@@ -21,8 +21,8 @@ observatories/instruments:
 +--------------------------+--------------------+----------------+
 | CTIO 1.3m                | ANDICAM (CCD)      | CTIO13CCD      |
 +--------------------------+--------------------+----------------+
-| Discovery Channel        | LMI                | DCTLMI         |
-| Telescope                |                    |                |
+| Discovery Channel        | Large Monolithic   | DCTLMI         |
+| Telescope                | Imager             |                |
 +--------------------------+--------------------+----------------+
 | Lowell 31"               | NASACAM            | LOWELL31       |
 +--------------------------+--------------------+----------------+
@@ -32,6 +32,8 @@ observatories/instruments:
 +--------------------------+--------------------+----------------+
 | Vatican Advanced         | VATT4k             | VATT4K         |
 | Technology Telescope     |                    |                |
++--------------------------+--------------------+----------------+
+| WIYN 0.9m                | Half Degree Imager | WIYN09HDI      |
 +--------------------------+--------------------+----------------+
 
 If you would like to use the pipeline for other observatories, please

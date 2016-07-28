@@ -260,11 +260,12 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
     ##### update image headers with wcs solutions where registration
     ##### was successful
     logging.info('update image headers with WCS solutions ') 
+
     for filename in goodfits:
         # remove fake wcs header keys
         fake_wcs_keys =  ['RADECSYS', 'CTYPE1', 'CTYPE2', 'CRVAL1', 'CRVAL2', 
                           'CRPIX1', 'CRPIX2', 'CD1_1', 'CD1_2', 'CD2_1', 
-                          'CD2_2']
+                          'CD2_2', 'RADESYS']
         hdu = fits.open(filename, mode='update')
         for fake_key in fake_wcs_keys:
             hdu[0].header[fake_key] = ''
@@ -289,11 +290,11 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                                      'copied from RADESYS')
         hdu[0].header['TEL_KEYW'] = (telescope, 'pipeline telescope keyword')
         hdu[0].header['REGCAT'] = (refcat, 'catalog used in WCS registration')
-        hdu.flush()
+        hdu.flush(output_verify='silentfix')
         hdu.close()
     
         # cleaning up (in case the registration succeeded)
-        if len(goodfits) == len(badfits):
+        if len(goodfits) == len(filenames):
             os.remove(filename[:filename.find('.fit')]+'.head')
 
         
@@ -331,7 +332,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
 
     ##### create diagnostics 
     if diagnostics:
-        diag.add_registration(output, extraction)
+       diag.add_registration(output, extraction)
 
     logging.info('Done! -----------------------------------------------------')
 

@@ -125,7 +125,13 @@ def curve_of_growth_analysis(filenames, parameters,
             # call HORIZONS to get target coordinates
             eph = callhorizons.query(targetname)
             eph.set_discreteepochs(date)
-            n = eph.get_ephemerides(obsparam['observatory_code'])
+            try:
+                n = eph.get_ephemerides(obsparam['observatory_code'])
+            except ValueError:
+                print 'Target (%s) not an asteroid' % targetname
+                logging.warning('Target (%s) not an asteroid' % targetname)
+                n = None
+
             if n is None or n == 0:
                 logging.warning('WARNING: No position from Horizons!'+\
                                 'Name (%s) correct?' % targetname)
@@ -141,6 +147,7 @@ def curve_of_growth_analysis(filenames, parameters,
         data = catalog('Sextractor_LDAC')
         data.read_ldac(ldac_filename, maxflag=3)
 
+        
         ### identify target and extract its curve-of-growth
         n_target_identified = 0
         if not parameters['background_only']:
@@ -154,8 +161,8 @@ def curve_of_growth_analysis(filenames, parameters,
                                 (filename, targetname,
                                  residuals[numpy.argmin(residuals)]*3600.))
             else:
-                target_flux.append(data[target_idx]['FLUX_GROWTH']/ 
-                                   max(data[target_idx]['FLUX_GROWTH']))
+                target_flux.append(data[target_idx]['FLUX_APER']/
+                                   max(data[target_idx]['FLUX_APER']))
                 target_snr.append(
                     data[target_idx]['FLUX_APER']/\
                     data[target_idx]['FLUXERR_APER']/ \
@@ -169,16 +176,20 @@ def curve_of_growth_analysis(filenames, parameters,
             #n_src = data.shape[0] # use all sources
             n_src = 50 # use only 50 sources
             for idx, src in enumerate(data.data[:n_src]):
-                if (any(numpy.isnan(src['FLUX_GROWTH'])) or 
-                    any(numpy.isnan(src['FLUX_APER'])) or 
-                    any(numpy.isnan(src['FLUXERR_APER']))):
+                if (numpy.any(numpy.isnan(src['FLUX_APER'])) or 
+                    numpy.any(numpy.isnan(src['FLUXERR_APER']))):
                     continue
-                background_flux.append(src['FLUX_GROWTH']/\
-                                       max(src['FLUX_GROWTH']))
+
+                # create growth curve
+                background_flux.append(src['FLUX_APER']/\
+                                       max(src['FLUX_APER']))
                 background_snr.append(src['FLUX_APER']/\
                                       src['FLUXERR_APER']/\
                                       max(src['FLUX_APER']/\
                                           src['FLUXERR_APER']))
+
+
+                
 
     ###### investigate curve-of-growth
     
@@ -343,10 +354,8 @@ def photometry(filenames, sex_snr, source_minarea, aprad,
     if aprad is None:
     
         # aperture radius list
-        aprads = numpy.arange(obsparam['aprad_range'][0], 
-                              obsparam['aprad_range'][1],
-                              (obsparam['aprad_range'][1]-
-                               obsparam['aprad_range'][0])/20.)
+        aprads = numpy.linspace(obsparam['aprad_range'][0],
+                                obsparam['aprad_range'][1], 20)
 
         photpar['aprad'] = aprads
         cog = curve_of_growth_analysis(filenames, photpar,

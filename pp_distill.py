@@ -127,8 +127,14 @@ def moving_primary_target(catalogs, man_targetname, offset):
             cat.obj = targetname
         eph = callhorizons.query(targetname)
         eph.set_discreteepochs(cat.obstime[0])
-        n = eph.get_ephemerides(obsparam['observatory_code'])
 
+        try:
+            n = eph.get_ephemerides(obsparam['observatory_code'])
+        except ValueError:
+            print 'Target (%s) is not an asteroid' % targetname
+            logging.warning('Target (%s) is not an asteroid' % targetname)
+            n = None
+            
         if n is None or n == 0:
             logging.warning('WARNING: No position from Horizons! '+\
                             'Name (%s) correct?' % cat.obj.replace('_', ' '))

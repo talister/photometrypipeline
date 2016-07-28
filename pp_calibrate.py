@@ -67,8 +67,9 @@ def skycenter(catalogs, ra_key='XWIN_WORLD', dec_key='YWIN_WORLD'):
 
 def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                              preferred_catalogs,
-                min_sources=_pp_conf.min_sources_photometric_catalog,
-                             max_sources=1e4, display=False):
+                        min_sources=_pp_conf.min_sources_photometric_catalog,
+                             max_sources=1e4, mag_accuracy=0.1,
+                             display=False):
     """create a photometric catalog of the field of view"""
 
     for catalogname in preferred_catalogs:
@@ -89,18 +90,21 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             print n_sources, 'sources downloaded from', catalogname
         if n_sources < min_sources:
             continue
-        
+
         # transform catalog to requested filtername, if necessesary
         if ( n_sources > 0 and 
-             (catalogname.find('SDSS') > -1 and
+             ('SDSS' in catalogname and
               filtername not in {'u', 'g', 'r', 'i', 'z'}) or
-             (catalogname.find('URAT') > -1 and
+             ('URAT' in catalogname and
               filtername not in {'B', 'V', 'g', 'r', 'i'}) or
-             (catalogname.find('APASS') > -1 and
+             ('APASS' in catalogname and
               filtername not in {'B', 'V', 'g', 'r', 'i'}) or
-             (catalogname.find('2MASS') > -1 and
+             ('2MASS' in catalogname and
               filtername not in {'J', 'H', 'Ks'}) ):
-            n_transformed = cat.transform_filters(filtername)
+            n_transformed = cat.transform_filters(filtername) - \
+                            cat.reject_sources_with(\
+                                    cat['_e_'+filtername+'mag'] > mag_accuracy)
+
             if display and n_transformed > 0:
                 print '%s transformed to %s-band: %d sources' % \
                     (catalogname, filtername, n_transformed)
@@ -112,11 +116,17 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
         else:
             # reject sources that do not have measured magnitudes
             logging.info('rejecting sources with no magnitude information')
+            
             n_sources = n_sources - cat.reject_sources_with(\
-                                    numpy.isnan(cat.data[filtername+'mag']))
+                                        numpy.isnan(cat[filtername+'mag'])) \
+                                  - cat.reject_sources_with(\
+                                      cat['e_'+filtername+'mag'] > mag_accuracy)
+
             if display:
-                logging.info('%d sources have measured magnitudes' % n_sources)
-                print '%d sources have measured magnitudes' % n_sources
+                logging.info('%d sources with accurate magnitudes in %s band' %
+                             (n_sources, filtername))
+                print '%d sources with accurate magnitudes in %s band' % \
+                    (n_sources, filtername)
 
             if n_sources > min_sources:
                 logging.info('more than %d sources (%d), use this catalog' % 
@@ -127,6 +137,8 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                              (min_sources, n_sources))
                 continue
 
+
+            
 
     # end up here if none of the catalogs has n_sources > min_sources
     if display:
@@ -156,6 +168,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
 
         if display:
             print 'zeropoint for %s:' % cat.catalogname,
+
         filterkey = filtername+'mag' if filtername+'mag' \
                     in ref_cat.fields else '_'+filtername+'mag'
         efilterkey = 'e_'+filtername+'mag' if 'e_'+filtername+'mag' \
@@ -228,6 +241,11 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         else:
             minstars = int(minstars_external)
 
+        # max 100 minstars
+        if minstars > 100:
+            minstars = 100
+            
+            
         # perform clipping to reject one outlier at a time
         zeropoint = 25 # initialize zeropoint
         while len(residuals) >= 3:
@@ -243,8 +261,9 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
             var = numpy.average((residuals-zeropoint)**2,
                                 weights=1./residuals_sig)
             #sigma = numpy.sqrt(var/(len(residuals)-1)) # weighted std of mean
-            # weighted std + rms of individual sigmas 
-            sigma = numpy.sqrt(var + numpy.average(residuals_sig**2)) 
+            # weighted std + rms of individual sigmas
+            # residuals_sig is already squared!
+            sigma = numpy.sqrt(var + numpy.average(residuals_sig)) 
             #sigma = numpy.std(residuals-zeropoint)
 
             clipping_steps.append([zeropoint, sigma, red_chi2, m_idc,
@@ -340,8 +359,13 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     catalogs, filternames = [], {}
     for filename in filenames:
         hdulist = fits.open(filename)
-        filtername = hdulist[0].header['FILTER']
-        
+        try:
+            filtername = hdulist[0].header['FILTER']
+        except KeyError:
+            print 'Cannot read filter name from file %s' % filename
+            logging.error('Cannot read filter name from file %s' % filename)
+            return None
+            
         # translate filtername, if available
         try:
             filtername = obsparam['filter_translations'][filtername]

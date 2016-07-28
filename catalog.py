@@ -114,7 +114,7 @@ class catalog:
         logging.info('%s:reject %s sources' % 
                      (self.catalogname, n_raw-self.shape[0]))
                      
-        return len(self.data)
+        return n_raw - len(self.data)
 
         
     def add_field(self, field_name, field_array, field_type='D'):
@@ -285,6 +285,16 @@ class catalog:
                                     'PPMXL'  : 'PPMXL',
                                     'USNO-B1': 'USNO-B1.0'}[self.catalogname]
 
+        # if 'APASS' in self.catalogname:
+        #     self.fieldnames['gmag'] = 'g_mag'
+        #     self.fieldnames['e_gmag'] = 'e_g_mag'
+        #     self.fieldnames['rmag'] = 'r_mag'
+        #     self.fieldnames['e_rmag'] = 'e_r_mag'
+        #     self.fieldnames['Vmag'] = 'V_mag'
+        #     self.fieldnames['e_Vmag'] = 'e_V_mag'
+        #     self.fieldnames['Imag'] = 'I_mag'
+        #     self.fieldnames['e_Imag'] = 'e_I_mag'
+            
         ### catalog additions and corrections
 
         # determine RA and DEC uncertainties for 2MASS
@@ -660,7 +670,7 @@ class catalog:
             return 0
 
         ### SDSS to BVRI
-        if (self.catalogname.find('SDSS') > -1) and \
+        if ('SDSS' in self.catalogname) and \
            (targetfilter in {'B', 'V', 'R', 'I'}) and \
            (self.magsystem == 'AB'):
 
@@ -756,15 +766,13 @@ class catalog:
                           (self.shape[0], targetfilter)))
 
 
-            #print list(self['_Vmag'])
-           
             return self.shape[0]
 
 
         ### URAT/APASS to R/I
         # todo: include g magnitudes and account for color
-        elif ((self.catalogname.find('URAT') > -1 or
-               self.catalogname.find('APASS') > -1) and 
+        elif ('URAT' in self.catalogname or
+              'APASS' in self.catalogname and 
               (targetfilter == 'R' or targetfilter == 'I')
               and self.magsystem == 'Vega'):
 
@@ -772,16 +780,10 @@ class catalog:
                           (self.shape[0], self.catalogname, targetfilter))
 
             ### transformations based on Chonis & Gaskell 2008, AJ, 135 
-            if self.catalogname.find('URAT') > -1:
-                mags = numpy.array([self.data['rmag'],
-                                    self.data['imag'],
-                                    self.data['e_rmag'],
-                                    self.data['e_imag']])
-            elif self.catalogname.find('APASS') > -1:
-                mags = numpy.array([self.data['r_mag'],
-                                    self.data['i_mag'],
-                                    self.data['e_r_mag'],
-                                    self.data['e_i_mag']])
+            mags = numpy.array([self.data['rmag'],
+                                self.data['imag'],
+                                self.data['e_rmag'],
+                                self.data['e_imag']])
 
             # sort out sources that do not meet the C&G requirements
             keep_idc = (mags[0]-mags[1] > 0.08) & (mags[0]-mags[1] < 0.5)
