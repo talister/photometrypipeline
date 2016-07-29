@@ -285,15 +285,17 @@ class catalog:
                                     'PPMXL'  : 'PPMXL',
                                     'USNO-B1': 'USNO-B1.0'}[self.catalogname]
 
-        # if 'APASS' in self.catalogname:
-        #     self.fieldnames['gmag'] = 'g_mag'
-        #     self.fieldnames['e_gmag'] = 'e_g_mag'
-        #     self.fieldnames['rmag'] = 'r_mag'
-        #     self.fieldnames['e_rmag'] = 'e_r_mag'
-        #     self.fieldnames['Vmag'] = 'V_mag'
-        #     self.fieldnames['e_Vmag'] = 'e_V_mag'
-        #     self.fieldnames['Imag'] = 'I_mag'
-        #     self.fieldnames['e_Imag'] = 'e_I_mag'
+        if 'APASS' in self.catalogname:
+            self.fieldnames['gmag'] = 'g_mag'
+            self.fieldnames['e_gmag'] = 'e_g_mag'
+            self.fieldnames['rmag'] = 'r_mag'
+            self.fieldnames['e_rmag'] = 'e_r_mag'
+            self.fieldnames['imag'] = 'i_mag'
+            self.fieldnames['e_imag'] = 'e_i_mag'
+            self.fieldnames['Vmag'] = 'V_mag'
+            self.fieldnames['e_Vmag'] = 'e_V_mag'
+            self.fieldnames['Imag'] = 'I_mag'
+            self.fieldnames['e_Imag'] = 'e_I_mag'
             
         ### catalog additions and corrections
 
@@ -318,8 +320,8 @@ class catalog:
         # perform correction to AB system for SDSS
         # http://www.sdss3.org/dr8/algorithms/fluxcal.php#SDSStoAB 
         if 'SDSS' in self.catalogname:
-            self.data['umag'] = self.data['umag'] - 0.04
-            self.data['zmag'] = self.data['zmag'] + 0.02
+            self['umag'] = self'umag'] - 0.04
+            self['zmag'] = self['zmag'] + 0.02
 
 
         logging.info('downloaded %d stars from %s' % (self.shape[0],
@@ -678,13 +680,13 @@ class catalog:
                           + '%s') % (self.shape[0], targetfilter))
 
             ### transformations based on Chonis & Gaskell 2008, AJ, 135 
-            mags = numpy.array([self.data['gmag'], self.data['rmag'],
-                                self.data['imag'],
-                                self.data['e_gmag'],
-                                self.data['e_rmag'],
-                                self.data['e_imag'],
-                                self.data['umag'],
-                                self.data['e_umag']])
+            mags = numpy.array([self['gmag'], self['rmag'],
+                                self['imag'],
+                                self['e_gmag'],
+                                self['e_rmag'],
+                                self['e_imag'],
+                                self['umag'],
+                                self['e_umag']])
 
             # lbl   = {'_Bmag':0 , '_e_Bmag': 1, '_Vmag': 2, '_e_Vmag': 3, 
             #          '_Rmag': 4, '_e_Rmag': 5, '_Imag': 6, '_e_Imag': 7}
@@ -780,10 +782,10 @@ class catalog:
                           (self.shape[0], self.catalogname, targetfilter))
 
             ### transformations based on Chonis & Gaskell 2008, AJ, 135 
-            mags = numpy.array([self.data['rmag'],
-                                self.data['imag'],
-                                self.data['e_rmag'],
-                                self.data['e_imag']])
+            mags = numpy.array([self['rmag'],
+                                self['imag'],
+                                self['e_rmag'],
+                                self['e_imag']])
 
             # sort out sources that do not meet the C&G requirements
             keep_idc = (mags[0]-mags[1] > 0.08) & (mags[0]-mags[1] < 0.5)
@@ -832,7 +834,7 @@ class catalog:
                           + 'Warner %s') % (self.shape[0], targetfilter))
 
             # transformations using the recipe by Warner 2007, MPBu
-            mags  = [self.data['Jmag'], self.data['Kmag'], self.data['e_Jmag']]
+            mags  = [self['Jmag'], self['Kmag'], self['e_Jmag']]
             lbl   = {'_Bmag':0 , '_e_Bmag': 1, '_Vmag': 2, '_e_Vmag': 3, 
                      '_Rmag': 4, '_e_Rmag': 5, '_Imag': 6, '_e_Imag': 7}
             nmags = [numpy.zeros(self.shape[0]) for i in range(len(lbl))]
@@ -881,7 +883,7 @@ class catalog:
                 self.add_field(key, nmags[idx])
                 
             # get rid of sources that have not been transformed
-            self.data = self.data[self.data['_Vmag'] < 99]
+            self.data = self.data[self['_Vmag'] < 99]
 
             self.catalogname  += '_transformed'
             self.history += ', %d transformed to Warner %s (Vega)' % \
@@ -904,9 +906,9 @@ class catalog:
                           +'UKIRT YZJHK') % self.shape[0])
 
             # transformations using the recipe by Hodgkin et al. 2009, MNRAS
-            mags  = [self.data['Jmag'], self.data['Hmag'], self.data['Kmag'],
-                     self.data['e_Jmag'], self.data['e_Hmag'], 
-                     self.data['e_Kmag']]
+            mags  = [self['Jmag'], self['Hmag'], self['Kmag'],
+                     self['e_Jmag'], self['e_Hmag'], 
+                     self['e_Kmag']]
             lbl   = {'_Ymag': 0, '_e_Ymag': 1, '_Zmag': 2, '_e_Zmag': 3, 
                      '_Jmag': 4, '_e_Jmag': 5, '_Hmag': 6, '_e_Hmag': 7, 
                      '_Kmag': 8, '_e_Kmag': 9}
@@ -962,7 +964,7 @@ class catalog:
                 self.add_field(key, nmags[idx])
                 
             # get rid of sources that have not been transformed
-            self.data = self.data[self.data['_Zmag'] < 99]
+            self.data = self.data[self['_Zmag'] < 99]
 
             self.catalogname  += '_transformed'
             self.history += ', %d transformed to UKIRT YZJHK (Vega)' %\
@@ -985,7 +987,7 @@ class catalog:
 
             ### transformations using the recipe by Hodgkin et al. 2009, MNRAS
             # select sources for input catalog
-            mags  = [self.data['zmag'], self.data['imag'], self.data['e_zmag']]
+            mags  = [self['zmag'], self['imag'], self['e_zmag']]
             lbl   = {'_Zmag': 0, '_e_Zmag': 1}
             nmags = [numpy.zeros(self.shape[0]) for i in range(len(lbl))]
 
@@ -1001,7 +1003,7 @@ class catalog:
                 self.add_field(key, nmags[idx])
                 
             # get rid of sources that have not been transformed
-            self.data = self.data[self.data['_Zmag'] < 99]
+            self.data = self.data[self['_Zmag'] < 99]
 
             self.catalogname  += '_transformed'
             self.history += ', %d transformed to UKIRT Z (Vega)' % \
