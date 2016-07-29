@@ -1060,22 +1060,26 @@ class catalog:
                                            range(len(match)))
             indices_other_catalog = map(lambda x: x[0], 
                                         filter((lambda x: len(x)==1), match))
-
+            
         else:
+            # will find the closest match for each target in this catalog
             other_cat = zip(catalog[match_keys_other_catalog[0]],
                             catalog[match_keys_other_catalog[1]])
 
             match = this_tree.query(other_cat) 
 
             indices_this_catalog, indices_other_catalog = [], []
-            for target_idx in range(len(self.data[0])):
+
+            for target_idx in range(self.shape[0]):
                 other_cat_indices = numpy.where(match[1]==target_idx)[0]
                 if len(other_cat_indices) > 0:
+                    # find closest match
                     min_idx = other_cat_indices[numpy.argmin(map(lambda
                                         i:match[0][i], other_cat_indices))]
 
                     indices_this_catalog.append(target_idx)
                     indices_other_catalog.append(min_idx)
+
 
         ### match outputs based on indices provided and require
         ### extract_fields to be filled

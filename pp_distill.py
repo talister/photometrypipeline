@@ -101,7 +101,7 @@ def pick_controlstar(catalogs):
 
         for cat_idx, cat in enumerate(catalogs):
             objects.append({'ident'      : 'control_star',
-                            'obsdate.jd' :  cat.obstime,
+                            'obsdate.jd' :  cat.obstime[0],
                             'cat_idx'    :  cat_idx,
                             'ra.deg'     :  match[1][0][ctlstar_idx],
                             'dec.deg'    :  match[1][1][ctlstar_idx]})
@@ -168,39 +168,107 @@ def fixed_target(fixed_coo, catalogs):
 
 
 def serendipitous_asteroids():
-    return []
-#     return [{'obsdate.jd': 2457424.85799478, 'cat_idx': 0, 'ident': u'Don Quixote', 'dec.deg': 19.98252, 'ra.deg': 162.83076999999997}, {'obsdate.jd': 2457424.859032847, 'cat_idx': 1, 'ident': u'Don Quixote', 'dec.deg': 19.98256920278544, 'ra.deg': 162.83061959474216}, {'obsdate.jd': 2457424.860031736, 'cat_idx': 2, 'ident': u'Don Quixote', 'dec.deg': 19.982617089712576, 'ra.deg': 162.83047486869475}, {'obsdate.jd': 2457424.861028183, 'cat_idx': 3, 'ident': u'Don Quixote', 'dec.deg': 19.98266527121123, 'ra.deg': 162.8303304985934}, {'obsdate.jd': 2457424.862025498, 'cat_idx': 4, 'ident': u'Don Quixote', 'dec.deg': 19.982713790857105, 'ra.deg': 162.83018600415772}, {'obsdate.jd': 2457424.863024225, 'cat_idx': 5, 'ident': u'Don Quixote', 'dec.deg': 19.982762560275024, 'ra.deg': 162.8300413060749}, {'obsdate.jd': 2457424.864022882, 'cat_idx': 6, 'ident': u'Don Quixote', 'dec.deg': 19.982811391489893, 'ra.deg':162.82989661843877}, {'obsdate.jd': 2457424.865020752, 'cat_idx': 7, 'ident': u'Don Quixote', 'dec.deg': 19.982860133465163, 'ra.deg': 162.82975204462963}, {'obsdate.jd': 2457424.866018148, 'cat_idx': 8, 'ident': u'Don Quixote', 'dec.deg': 19.982908685942125, 'ra.deg': 162.8296075385919}, {'obsdate.jd': 2457424.86701478, 'cat_idx': 9, 'ident': u'Don Quixote', 'dec.deg': 19.98295691963855, 'ra.deg': 162.8294631418439}, {'obsdate.jd': 2457424.917261586, 'cat_idx': 10, 'ident': u'Don Quixote', 'dec.deg': 19.98536328910356, 'ra.deg': 162.82216337024497}, {'obsdate.jd': 2457424.918299514, 'cat_idx': 11, 'ident': u'Don Quixote', 'dec.deg': 19.985413269426164, 'ra.deg': 162.8220132015485}, {'obsdate.jd': 2457424.91929824, 'cat_idx': 12, 'ident': u'Don Quixote', 'dec.deg': 19.985460853078855, 'ra.deg': 162.82186818284}, {'obsdate.jd': 2457424.920296933, 'cat_idx': 13, 'ident': u'Don Quixote', 'dec.deg': 19.985507802511076, 'ra.deg': 162.82172239051937}, {'obsdate.jd': 2457424.921293959, 'cat_idx': 14, 'ident': u'Don Quixote', 'dec.deg': 19.985554169563997, 'ra.deg': 162.8215761915903}, {'obsdate.jd': 2457424.922292118, 'cat_idx': 15, 'ident': u'Don Quixote', 'dec.deg': 19.985600325767813, 'ra.deg': 162.82142947380476}, {'obsdate.jd': 2457424.923296319, 'cat_idx': 16, 'ident': u'Don Quixote', 'dec.deg': 19.985646739461135, 'ra.deg': 162.8212818137833}, {'obsdate.jd': 2457424.924294086, 'cat_idx': 17, 'ident': u'Don Quixote', 'dec.deg': 19.985693076679222, 'ra.deg': 162.8211353460674}, {'obsdate.jd': 2457424.925291817, 'cat_idx': 18, 'ident': u'Don Quixote', 'dec.deg': 19.985739873626958, 'ra.deg':162.82098942746939}, {'obsdate.jd': 2457424.92628912, 'cat_idx': 19, 'ident': u'Don Quixote', 'dec.deg': 19.985787248865247, 'ra.deg': 162.82084426951843}, {'obsdate.jd': 2457424.927285694, 'cat_idx': 20, 'ident': u'Don Quixote', 'dec.deg': 19.98583510021966, 'ra.deg': 162.8206997598177}, {'obsdate.jd': 2457424.928284629, 'cat_idx': 21, 'ident': u'Don Quixote', 'dec.deg': 19.985883460727468, 'ra.deg': 162.8205552552979}, {'obsdate.jd': 2457424.929280961, 'cat_idx': 22, 'ident': u'Don Quixote', 'dec.deg': 19.985931973715015, 'ra.deg':162.82041127812988}, {'obsdate.jd': 2457424.93027728, 'cat_idx': 23, 'ident': u'Don Quixote', 'dec.deg':19.985980648101318, 'ra.deg': 162.82026725807398}, {'obsdate.jd': 2457424.931275266, 'cat_idx': 24, 'ident': u'Don Quixote', 'dec.deg': 19.986029450042764, 'ra.deg':162.82012275629015}, {'obsdate.jd': 2457424.932273055,'cat_idx': 25, 'ident': u'Don Quixote', 'dec.deg': 19.98607817201905, 'ra.deg': 162.81997784614833}, {'obsdate.jd': 2457424.933271829, 'cat_idx': 26, 'ident': u'Don Quixote', 'dec.deg': 19.986126754998274, 'ra.deg':162.81983215885538}, {'obsdate.jd': 2457424.93426838,'cat_idx': 27, 'ident': u'Don Quixote', 'dec.deg': 19.98617492694687, 'ra.deg': 162.819685967741}, {'obsdate.jd': 2457424.935264861, 'cat_idx': 28, 'ident': u'Don Quixote', 'dec.deg': 19.986222676870085, 'ra.deg': 162.81953876426968}, {'obsdate.jd': 2457424.936263634, 'cat_idx': 29, 'ident': u'Don Quixote', 'dec.deg': 19.98627, 'ra.deg': 162.81939}, {'obsdate.jd': 2457424.85799478, 'cat_idx': 0, 'ident': u'2001 MR12', 'dec.deg': 20.024220000000003, 'ra.deg': 162.89035000000004},
-# {'obsdate.jd': 2457424.859032847, 'cat_idx': 1, 'ident': u'2001 MR12', 'dec.deg': 20.024349827404578, 'ra.deg': 162.8901306835853},
-# {'obsdate.jd': 2457424.860031736, 'cat_idx': 2, 'ident': u'2001 MR12', 'dec.deg': 20.024475806710104, 'ra.deg': 162.8899207345458},
-# {'obsdate.jd': 2457424.861028183, 'cat_idx': 3, 'ident': u'2001 MR12', 'dec.deg': 20.02460234855395, 'ra.deg': 162.8897121986007},
-# {'obsdate.jd': 2457424.862025498, 'cat_idx': 4, 'ident': u'2001 MR12', 'dec.deg': 20.024729716259028, 'ra.deg': 162.88950421746517},
-# {'obsdate.jd': 2457424.863024225, 'cat_idx': 5, 'ident': u'2001 MR12', 'dec.deg': 20.024857826223712, 'ra.deg': 162.8892965166712},
-# {'obsdate.jd': 2457424.864022882, 'cat_idx': 6, 'ident': u'2001 MR12', 'dec.deg': 20.0249863338468, 'ra.deg': 162.88908924163866},
-# {'obsdate.jd': 2457424.865020752, 'cat_idx': 7, 'ident': u'2001 MR12', 'dec.deg': 20.025114990759327, 'ra.deg': 162.88888237705615},
-# {'obsdate.jd': 2457424.866018148, 'cat_idx': 8, 'ident': u'2001 MR12', 'dec.deg': 20.025243681686728, 'ra.deg': 162.8886756939257},
-# {'obsdate.jd': 2457424.86701478, 'cat_idx': 9, 'ident': u'2001 MR12', 'dec.deg': 20.02537221401495, 'ra.deg': 162.88846908917702},
-# {'obsdate.jd': 2457424.917261586, 'cat_idx': 10, 'ident': u'2001 MR12', 'dec.deg': 20.031776835057908, 'ra.deg': 162.87794161301122},
-# {'obsdate.jd': 2457424.918299514, 'cat_idx': 11, 'ident': u'2001 MR12', 'dec.deg': 20.031908621766053, 'ra.deg': 162.87772211722833},
-# {'obsdate.jd': 2457424.91929824, 'cat_idx': 12, 'ident': u'2001 MR12', 'dec.deg': 20.032035430673123, 'ra.deg': 162.87751090678276},
-# {'obsdate.jd': 2457424.920296933, 'cat_idx': 13, 'ident': u'2001 MR12', 'dec.deg': 20.03216224514496, 'ra.deg': 162.87729984979623},
-# {'obsdate.jd': 2457424.921293959, 'cat_idx': 14, 'ident': u'2001 MR12', 'dec.deg': 20.032288858678815, 'ra.deg': 162.8770893063405},
-# {'obsdate.jd': 2457424.922292118, 'cat_idx': 15, 'ident': u'2001 MR12', 'dec.deg': 20.032415623930707, 'ra.deg': 162.87687864128247},
-# {'obsdate.jd': 2457424.923296319, 'cat_idx': 16, 'ident': u'2001 MR12', 'dec.deg': 20.03254316145965, 'ra.deg': 162.87666677534884},
-# {'obsdate.jd': 2457424.924294086, 'cat_idx': 17, 'ident': u'2001 MR12', 'dec.deg': 20.0326698838749, 'ra.deg': 162.87645629637967},
-# {'obsdate.jd': 2457424.925291817, 'cat_idx': 18, 'ident': u'2001 MR12', 'dec.deg': 20.03279660071685, 'ra.deg': 162.87624581061942},
-# {'obsdate.jd': 2457424.92628912, 'cat_idx': 19, 'ident': u'2001 MR12', 'dec.deg': 20.03292326034159, 'ra.deg': 162.87603537208778},
-# {'obsdate.jd': 2457424.927285694, 'cat_idx': 20, 'ident': u'2001 MR12', 'dec.deg': 20.03304982478575, 'ra.deg': 162.87582504887487},
-# {'obsdate.jd': 2457424.928284629, 'cat_idx': 21, 'ident': u'2001 MR12', 'dec.deg': 20.033176687073606, 'ra.deg': 162.87561419752717},
-# {'obsdate.jd': 2457424.929280961, 'cat_idx': 22, 'ident': u'2001 MR12', 'dec.deg': 20.033303217439354, 'ra.deg': 162.87540387450363},
-# {'obsdate.jd': 2457424.93027728, 'cat_idx': 23, 'ident': u'2001 MR12', 'dec.deg': 20.03342974533349, 'ra.deg': 162.87519354200376},
-# {'obsdate.jd': 2457424.931275266, 'cat_idx': 24, 'ident': u'2001 MR12', 'dec.deg': 20.03355648470393, 'ra.deg': 162.8749828540921},
-# {'obsdate.jd': 2457424.932273055, 'cat_idx': 25, 'ident': u'2001 MR12', 'dec.deg': 20.033683199351685, 'ra.deg': 162.87477221317346},
-# {'obsdate.jd': 2457424.933271829, 'cat_idx': 26, 'ident': u'2001 MR12', 'dec.deg': 20.033810040071014, 'ra.deg': 162.87456137836995},
-# {'obsdate.jd': 2457424.93426838, 'cat_idx': 27, 'ident': u'2001 MR12', 'dec.deg': 20.03393659998836, 'ra.deg': 162.87435103571},
-# {'obsdate.jd': 2457424.935264861, 'cat_idx': 28, 'ident': u'2001 MR12', 'dec.deg': 20.03406315313596, 'ra.deg': 162.87414073939965},
-# {'obsdate.jd': 2457424.936263634, 'cat_idx': 29, 'ident': u'2001 MR12', 'dec.deg': 20.03419, 'ra.deg': 162.87393}]
-
-
+    #return []
+    return [{'obsdate.jd': 2457424.974246285, 'cat_idx': 0, 'ident': '2000 SK176', 'dec.deg': -8.41924, 'ra.deg': 209.41220999999996},
+{'obsdate.jd': 2457424.975281852, 'cat_idx': 1, 'ident': '2000 SK176', 'dec.deg': -8.419283831045874, 'ra.deg': 209.41246562833572},
+{'obsdate.jd': 2457424.976279572, 'cat_idx': 2, 'ident': '2000 SK176', 'dec.deg': -8.419326069771497, 'ra.deg': 209.4127165691116},
+{'obsdate.jd': 2457424.97727735, 'cat_idx': 3, 'ident': '2000 SK176', 'dec.deg': -8.419368314306624, 'ra.deg': 209.41297010875692},
+{'obsdate.jd': 2457424.978277558, 'cat_idx': 4, 'ident': '2000 SK176', 'dec.deg': -8.419410659122125, 'ra.deg': 209.41322489138415},
+{'obsdate.jd': 2457424.984377454, 'cat_idx': 5, 'ident': '2000 SK176', 'dec.deg': -8.419668912380356, 'ra.deg': 209.41476360944603},
+{'obsdate.jd': 2457424.98541316, 'cat_idx': 6, 'ident': '2000 SK176', 'dec.deg': -8.419712545266849, 'ra.deg': 209.41502378342423},
+{'obsdate.jd': 2457424.986410602, 'cat_idx': 7, 'ident': '2000 SK176', 'dec.deg': -8.41975465873114, 'ra.deg': 209.41527250678584},
+{'obsdate.jd': 2457424.987408287, 'cat_idx': 8, 'ident': '2000 SK176', 'dec.deg': -8.419797297705333, 'ra.deg': 209.4155227577109},
+{'obsdate.jd': 2457424.988405325, 'cat_idx': 9, 'ident': '2000 SK176', 'dec.deg': -8.4198403180754, 'ra.deg': 209.41577592103883},
+{'obsdate.jd': 2457424.994686216, 'cat_idx': 10, 'ident': '2000 SK176', 'dec.deg': -8.420094996365746, 'ra.deg': 209.41735303572193},
+{'obsdate.jd': 2457424.995725868, 'cat_idx': 11, 'ident': '2000 SK176', 'dec.deg': -8.420139545128215, 'ra.deg': 209.41761250102138},
+{'obsdate.jd': 2457424.996723149, 'cat_idx': 12, 'ident': '2000 SK176', 'dec.deg': -8.420181698807244, 'ra.deg': 209.41786144592314},
+{'obsdate.jd': 2457424.997719352, 'cat_idx': 13, 'ident': '2000 SK176', 'dec.deg': -8.420223650267445, 'ra.deg': 209.41811187690288},
+{'obsdate.jd': 2457424.998718287, 'cat_idx': 14, 'ident': '2000 SK176', 'dec.deg': -8.420265867517708, 'ra.deg': 209.41836555158358},
+{'obsdate.jd': 2457425.006592801, 'cat_idx': 15, 'ident': '2000 SK176', 'dec.deg': -8.420599724452769, 'ra.deg': 209.42034096986737},
+{'obsdate.jd': 2457425.007630706, 'cat_idx': 16, 'ident': '2000 SK176', 'dec.deg': -8.420643565884676, 'ra.deg': 209.42060063257608},
+{'obsdate.jd': 2457425.008629688, 'cat_idx': 17, 'ident': '2000 SK176', 'dec.deg': -8.420684556500422, 'ra.deg': 209.42085172874533},
+{'obsdate.jd': 2457425.009628009, 'cat_idx': 18, 'ident': '2000 SK176', 'dec.deg': -8.420723610203146, 'ra.deg': 209.42110461988887},
+{'obsdate.jd': 2457425.010625266, 'cat_idx': 19, 'ident': '2000 SK176', 'dec.deg': -8.42076, 'ra.deg': 209.42136},
+{'obsdate.jd': 2457424.974246285, 'cat_idx': 0, 'ident': '2001 FV4', 'dec.deg': -8.427449999999999, 'ra.deg': 209.31837999999993},
+{'obsdate.jd': 2457424.975281852, 'cat_idx': 1, 'ident': '2001 FV4', 'dec.deg': -8.427489852516802, 'ra.deg': 209.3184364918058},
+{'obsdate.jd': 2457424.976279572, 'cat_idx': 2, 'ident': '2001 FV4', 'dec.deg': -8.427528248545878, 'ra.deg': 209.3184953944282},
+{'obsdate.jd': 2457424.97727735, 'cat_idx': 3, 'ident': '2001 FV4', 'dec.deg': -8.427566646792878, 'ra.deg': 209.31855682164425},
+{'obsdate.jd': 2457424.978277558, 'cat_idx': 4, 'ident': '2001 FV4', 'dec.deg': -8.427605138547055, 'ra.deg': 209.31861907263678},
+{'obsdate.jd': 2457424.984377454, 'cat_idx': 5, 'ident': '2001 FV4', 'dec.deg': -8.427839885495132, 'ra.deg': 209.31898346314597},
+{'obsdate.jd': 2457424.98541316, 'cat_idx': 6, 'ident': '2001 FV4', 'dec.deg': -8.42787974335857, 'ra.deg': 209.31904856291277},
+{'obsdate.jd': 2457424.986410602, 'cat_idx': 7, 'ident': '2001 FV4', 'dec.deg': -8.427918128665198, 'ra.deg': 209.31911032839363},
+{'obsdate.jd': 2457424.987408287, 'cat_idx': 8, 'ident': '2001 FV4', 'dec.deg': -8.427956523329325, 'ra.deg': 209.31916991789},
+{'obsdate.jd': 2457424.988405325, 'cat_idx': 9, 'ident': '2001 FV4', 'dec.deg': -8.427994893107298, 'ra.deg': 209.3192270918976},
+{'obsdate.jd': 2457424.994686216, 'cat_idx': 10, 'ident': '2001 FV4', 'dec.deg': -8.42823660541511, 'ra.deg': 209.3195995407443},
+{'obsdate.jd': 2457424.995725868, 'cat_idx': 11, 'ident': '2001 FV4', 'dec.deg': -8.428276615126734, 'ra.deg': 209.31966192725892},
+{'obsdate.jd': 2457424.996723149, 'cat_idx': 12, 'ident': '2001 FV4', 'dec.deg': -8.428314994259686, 'ra.deg': 209.3197239494473},
+{'obsdate.jd': 2457424.997719352, 'cat_idx': 13, 'ident': '2001 FV4', 'dec.deg': -8.42835333190346, 'ra.deg': 209.31978522832566},
+{'obsdate.jd': 2457424.998718287, 'cat_idx': 14, 'ident': '2001 FV4', 'dec.deg': -8.428391774664144, 'ra.deg': 209.31984405362797},
+{'obsdate.jd': 2457425.006592801, 'cat_idx': 15, 'ident': '2001 FV4', 'dec.deg': -8.42869481557675, 'ra.deg': 209.32030807478094},
+{'obsdate.jd': 2457425.007630706, 'cat_idx': 16, 'ident': '2001 FV4', 'dec.deg': -8.428734758058589, 'ra.deg': 209.32036730110963},
+{'obsdate.jd': 2457425.008629688, 'cat_idx': 17, 'ident': '2001 FV4', 'dec.deg': -8.428773202647825, 'ra.deg': 209.32042503892413},
+{'obsdate.jd': 2457425.009628009, 'cat_idx': 18, 'ident': '2001 FV4', 'dec.deg': -8.428811621794425, 'ra.deg': 209.32048533294335},
+{'obsdate.jd': 2457425.010625266, 'cat_idx': 19, 'ident': '2001 FV4', 'dec.deg': -8.42885, 'ra.deg': 209.32055},
+{'obsdate.jd': 2457424.974246285, 'cat_idx': 0, 'ident': '2012 TW236', 'dec.deg': -8.47544, 'ra.deg': 209.33318999999997},
+{'obsdate.jd': 2457424.975281852, 'cat_idx': 1, 'ident': '2012 TW236', 'dec.deg': -8.475413056862179, 'ra.deg': 209.33329231184868},
+{'obsdate.jd': 2457424.976279572, 'cat_idx': 2, 'ident': '2012 TW236', 'dec.deg': -8.475391210319247, 'ra.deg': 209.3333927419245},
+{'obsdate.jd': 2457424.97727735, 'cat_idx': 3, 'ident': '2012 TW236', 'dec.deg': -8.475371755719252, 'ra.deg': 209.33349383176127},
+{'obsdate.jd': 2457424.978277558, 'cat_idx': 4, 'ident': '2012 TW236', 'dec.deg': -8.47535302643146, 'ra.deg': 209.33359466448238},
+{'obsdate.jd': 2457424.984377454, 'cat_idx': 5, 'ident': '2012 TW236', 'dec.deg': -8.475215985308424, 'ra.deg': 209.33419351172768},
+{'obsdate.jd': 2457424.98541316, 'cat_idx': 6, 'ident': '2012 TW236', 'dec.deg': -8.475192389733662, 'ra.deg': 209.33429759264206},
+{'obsdate.jd': 2457424.986410602, 'cat_idx': 7, 'ident': '2012 TW236', 'dec.deg': -8.475169447542871, 'ra.deg': 209.33439729547135},
+{'obsdate.jd': 2457424.987408287, 'cat_idx': 8, 'ident': '2012 TW236', 'dec.deg': -8.475145958070772, 'ra.deg': 209.3344969435359},
+{'obsdate.jd': 2457424.988405325, 'cat_idx': 9, 'ident': '2012 TW236', 'dec.deg': -8.475122112403065, 'ra.deg': 209.3345967154096},
+{'obsdate.jd': 2457424.994686216, 'cat_idx': 10, 'ident': '2012 TW236', 'dec.deg': -8.474988318122566, 'ra.deg': 209.33522583895862},
+{'obsdate.jd': 2457424.995725868, 'cat_idx': 11, 'ident': '2012 TW236', 'dec.deg': -8.474963723744242, 'ra.deg': 209.3353268641253},
+{'obsdate.jd': 2457424.996723149, 'cat_idx': 12, 'ident': '2012 TW236', 'dec.deg': -8.474940725539769, 'ra.deg': 209.33542221934076},
+{'obsdate.jd': 2457424.997719352, 'cat_idx': 13, 'ident': '2012 TW236', 'dec.deg': -8.474918030831947, 'ra.deg': 209.3355184673156},
+{'obsdate.jd': 2457424.998718287, 'cat_idx': 14, 'ident': '2012 TW236', 'dec.deg': -8.474895244484607, 'ra.deg': 209.33561759743387},
+{'obsdate.jd': 2457425.006592801, 'cat_idx': 15, 'ident': '2012 TW236', 'dec.deg': -8.474724412766317, 'ra.deg': 209.33640266688045},
+{'obsdate.jd': 2457425.007630706, 'cat_idx': 16, 'ident': '2012 TW236', 'dec.deg': -8.474699650275673, 'ra.deg': 209.33650197247772},
+{'obsdate.jd': 2457425.008629688, 'cat_idx': 17, 'ident': '2012 TW236', 'dec.deg': -8.474675333578814, 'ra.deg': 209.33659836940507},
+{'obsdate.jd': 2457425.009628009, 'cat_idx': 18, 'ident': '2012 TW236', 'dec.deg': -8.474651730121483, 'ra.deg': 209.33669717730356},
+{'obsdate.jd': 2457425.010625266, 'cat_idx': 19, 'ident': '2012 TW236', 'dec.deg': -8.47463, 'ra.deg': 209.3368},
+{'obsdate.jd': 2457424.974246285, 'cat_idx': 0, 'ident': '2015 AU206', 'dec.deg': -8.378939999999998, 'ra.deg': 209.43675},
+{'obsdate.jd': 2457424.975281852, 'cat_idx': 1, 'ident': '2015 AU206', 'dec.deg': -8.37892462942251, 'ra.deg': 209.43681705112343},
+{'obsdate.jd': 2457424.976279572, 'cat_idx': 2, 'ident': '2015 AU206', 'dec.deg': -8.378914478028506, 'ra.deg': 209.43687717613273},
+{'obsdate.jd': 2457424.97727735, 'cat_idx': 3, 'ident': '2015 AU206', 'dec.deg': -8.378906911323863, 'ra.deg': 209.43693478336007},
+{'obsdate.jd': 2457424.978277558, 'cat_idx': 4, 'ident': '2015 AU206', 'dec.deg': -8.378899951062525, 'ra.deg': 209.436991856732},
+{'obsdate.jd': 2457424.984377454, 'cat_idx': 5, 'ident': '2015 AU206', 'dec.deg': -8.378842398337783, 'ra.deg': 209.43735518116355},
+{'obsdate.jd': 2457424.98541316, 'cat_idx': 6, 'ident': '2015 AU206', 'dec.deg': -8.37883148244436, 'ra.deg': 209.43741364476122},
+{'obsdate.jd': 2457424.986410602, 'cat_idx': 7, 'ident': '2015 AU206', 'dec.deg': -8.378819156185022, 'ra.deg': 209.43747087581932},
+{'obsdate.jd': 2457424.987408287, 'cat_idx': 8, 'ident': '2015 AU206', 'dec.deg': -8.3788084317302, 'ra.deg': 209.43753030212176},
+{'obsdate.jd': 2457424.988405325, 'cat_idx': 9, 'ident': '2015 AU206', 'dec.deg': -8.37880089829109, 'ra.deg': 209.43759205903166},
+{'obsdate.jd': 2457424.994686216, 'cat_idx': 10, 'ident': '2015 AU206', 'dec.deg': -8.378743086959227, 'ra.deg': 209.43796876124324},
+{'obsdate.jd': 2457424.995725868, 'cat_idx': 11, 'ident': '2015 AU206', 'dec.deg': -8.378732525914641, 'ra.deg': 209.43803114320397},
+{'obsdate.jd': 2457424.996723149, 'cat_idx': 12, 'ident': '2015 AU206', 'dec.deg': -8.378720261228654, 'ra.deg': 209.43808858779698},
+{'obsdate.jd': 2457424.997719352, 'cat_idx': 13, 'ident': '2015 AU206', 'dec.deg': -8.378709162394792, 'ra.deg': 209.4381448811037},
+{'obsdate.jd': 2457424.998718287, 'cat_idx': 14, 'ident': '2015 AU206', 'dec.deg': -8.37870113500953, 'ra.deg': 209.43820147140488},
+{'obsdate.jd': 2457425.006592801, 'cat_idx': 15, 'ident': '2015 AU206', 'dec.deg': -8.378620534896914, 'ra.deg': 209.43866688117768},
+{'obsdate.jd': 2457425.007630706, 'cat_idx': 16, 'ident': '2015 AU206', 'dec.deg': -8.378613019915377, 'ra.deg': 209.43872700434773},
+{'obsdate.jd': 2457425.008629688, 'cat_idx': 17, 'ident': '2015 AU206', 'dec.deg': -8.378604924638601, 'ra.deg': 209.43878499970927},
+{'obsdate.jd': 2457425.009628009, 'cat_idx': 18, 'ident': '2015 AU206', 'dec.deg': -8.378594427386407, 'ra.deg': 209.4388427734835},
+{'obsdate.jd': 2457425.010625266, 'cat_idx': 19, 'ident': '2015 AU206', 'dec.deg': -8.37858, 'ra.deg': 209.4389},
+{'obsdate.jd': [2457424.974246285,1], 'cat_idx': 0, 'ident': '2016 GW108', 'dec.deg': -8.540019999999998, 'ra.deg': 209.372},
+{'obsdate.jd': [2457424.975281852,1], 'cat_idx': 1, 'ident': '2016 GW108', 'dec.deg': -8.540040496851558, 'ra.deg': 209.37210431487213},
+{'obsdate.jd': [2457424.976279572,1], 'cat_idx': 2, 'ident': '2016 GW108', 'dec.deg': -8.540064901808284, 'ra.deg': 209.37220929270816},
+{'obsdate.jd': [2457424.97727735,1], 'cat_idx': 3, 'ident': '2016 GW108', 'dec.deg': -8.540091893368333, 'ra.deg': 209.37231679777622},
+{'obsdate.jd': [2457424.978277558,1], 'cat_idx': 4, 'ident': '2016 GW108', 'dec.deg': -8.540119575590998, 'ra.deg': 209.37242523884714},
+{'obsdate.jd': [2457424.984377454,1], 'cat_idx': 5, 'ident': '2016 GW108', 'dec.deg': -8.540273294348596, 'ra.deg': 209.373071325477},
+{'obsdate.jd': [2457424.98541316,1], 'cat_idx': 6, 'ident': '2016 GW108', 'dec.deg': -8.540298255671674, 'ra.deg': 209.37318425612656},
+{'obsdate.jd': [2457424.986410602,1], 'cat_idx': 7, 'ident': '2016 GW108', 'dec.deg': -8.540320478879721, 'ra.deg': 209.37329208473298},
+{'obsdate.jd': [2457424.987408287,1], 'cat_idx': 8, 'ident': '2016 GW108', 'dec.deg': -8.540344299750606, 'ra.deg': 209.37339774504747},
+{'obsdate.jd': [2457424.988405325,1], 'cat_idx': 9, 'ident': '2016 GW108', 'dec.deg': -8.540371279271902, 'ra.deg': 209.3735009572041},
+{'obsdate.jd': [2457424.994686216,1], 'cat_idx': 10, 'ident': '2016 GW108', 'dec.deg': -8.540530806554408, 'ra.deg': 209.37416340383075},
+{'obsdate.jd': [2457424.995725868,1], 'cat_idx': 11, 'ident': '2016 GW108', 'dec.deg': -8.540557205848053, 'ra.deg': 209.37427406985654},
+{'obsdate.jd': [2457424.996723149,1], 'cat_idx': 12, 'ident': '2016 GW108', 'dec.deg': -8.54058011577894, 'ra.deg': 209.37438232529405},
+{'obsdate.jd': [2457424.997719352,1], 'cat_idx': 13, 'ident': '2016 GW108', 'dec.deg': -8.540601878363882, 'ra.deg': 209.37448914712667},
+{'obsdate.jd': [2457424.998718287,1], 'cat_idx': 14, 'ident': '2016 GW108', 'dec.deg': -8.540623817985683, 'ra.deg': 209.3745930051677},
+{'obsdate.jd': [2457425.006592801,1], 'cat_idx': 15, 'ident': '2016 GW108', 'dec.deg': -8.540820425917447, 'ra.deg': 209.3754245044099},
+{'obsdate.jd': [2457425.007630706,1], 'cat_idx': 16, 'ident': '2016 GW108', 'dec.deg': -8.540849130321682, 'ra.deg': 209.37553710897066},
+{'obsdate.jd': [2457425.008629688,1], 'cat_idx': 17, 'ident': '2016 GW108', 'dec.deg': -8.540876060425054, 'ra.deg': 209.3756448055592},
+{'obsdate.jd': [2457425.009628009,1], 'cat_idx': 18, 'ident': '2016 GW108', 'dec.deg': -8.54090032819322, 'ra.deg': 209.3757497680407},
+{'obsdate.jd': [2457425.010625266,1], 'cat_idx': 19, 'ident': '2016 GW108', 'dec.deg': -8.54092, 'ra.deg': 209.37585}]
 
 ### -------------------
 
@@ -251,7 +319,7 @@ def distill(catalogs, man_targetname, offset, fixed_coo, posfile,
     objects += pick_controlstar(catalogs)
 
     ### check Horizons for primary target (if a moving target)
-    objects += moving_primary_target(catalogs, man_targetname, offset)
+    #objects += moving_primary_target(catalogs, man_targetname, offset)
 
     ### add fixed target
     if fixed_coo[0] != 0 and fixed_coo[1] != 0.0:
@@ -299,7 +367,7 @@ def distill(catalogs, man_targetname, offset, fixed_coo, posfile,
 
 
         # build field lists for observed catalogs
-        match_keys_other_catalog, extract_other_catalog = [], []        
+        match_keys_other_catalog, extract_other_catalog = [], []
         for key in ['ra.deg', 'dec.deg', 'XWIN_IMAGE', 'YWIN_IMAGE', 'FLAGS']:
             if key in cat.fieldnames.keys():
                 match_keys_other_catalog.append(cat.fieldnames[key])
@@ -308,6 +376,7 @@ def distill(catalogs, man_targetname, offset, fixed_coo, posfile,
                 match_keys_other_catalog.append(key)
                 extract_other_catalog.append(key)
 
+
         match = target_cat.match_with \
                   (cat,
                    match_keys_this_catalog=('ra.deg', 'dec.deg'),
@@ -315,7 +384,6 @@ def distill(catalogs, man_targetname, offset, fixed_coo, posfile,
                    extract_this_catalog=['ra.deg', 'dec.deg', 'ident'],
                    extract_other_catalog=extract_other_catalog+mag_keys,
                    tolerance=None)
-
 
         for i in range(len(match[0][0])):
             # derive calibrated magnitudes, if available
