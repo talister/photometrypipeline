@@ -320,7 +320,7 @@ class catalog:
         # perform correction to AB system for SDSS
         # http://www.sdss3.org/dr8/algorithms/fluxcal.php#SDSStoAB 
         if 'SDSS' in self.catalogname:
-            self['umag'] = self'umag'] - 0.04
+            self['umag'] = self['umag'] - 0.04
             self['zmag'] = self['zmag'] + 0.02
 
 
