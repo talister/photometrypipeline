@@ -27,10 +27,10 @@ def setup_diagnostics():
         os.mkdir(diagroot) 
 
     # define diagnostic website filenames
-    index_filename = dataroot + 'diagnostics.html'
-    reg_filename   = diagroot + 'registration.html'
-    cal_filename   = diagroot + 'calibration.html'
-    res_filename   = diagroot + 'results.html'
+    index_filename = 'diagnostics.html'
+    reg_filename   = '.diagnostics/' + 'registration.html'
+    cal_filename   = '.diagnostics/' + 'calibration.html'
+    res_filename   = '.diagnostics/' + 'results.html'
 
 
     return (dataroot, diagroot, index_filename,

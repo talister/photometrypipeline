@@ -153,7 +153,9 @@ def create_index(filenames, directory, obsparam, display=False):
                "%d frames total, see full pipeline " + \
                "<A HREF=\"%s\">log</A> for more information\n") % \
                (obsparam['telescope_instrument'], filtername,
-                len(filenames), _pp_conf.log_filename)
+                len(filenames), 
+                '.diagnostics/' + 
+                _pp_conf.log_filename.split('.diagnostics/')[1])
 
     ### create frame information table
     html += "<P><TABLE BORDER=\"1\">\n<TR>\n"
@@ -187,7 +189,9 @@ def create_index(filenames, directory, obsparam, display=False):
             binning_x = header[obsparam['binning'][0]]
             binning_y = header[obsparam['binning'][1]]
 
-        framefilename = _pp_conf.diagroot + '/' + filename + '.png'
+        #framefilename = _pp_conf.diagroot + '/' + filename + '.png'
+        framefilename = '.diagnostics/' + filename + '.png'
+
         html += ("<TR><TD>%d</TD><TD><A HREF=\"%s\">%s</A></TD>" + \
                  "<TD>%16.8f</TD><TD>%s</TD>" + \
                  "<TD>%s</TD><TD>%4.2f</TD><TD>%.1f</TD>" + \
@@ -262,7 +266,7 @@ def add_registration(data, extraction_data):
                  + "<TD>%4.1f</TD><TD>%4.1f</TD>" \
                  + "<TD>%5.3f</TD><TD>%5.3f</TD>" \
                  + "<TD>%e</TD><TD>%e</TD>\n</TR>\n" )% \
-                (_pp_conf.diagroot + '/' + dat[0] + '_astrometry.png',
+                (dat[0] + '_astrometry.png',
                  dat[0], dat[1], dat[2], dat[3], dat[4], dat[5], dat[6])
     html += "</TABLE>\n"
     html += "<P>AS_CONTRAST: position angle/scale contrast " + \
@@ -282,7 +286,7 @@ def add_registration(data, extraction_data):
 
     ### create frame images
     for dat in extraction_data:
-        framefilename = _pp_conf.diagroot + '/' + dat['fits_filename'] + \
+        framefilename = '.diagnostics/' + dat['fits_filename'] + \
                         '_astrometry.png'        
         imgdat = fits.open(dat['fits_filename'])[0].data
         header = fits.open(dat['fits_filename'])[0].header
@@ -356,8 +360,8 @@ def add_photometry(data, extraction):
     """
 
     parameters = data['parameters']
-    growth_filename = _pp_conf.diagroot + 'curve_of_growth.png'
-    fwhm_filename   = _pp_conf.diagroot + 'fwhm.png'
+    growth_filename = '.diagnostics/curve_of_growth.png'
+    fwhm_filename   = '.diagnostics/fwhm.png'
 
     ##### plot curve-of-growth data
     plt.subplot(211)
@@ -511,10 +515,10 @@ def add_calibration(data):
         ax3.set_ylim(ax3.get_ylim()[::-1]) # reverse y axis  
 
         plt.grid()
-        plt.savefig((_pp_conf.diagroot+'%s_photcal.png') % cat.catalogname,
+        plt.savefig(('.diagnostics/%s_photcal.png') % cat.catalogname,
                     format='png')
         data['zeropoints'][idx]['plotfilename'] = \
-                                        (_pp_conf.diagroot+'%s_photcal.png') % \
+                                        ('.diagnostics/%s_photcal.png') % \
                                         cat.catalogname
         plt.close()
 
@@ -531,9 +535,9 @@ def add_calibration(data):
     plt.show()
     plt.ylim([plt.ylim()[1], plt.ylim()[0]])
     plt.grid()
-    plt.savefig(_pp_conf.diagroot+'zeropoints.png', format='png')
+    plt.savefig('.diagnostics/zeropoints.png', format='png')
     plt.close()
-    data['zpplot'] = _pp_conf.diagroot+'zeropoints.png'
+    data['zpplot'] = 'zeropoints.png'
 
 
     ### create registration website
@@ -549,7 +553,8 @@ def add_calibration(data):
             html += ("<TR><TD><A HREF=\"#%s\">%s</A></TD>" \
                      + "<TD>%7.4f</TD><TD>%7.4f</TD><TD>%d</TD>" \
                      + "<TD>%d</TD>\n</TR>" ) % \
-                (dat['plotfilename'], dat['filename'], dat['zp'],
+                (dat['plotfilename'].split('.diagnostics/')[1], 
+                 dat['filename'], dat['zp'],
                  dat['zp_sig'], dat['zp_nstars'],
                  len(dat['match'][0][0]))
     html += "</TABLE>\n"
@@ -557,7 +562,7 @@ def add_calibration(data):
     for dat in data['zeropoints']:
         if not dat['success']:
             continue
-        catframe = _pp_conf.diagroot + '/' + \
+        catframe = '.diagnostics/'+ \
                    dat['filename'][:dat['filename'].find('.ldac')] + \
                    '.fits_reference_stars.png'
         html += ("<H3>%s</H3>" \
@@ -567,8 +572,13 @@ def add_calibration(data):
                  + "</A></TD><TD><A HREF=\"%s\">" \
                  + "<IMG ID=\"%s\" SRC=\"%s\" HEIGHT=400 WIDTH=400>" \
                  + "</A></TD>\n") % \
-                (dat['filename'], dat['plotfilename'], dat['plotfilename'],
-                 dat['plotfilename'], catframe, catframe, catframe)
+                (dat['filename'],
+                 dat['plotfilename'].split('.diagnostics/')[1], 
+                 dat['plotfilename'].split('.diagnostics/')[1],
+                 dat['plotfilename'].split('.diagnostics/')[1], 
+                 catframe.split('.diagnostics/')[1], 
+                 catframe.split('.diagnostics/')[1], 
+                 catframe.split('.diagnostics/')[1])
         html += "<TD><TABLE BORDER=\"1\">\n<TR>\n"
         html += "<TH>Idx</TH><TH>Name</TH><TH>RA</TH><TH>Dec</TH>" \
                 + "<TH>Catalog (mag)</TH>" \
@@ -650,7 +660,7 @@ def add_calibration(data):
             (data['ref_cat'].catalogname, data['ref_cat'].history)
     html += "see <A HREF=\"%s\">calibration</A> website for details\n" % \
             _pp_conf.cal_filename
-    html += "<P><IMG SRC=\"%s\">\n" % data['zpplot']
+    html += "<P><IMG SRC=\"%s\">\n" % ('.diagnostics/' + data['zpplot'])
 
     append_website(_pp_conf.index_filename, html)
 
@@ -677,11 +687,11 @@ def add_results(data):
                      linestyle='', color='black')
         plt.ylim([plt.ylim()[1], plt.ylim()[0]])
         plt.grid()
-        plt.savefig(_pp_conf.diagroot+('%s.png' % target.replace(' ', '_')), 
+        plt.savefig('.diagnostics/' + ('%s.png' % target.replace(' ', '_')), 
                     format='png')
         plt.close()
-        data['lightcurveplots'][target] = _pp_conf.diagroot + \
-                                    ('%s.png' % target.replace(' ', '_'))
+        data['lightcurveplots'][target] = ('.diagnostics/' + '%s.png' % 
+                                           target.replace(' ', '_'))
 
     ##### create thumbnail images
     
@@ -794,7 +804,7 @@ def add_results(data):
                             exp_y-obj_y+boxsize/2., 
                             marker='+', s=100, color='green')
 
-            thumbfilename = _pp_conf.diagroot+target.replace(' ', '_')+'_'+ \
+            thumbfilename = '.diagnostics/' + target.replace(' ', '_')+'_'+ \
                             fitsfilename[:fitsfilename.find('.fit')] + \
                             '_thumb.png'
             plt.savefig(thumbfilename, format='png', bbox_inches='tight', 
@@ -806,14 +816,14 @@ def add_results(data):
 
         ## create gif animation
         gif_filename = ('%s.gif' % 
-                        (_pp_conf.diagroot+target.replace(' ', '_')))
+                        (target.replace(' ', '_')))
         logging.info('converting images to gif: %s' % gif_filename)
         root = os.getcwd()
         os.chdir(_pp_conf.diagroot)
         try:
             convert = subprocess.Popen(['convert', '-delay', '50', 
                                         ('%s*thumb.png' % 
-                                (_pp_conf.diagroot+target.replace(' ', '_'))), 
+                                (target.replace(' ', '_'))), 
                                         '-loop', '0', 
                                         ('%s' % gif_filename)])
 
@@ -821,7 +831,7 @@ def add_results(data):
         except:
             logging.warning('could not produce gif animation for ' \
                             + 'target %s' % target)
-        data['gifs'][target] = gif_filename
+        data['gifs'][target] = '.diagnostics/' + gif_filename
         os.chdir(root)
 
 
@@ -829,8 +839,10 @@ def add_results(data):
     data['resultswebsites'] = {}
     for target in data['targetnames']:
         html  = "<H2>%s - Photometric Results</H2>\n" % target
-        html += "<P><IMG SRC=\"%s\">\n" % data['lightcurveplots'][target]
-        html += "<IMG SRC=\"%s\">\n" % data['gifs'][target]
+        html += "<P><IMG SRC=\"%s\">\n" % \
+                data['lightcurveplots'][target].split('.diagnostics/')[1]
+        html += "<IMG SRC=\"%s\">\n" % \
+                data['gifs'][target].split('.diagnostics/')[1]
 
         # create summary table
         html += "<TABLE BORDER=\"1\">\n<TR>\n"
@@ -851,9 +863,10 @@ def add_results(data):
         # plot individual thumbnails
         html += "<H3>Thumbnails</H3>\n"
         for idx, plts in enumerate(data['thumbnailplots'][target]):
-            html += "<P>%s<IMG ID=\"%s\" SRC=\"%s\">\n" % (plts[0], 
-                                                data[target][idx][10], plts[1])
-        filename = _pp_conf.diagroot+target.replace(' ', '_')+'_'+'results.html'
+            html += "<P>%s<IMG ID=\"%s\" SRC=\"%s\">\n" % (plts[0],
+                                    data[target][idx][10],
+                                    plts[1].split('.diagnostics/')[1])
+        filename = '.diagnostics/'+target.replace(' ', '_')+'_'+'results.html'
         create_website(filename, html)
         data['resultswebsites'][target] = filename 
 
