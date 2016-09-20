@@ -97,7 +97,7 @@ def curve_of_growth_analysis(filenames, parameters,
 
         if not parameters['background_only']:
 
-            hdu = fits.open(filename)
+            hdu = fits.open(filename, ignore_missing_end=True)
                 
             # pull target coordinates from Horizons
             targetname =  hdu[0].header[obsparam['object']]
@@ -314,7 +314,7 @@ def curve_of_growth_analysis(filenames, parameters,
 
     ##### update image headers 
     for filename in filenames:
-        hdu = fits.open(filename, mode='update')
+        hdu = fits.open(filename, mode='update', ignore_missing_end=True)
         hdu[0].header['APRAD'] = (optimum_aprad, 'aperture phot radius (px)')
         hdu[0].header['APIDX'] = (optimum_aprad_idx, 'optimum aprad index')
         hdu.flush()
@@ -423,7 +423,7 @@ if __name__ == '__main__':
                          .readlines()]
 
     # obtain telescope information
-    hdu = fits.open(filenames[0])
+    hdu = fits.open(filenames[0], ignore_missing_end=True)
     try:
         telescope = hdu[0].header['TEL_KEYW']
     except KeyError:

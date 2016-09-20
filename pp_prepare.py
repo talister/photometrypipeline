@@ -71,7 +71,8 @@ def prepare(filenames, obsparam, header_update, flipx=False,
     ##### identify keywords for GENERIC telescopes
 
     # open one sample image file
-    hdulist = fits.open(filenames[0])
+    hdulist = fits.open(filenames[0], verify='ignore', 
+                        ignore_missing_end='True')
     header = hdulist[0].header
     
     # keywords that have to be implanted into each image
@@ -124,7 +125,8 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             print 'preparing', filename
 
         # open image file
-        hdulist = fits.open(filename, mode='update')
+        hdulist = fits.open(filename, mode='update', verify='ignore', 
+                            ignore_missing_end=True)
         header = hdulist[0].header
 
         # add other headers, if available
@@ -157,6 +159,19 @@ def prepare(filenames, obsparam, header_update, flipx=False,
 
         # read image data
         imdata = hdulist[0].data
+
+        ## check if image is a cube, or a single frame put into a cube
+        if len(imdata.shape) > 2:
+            # this image is a cube
+            if imdata.shape[0] == 1:
+                # this is a single image put into a cube
+                # turn this into a single-frame fits file
+                imdata = imdata[0]
+            else:
+                # this is really a cube; don't know what to do
+                raise TypeError(("%s is a cube FITS file; don't know how to " +\
+                                 "handle this file...") % filename)
+
 
         ### add header keywords for Source Extractor
         if 'EPOCH' not in header:
@@ -198,11 +213,18 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                                          split('_')[0]].split()[0])
                 binning_y = float(header[obsparam['binning'][1].\
                                          split('_')[0]].split()[1])
-            if '_x' in obsparam['binning'][0]:
+            elif '_x' in obsparam['binning'][0]:
                 binning_x = float(header[obsparam['binning'][0].\
                                          split('_')[0]].split('x')[0])
                 binning_y = float(header[obsparam['binning'][1].\
                                          split('_')[0]].split('x')[1])
+            elif '_CH_' in obsparam['binning'][0]:
+                # only for RATIR
+                channel = header['INSTRUME'].strip()[1]
+                binning_x = float(header[obsparam['binning'][0].
+                                         replace('_CH_', channel)])
+                binning_y = float(header[obsparam['binning'][1].
+                                         replace('_CH_', channel)])
         else:
             binning_x = header[obsparam['binning'][0]]
             binning_y = header[obsparam['binning'][1]]
@@ -322,8 +344,10 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         #### crop center from LOWELL42 frames
         if obsparam['telescope_keyword'] == 'LOWELL42': 
             imdata = imdata[100:-100,100:-100]
-            hdulist[0].data = imdata
             logging.info('cropping LOWELL42 data')
+
+        # overwrite imdata in case something has been modified
+        hdulist[0].data = imdata
 
         hdulist.flush()
         hdulist.close()
@@ -381,7 +405,8 @@ if __name__ == '__main__':
     ### read telescope information from fits headers
     instruments = []
     for filename in filenames:
-        hdulist = fits.open(filename)
+        hdulist = fits.open(filename, verify='ignore', 
+                            ignore_missing_end=True)
         header = hdulist[0].header
         for key in _pp_conf.instrument_keys:
             if key in header:

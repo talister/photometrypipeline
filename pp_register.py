@@ -47,8 +47,7 @@ logging.basicConfig(filename = _pp_conf.log_filename,
 
 
 def register(filenames, telescope, sex_snr, source_minarea, aprad,
-             mancat, obsparam, display=False, diagnostics=False,
-             dont_run_registration_again=False):
+             mancat, obsparam, display=False, diagnostics=False):
     """
     registration wrapper
     output: diagnostic properties
@@ -61,7 +60,8 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
     
     # check if images have been run through pp_prepare
     try:
-        midtime_jd = fits.open(filenames[0])[0].header['MIDTIMJD']
+        midtime_jd = fits.open(filenames[0], 
+                               ignore_missing_end=True)[0].header['MIDTIMJD']
     except KeyError:
         raise KeyError(('%s image header incomplete, have the data run ' + 
                         'through pp_prepare?') % filenames[0])
@@ -104,6 +104,10 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
 
     fileline = " ".join(ldac_files)
 
+    obsparam['astrometry_catalogs'] = [catcat for cat in
+                                       obsparam['astrometry_catalogs']
+                                       for catcat in [cat]*
+                                       _pp_conf.n_registration_repetitions ]
     for cat_idx, refcat in enumerate(obsparam['astrometry_catalogs']):
 
         output = {}
@@ -111,7 +115,8 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         ### check if sufficient reference stars are available in refcat
         logging.info('check if sufficient reference stars in catalog %s' %
                      refcat)
-        hdulist = fits.open(filenames[len(filenames)/2])
+        hdulist = fits.open(filenames[len(filenames)/2],
+                            ignore_missing_end=True)
         ra = float(hdulist[0].header['CRVAL1'])
         dec = float(hdulist[0].header['CRVAL2'])
         rad = max([float(hdulist[0].header[obsparam['extent'][0]])*
@@ -212,50 +217,15 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
             logging.info(' > match failed for %d/%d images' % \
                          (len(badfits), len(filenames)))
 
-            ### if registration failed, try again with the same catalog!
+            ### if registration failed, try again with the same catalog
+            # and no extraction!
             # this will make use of the .head files and improves results
-            if not dont_run_registration_again:
-                logging.critical('Not all images matched ' \
-                                 + '- try again with the same catalog')
-                if display:
-                    print 'Not all images matched ' \
-                        + '- try again with the same catalog'
+            logging.critical('Not all images matched ' \
+                             + '- try again or different catalog, if available')
+            if display:
+                print 'Not all images matched ' \
+                    + '- try again for different catalog, if available'
 
-                output = register(filenames, telescope, sex_snr,
-                                  source_minarea, aprad,
-                                  refcat, obsparam,
-                                  display=True, diagnostics=True,
-                                  dont_run_registration_again=True)
-                
-                # if the rerun succeeded, leave
-                if output['badfits'] == 0:
-                    return output
-                # if not, try the next catalog
-                else:
-                    continue
-
-            else:
-                logging.critical('Not all images matched ' \
-                                 + '- won\'t try again with this catalog, ' \
-                                 + 'switch catalog') 
-                if display:
-                    print 'Not all images matched ' \
-                        + '- won\'t try again with this catalog, switch catalog'
-
-                # try next catalog in the list
-                return output
-
-            ### if this is the last catalog in the list
-            if (cat_idx == len(obsparam['astrometry_catalogs'])-1) and \
-               dont_run_registration_again:
-                logging.info('No perfect match possible with either catalog' \
-                                 + '- proceed with what has been matched') 
-                if display:
-                    print 'No perfect match possible with either catalog' \
-                        + '- proceed with what has been matched'
-
-                # leave this loop
-                break
 
     ##### update image headers with wcs solutions where registration
     ##### was successful
@@ -266,7 +236,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         fake_wcs_keys =  ['RADECSYS', 'CTYPE1', 'CTYPE2', 'CRVAL1', 'CRVAL2', 
                           'CRPIX1', 'CRPIX2', 'CD1_1', 'CD1_2', 'CD2_1', 
                           'CD2_2', 'RADESYS']
-        hdu = fits.open(filename, mode='update')
+        hdu = fits.open(filename, mode='update', ignore_missing_end=True)
         for fake_key in fake_wcs_keys:
             hdu[0].header[fake_key] = ''
 
@@ -366,7 +336,7 @@ if __name__ == '__main__':
     # check that they are the same for all images
     instruments = []
     for filename in filenames:
-        hdulist = fits.open(filename)
+        hdulist = fits.open(filename, ignore_missing_end=True)
         header = hdulist[0].header
         for key in _pp_conf.instrument_keys:
             if key in header:

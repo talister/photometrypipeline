@@ -78,9 +78,10 @@ class catalog:
         return: source or field
         """
         try:
-            return self.data[self.fieldnames[ident]]
-        except KeyError:
             return self.data[ident]
+        except KeyError:
+            return self.data[self.fieldnames[ident]]
+
 
     ##### data manipulation functions
 
@@ -251,7 +252,8 @@ class catalog:
 
         # read FITS table and assign to self.data
         try:
-            hdulist = fits.open(self.catalogname+'.fits')
+            hdulist = fits.open(self.catalogname+'.fits', 
+                                ignore_missing_end=True)
             self.data = hdulist[1].data
         except IOError:
             if self.display:
@@ -286,16 +288,14 @@ class catalog:
                                     'USNO-B1': 'USNO-B1.0'}[self.catalogname]
 
         if 'APASS' in self.catalogname:
-            self.fieldnames['gmag'] = 'g_mag'
-            self.fieldnames['e_gmag'] = 'e_g_mag'
-            self.fieldnames['rmag'] = 'r_mag'
-            self.fieldnames['e_rmag'] = 'e_r_mag'
-            self.fieldnames['imag'] = 'i_mag'
-            self.fieldnames['e_imag'] = 'e_i_mag'
-            self.fieldnames['Vmag'] = 'V_mag'
-            self.fieldnames['e_Vmag'] = 'e_V_mag'
-            self.fieldnames['Imag'] = 'I_mag'
-            self.fieldnames['e_Imag'] = 'e_I_mag'
+            self.fieldnames['gmag'] = "g_mag"
+            self.fieldnames['e_gmag'] = "e_g_mag"
+            self.fieldnames['rmag'] = "r_mag"
+            self.fieldnames['e_rmag'] = "e_r_mag"
+            self.fieldnames['imag'] = "i_mag"
+            self.fieldnames['e_imag'] = "e_i_mag"
+            self.fieldnames['e_Vmag'] = "e_Vmag"
+            self.fieldnames['e_Bmag'] = "e_Bmag"
             
         ### catalog additions and corrections
 
@@ -344,7 +344,7 @@ class catalog:
         """
 
         # load LDAC file
-        hdulist  = fits.open(filename)
+        hdulist  = fits.open(filename, ignore_missing_end=True)
 
         if len(hdulist) < 3:
             print ('ERROR: %s seems to be empty; check LOG file if ' + 
@@ -374,7 +374,8 @@ class catalog:
 
         # read data from image header, if requested
         if fits_filename is not None:
-            fitsheader = fits.open(fits_filename)[0].header
+            fitsheader = fits.open(fits_filename, 
+                                   ignore_missing_end=True)[0].header
             self.obstime[0] = float(fitsheader[time_keyword])
             self.obstime[1] = float(fitsheader[exptime_keyword])
             self.obj        = fitsheader[object_keyword]
@@ -780,6 +781,7 @@ class catalog:
 
             logging.info('trying to transform %d %s sources to %s' % 
                           (self.shape[0], self.catalogname, targetfilter))
+
 
             ### transformations based on Chonis & Gaskell 2008, AJ, 135 
             mags = numpy.array([self['rmag'],

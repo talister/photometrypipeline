@@ -144,7 +144,7 @@ def create_index(filenames, directory, obsparam, display=False):
     logging.info('create frame index table and frame images')
 
     # obtain filtername from first image file
-    refheader = fits.open(filenames[0])[0].header
+    refheader = fits.open(filenames[0], ignore_missing_end=True)[0].header
     filtername = obsparam['filter_translations'][refheader[obsparam['filter']]]
 
     html = "<H2>data directory: %s</H2>\n" % directory
@@ -170,7 +170,7 @@ def create_index(filenames, directory, obsparam, display=False):
 
 
         ### fill table
-        hdulist = fits.open(filename)
+        hdulist = fits.open(filename, ignore_missing_end=True)
         header = hdulist[0].header
 
         # read out image binning mode
@@ -180,11 +180,18 @@ def create_index(filenames, directory, obsparam, display=False):
                                          split('_')[0]].split()[0])
                 binning_y = float(header[obsparam['binning'][1].\
                                          split('_')[0]].split()[1])
-            if '_x' in obsparam['binning'][0]:
+            elif '_x' in obsparam['binning'][0]:
                 binning_x = float(header[obsparam['binning'][0].\
                                          split('_')[0]].split('x')[0])
                 binning_y = float(header[obsparam['binning'][1].\
                                          split('_')[0]].split('x')[1])
+            elif '_CH_' in obsparam['binning'][0]:
+                # only for RATIR
+                channel = header['INSTRUME'].strip()[1]
+                binning_x = float(header[obsparam['binning'][0].
+                                         replace('_CH_', channel)])
+                binning_y = float(header[obsparam['binning'][1].
+                                         replace('_CH_', channel)])
         else:
             binning_x = header[obsparam['binning'][0]]
             binning_y = header[obsparam['binning'][1]]
@@ -192,12 +199,17 @@ def create_index(filenames, directory, obsparam, display=False):
         #framefilename = _pp_conf.diagroot + '/' + filename + '.png'
         framefilename = '.diagnostics/' + filename + '.png'
 
+        try:
+            objectname = header[obsparam['object']]
+        except KeyError:
+            objectname ='Unknown Target'
+
         html += ("<TR><TD>%d</TD><TD><A HREF=\"%s\">%s</A></TD>" + \
                  "<TD>%16.8f</TD><TD>%s</TD>" + \
                  "<TD>%s</TD><TD>%4.2f</TD><TD>%.1f</TD>" + \
                  "<TD>%.1f x %.1f</TD>\n</TR>\n") % \
             (idx+1, framefilename, filename, header[obsparam['obsmidtime_jd']], 
-             header[obsparam['object']],
+             objectname,
              header[obsparam['filter']],
              float(header[obsparam['airmass']]),
              float(header[obsparam['exptime']]),
@@ -207,6 +219,7 @@ def create_index(filenames, directory, obsparam, display=False):
    
         ### create frame image
         imgdat = hdulist[0].data
+
         median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
                                      int(imgdat.shape[1]*0.75),
                                      int(imgdat.shape[0]*0.25):
@@ -288,8 +301,10 @@ def add_registration(data, extraction_data):
     for dat in extraction_data:
         framefilename = '.diagnostics/' + dat['fits_filename'] + \
                         '_astrometry.png'        
-        imgdat = fits.open(dat['fits_filename'])[0].data
-        header = fits.open(dat['fits_filename'])[0].header
+        imgdat = fits.open(dat['fits_filename'], 
+                           ignore_missing_end=True)[0].data
+        header = fits.open(dat['fits_filename'], 
+                           ignore_missing_end=True)[0].header
         median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
                                      int(imgdat.shape[1]*0.75),
                                      int(imgdat.shape[0]*0.25):
@@ -603,8 +618,8 @@ def add_calibration(data):
         ### create catalog frame
         fits_filename = dat['filename'][:dat['filename'].find('.ldac')] + \
                         '.fits'
-        imgdat = fits.open(fits_filename)[0].data
-        header = fits.open(fits_filename)[0].header
+        imgdat = fits.open(fits_filename, ignore_missing_end=True)[0].data
+        header = fits.open(fits_filename, ignore_missing_end=True)[0].header
         median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
                                      int(imgdat.shape[1]*0.75),
                                      int(imgdat.shape[0]*0.25):
@@ -706,7 +721,7 @@ def add_results(data):
                 if os.path.isfile(fitsfilename):
                     break
                 #= dat[10][:dat[10].find('.ldac')]+'.fits'
-            hdulist = fits.open(fitsfilename)
+            hdulist = fits.open(fitsfilename, ignore_missing_end=True)
 
             logging.info('create thumbnail image for %s/%s' % (target, 
                                                             fitsfilename))

@@ -358,7 +358,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     ### read in ldac data into catalogs
     catalogs, filternames = [], {}
     for filename in filenames:
-        hdulist = fits.open(filename)
+        hdulist = fits.open(filename, ignore_missing_end=True)
         try:
             filtername = hdulist[0].header['FILTER']
         except KeyError:
@@ -500,7 +500,7 @@ if __name__ == '__main__':
                          readlines()]
 
     # obtain telescope information
-    hdulist = fits.open(filenames[0])
+    hdulist = fits.open(filenames[0], ignore_missing_end=True)
     try:
         telescope = hdulist[0].header['TEL_KEYW']
     except KeyError:

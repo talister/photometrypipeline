@@ -137,7 +137,7 @@ class Clicker:
             sys.stdout.flush()
 
             ## read image data
-            hdulist = fits.open(filename)
+            hdulist = fits.open(filename, ignore_missing_end=True)
             imgdat = hdulist[0].data
 
             median = numpy.median(imgdat)

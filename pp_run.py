@@ -80,7 +80,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
     instruments = []
     for idx, filename in enumerate(filenames):
         try:
-            hdulist = fits.open(filename)
+            hdulist = fits.open(filename, ignore_missing_end=True)
         except IOError:
             logging.error('cannot open file %s' % filename)
             print 'ERROR: cannot open file %s' % filename
@@ -123,7 +123,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
     filters = []
     for idx, filename in enumerate(filenames):
         try:
-            hdulist = fits.open(filename)
+            hdulist = fits.open(filename, ignore_missing_end=True)
         except IOError:
             logging.error('cannot open file %s' % filename)
             print 'ERROR: cannot open file %s' % filename

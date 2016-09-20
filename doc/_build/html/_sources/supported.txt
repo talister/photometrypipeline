@@ -35,6 +35,10 @@ observatories/instruments:
 +--------------------------+--------------------+----------------+
 | WIYN 0.9m                | Half Degree Imager | WIYN09HDI      |
 +--------------------------+--------------------+----------------+
+| SOAR 4.1m                | Goodman            | SOARGOODMAN    |
++--------------------------+--------------------+----------------+
+| Generic Telescope        | any                | GENERIC        |
++--------------------------+--------------------+----------------+
 
 If you would like to use the pipeline for other observatories, please
 contact me.

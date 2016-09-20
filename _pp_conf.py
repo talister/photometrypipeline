@@ -131,6 +131,9 @@ allcatalogs_mag = {'URAT-1'  : 'Vmag',
 # if number of sources less than this number
 min_sources_astrometric_catalog = 20
 
+# how often to run SCAMP using one single catalog?
+n_registration_repetitions = 2
+
 # minimum number of reference sources in photometric reference catalog
 min_sources_photometric_catalog = 3
 

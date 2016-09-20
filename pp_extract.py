@@ -178,7 +178,7 @@ class extractor(threading.Thread):
             out['catalog_data'] = ldac_data
 
             ### update image header with aperture radius and other information
-            hdu = fits.open(filename, mode='update')
+            hdu = fits.open(filename, mode='update', ignore_missing_end=True)
             obsparam = self.param['obsparam']
             # observation midtime
             if obsparam['obsmidtime_jd'] in hdu[0].header:
@@ -239,7 +239,7 @@ def extract_multiframe(filenames, parameters):
 
 
     # obtain telescope information from image header or override manually
-    hdu = fits.open(filenames[0])
+    hdu = fits.open(filenames[0], ignore_missing_end=True)
 
     if 'telescope' not in parameters or parameters['telescope'] is None: 
         try:

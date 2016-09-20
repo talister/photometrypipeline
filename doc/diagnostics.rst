@@ -224,9 +224,9 @@ identification of corrupted frames.
 
 
 
-.. _image of that frame: http://phy54.phy.nau.edu/photometrypipeline/example_7813/.diagnostics//mscience0300.fits.png
-.. _registration website: http://phy54.phy.nau.edu/photometrypipeline/example_7813/.diagnostics/registration.html
-.. _detailed information: http://phy54.phy.nau.edu/photometrypipeline/example_7813/.diagnostics/calibration.html
+.. _image of that frame: http://134.114.60.45/photometrypipeline/example_7813/.diagnostics//mscience0300.fits.png
+.. _registration website: http://134.114.60.45/photometrypipeline/example_7813/.diagnostics/registration.html
+.. _detailed information: http://134.114.60.45/photometrypipeline/example_7813/.diagnostics/calibration.html
 .. _SCAMP manual: http://astromatic.iap.fr/wordpress/wp-content/uploads/2009/01/pdf-dist.png
-.. _this: http://phy54.phy.nau.edu/photometrypipeline/example_7813/diagnostics.html
-.. _dedicated photometry page: http://phy54.phy.nau.edu/photometrypipeline/example_7813/.diagnostics/7813_results.html
+.. _this: http://134.114.60.45/photometrypipeline/example_7813/diagnostics.html
+.. _dedicated photometry page: http://134.114.60.45/photometrypipeline/example_7813/.diagnostics/7813_results.html
