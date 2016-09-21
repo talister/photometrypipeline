@@ -67,42 +67,9 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                         'through pp_prepare?') % filenames[0])
         return None
 
-    ##### run extract routines
-    # ignore saturation: saturated stars are bright and might be necessary 
-    # for SCAMP
-    if display:
-        print '* extract sources from %d frames' % len(filenames)
-
-    extractparameters = {'sex_snr':sex_snr,
-                         'source_minarea':source_minarea, \
-                         'aprad':aprad, 'telescope':telescope, \
-                         'ignore_saturation':True, 'quiet':False}
-
-    extraction = pp_extract.extract_multiframe(filenames, extractparameters)
-
-    if extraction is None:
-        if display:
-            print 'ERROR: extraction was not successful'
-        logging.error('extraction was not successful')
-        return None
-    
-    ### check if enough sources have been detected in images
-    ldac_files = []
-    for frame in extraction:
-        if frame['catalog_data'].shape[0] > 10:
-            ldac_files.append(frame['ldac_filename'])
-
-    if len(ldac_files) == 0:
-        if display:
-            print 'ERROR: no sources detected in image files'
-        logging.error('no sources detected in image files')
-        return {'goodfits': [], 'badfits': filenames}
-
     ##### run scamp on all image catalogs using different catalogs
     if mancat is not None:
         obsparam['astrometry_catalogs'] = [mancat]
-
-    fileline = " ".join(ldac_files)
 
     obsparam['astrometry_catalogs'] = [catcat for cat in
                                        obsparam['astrometry_catalogs']
@@ -110,7 +77,41 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                                        _pp_conf.n_registration_repetitions ]
     for cat_idx, refcat in enumerate(obsparam['astrometry_catalogs']):
 
+        ##### run extract routines
+        # ignore saturation: saturated stars are bright and might be necessary 
+        # for SCAMP
+        if display:
+            print '* extract sources from %d frames' % len(filenames)
+
+        extractparameters = {'sex_snr':sex_snr,
+                             'source_minarea':source_minarea, \
+                             'aprad':aprad, 'telescope':telescope, \
+                             'ignore_saturation':True, 'quiet':False}
+        
+        extraction = pp_extract.extract_multiframe(filenames, 
+                                                   extractparameters)
+
+        if extraction is None:
+            if display:
+                print 'ERROR: extraction was not successful'
+            logging.error('extraction was not successful')
+            return None
+    
+        ### check if enough sources have been detected in images
+        ldac_files = []
+        for frame in extraction:
+            if frame['catalog_data'].shape[0] > 10:
+                ldac_files.append(frame['ldac_filename'])
+
+        if len(ldac_files) == 0:
+            if display:
+                print 'ERROR: no sources detected in image files'
+                logging.error('no sources detected in image files')
+            return {'goodfits': [], 'badfits': filenames}
+
+
         output = {}
+        fileline = " ".join(ldac_files)
 
         ### check if sufficient reference stars are available in refcat
         logging.info('check if sufficient reference stars in catalog %s' %

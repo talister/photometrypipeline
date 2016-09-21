@@ -997,7 +997,7 @@ ratir_param = {
     'telescope_instrument' : 'RATIR', # telescope/instrument name
     'telescope_keyword'    : 'RATIR',        # telescope/instrument keyword
     'observatory_code'     : '679',         # MPC observatory code
-    'secpix'               : (0.3, 0.3), # pixel size (arcsec)
+    'secpix'               : (0.15, 0.15), # pixel size (arcsec)
                                                # before binning
     'ext_coeff'            : 0.05,          # typical extinction coefficient
 
@@ -1011,8 +1011,8 @@ ratir_param = {
     'binning'              : ('SC_CH_DTBN', 'SC_CH_DTBN'), # binning in x/y
                              # _CH_ gets replaced with Channel number
     'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
-    'ra'                   : 'ETROBRA',  # telescope pointing, RA
-    'dec'                  : 'ETROBDE', # telescope pointin, Dec 
+    'ra'                   : 'STRSTRA',  # telescope pointing, RA
+    'dec'                  : 'STRSTDE', # telescope pointin, Dec 
     'radec_separator'      : 'XXX',   # RA/Dec hms separator, use 'XXX'
                                     # if already in degrees
     'date_keyword'         : 'SSHT', # obs date/time
@@ -1032,7 +1032,7 @@ ratir_param = {
 
 
     # source extractor settings
-    'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'source_minarea'       : 18, # default sextractor source minimum N_pixels
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/ratir.sex',
@@ -1044,7 +1044,7 @@ ratir_param = {
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT' +
-                              'SSHT,ETROBRA,ETROBDE,SECPIX,STROBAM,' +
+                              'SSHT,STRSTRA,STRSTDE,SECPIX,STROBAM,' +
                               'TEL_KEYW'),
     #                        keywords to be copied in image
     #                        combination using swarp

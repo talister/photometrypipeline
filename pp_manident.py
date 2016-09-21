@@ -302,19 +302,19 @@ if __name__ == "__main__":
     for image_idx, image_name in enumerate(app.files):
         # accurate position
         if app.target_index[image_idx] is not None:
-            outf.write('%50.50s   %15.7f   %9.5f  %9.5f\n' % (image_name, 
-                app.mjd[image_idx], \
-                app.ldac[image_idx][app.target_index[image_idx]]['XWIN_WORLD'], \
-                app.ldac[image_idx][app.target_index[image_idx]]['YWIN_WORLD']))
+            outf.write('%50.50s   %9.5f  %9.5f   %15.7f\n' % (image_name, 
+                app.ldac[image_idx][app.target_index[image_idx]]['XWIN_WORLD'],
+                app.ldac[image_idx][app.target_index[image_idx]]['YWIN_WORLD'],
+                app.mjd[image_idx]))
         # interpolated position
         else:
             app.index = image_idx
             interp_idx = app.extrapolate(app.mjd[image_idx])
 
-            outf.write('%50.50s   %15.7f   %9.5f  %9.5f\n' % (image_name, 
-                app.mjd[image_idx],
-                app.ldac[image_idx][interp_idx]['XWIN_WORLD'], \
-                app.ldac[image_idx][interp_idx]['YWIN_WORLD']))
+            outf.write('%50.50s   %9.5f  %9.5f  %15.7f\n' % (image_name, 
+                app.ldac[image_idx][interp_idx]['XWIN_WORLD'], 
+                app.ldac[image_idx][interp_idx]['YWIN_WORLD'],
+                app.mjd[image_idx]))
 
     print image_idx, 'target positions written to file positions.dat'
 

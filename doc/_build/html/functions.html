@@ -334,8 +334,15 @@ underscores if the target&#8217;s name is a designation</li>
 positions (e.g., Horizons position for moving
 targets) in arcsec; requires two floats, one for RA
 and one for Dec</li>
-<li><strong>-fixed_coo</strong> &#8211; (optional) fixed target position (requires two
-floats, one for RA and one for Dec, coordinates in degrees)</li>
+<li><strong>-positions</strong> &#8211; (optional) file that lists the position of the
+target as a function of time for all frames;
+exact format: image filename, ra (deg), dec
+(deg), observations midtime (JD)</li>
+<li><strong>-fixedtargets</strong> &#8211; (optional) file that list targets with fixed
+positions; exact format: target name, ra
+(deg), dec (deg)</li>
+<li><strong>-serendipity</strong> &#8211; (optional) search for serendipitous targets in
+the field (still experimental)</li>
 <li><strong>images</strong> &#8211; images to run <cite>pp_distill</cite> on</li>
 </ul>
 </td>

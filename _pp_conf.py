@@ -151,10 +151,13 @@ pos_epsilon = 0.5
 fluxlimit_aprad = 0.7
 fluxmargin_aprad = 0.05
 
-
-
 # minimum number of stars (integer number) or fraction (float) to use in
 # photometric calibration
 minstars = 0.5
 
 
+#### support 
+
+# path to local variable star database file
+# if you 
+vsx_database_file = os.environ.get('PPVARSTARSDB')

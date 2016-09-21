@@ -288,6 +288,16 @@ def extract_multiframe(filenames, parameters):
             binning_y = float(\
                         hdu[0].header[parameters['obsparam']['binning'][1].\
                                       split('_')[0]].split('x')[1])
+        elif '_CH_' in parameters['obsparam']['binning'][0]:
+            # only for RATIR
+            channel = hdu[0].header['INSTRUME'].strip()[1]
+            binning_x = float(hdu[0].header[parameters['obsparam']
+                                                      ['binning'][0].
+                                     replace('_CH_', channel)])
+            binning_y = float(hdu[0].header[parameters['obsparam']
+                                                      ['binning'][1].
+                                     replace('_CH_', channel)])
+
     else:
         binning_x = hdu[0].header[parameters['obsparam']['binning'][0]]
         binning_y = hdu[0].header[parameters['obsparam']['binning'][1]]

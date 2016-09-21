@@ -195,8 +195,15 @@ the logical order:
                    positions (e.g., Horizons position for moving
                    targets) in arcsec; requires two floats, one for RA
                    and one for Dec
-   :param -fixed_coo: (optional) fixed target position (requires two
-                   floats, one for RA and one for Dec, coordinates in degrees)
+   :param -positions: (optional) file that lists the position of the
+		      target as a function of time for all frames;
+		      exact format: image filename, ra (deg), dec
+		      (deg), observations midtime (JD)
+   :param -fixedtargets: (optional) file that list targets with fixed
+                         positions; exact format: target name, ra
+                         (deg), dec (deg)
+   :param -serendipity: (optional) search for serendipitous targets in
+                        the field (still experimental)
    :param images:  images to run `pp_distill` on
 
    This function will automatically read the target name from the FITS
