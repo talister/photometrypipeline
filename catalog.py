@@ -370,7 +370,7 @@ class catalog:
         # reject flagged sources (if requested)
         if maxflag is not None:
             self.reject_sources_other_than(self.data['FLAGS'] <= maxflag)
-            # FLAGS <= 4: allow for blending and nearby sources
+            # FLAGS <= 3: allow for blending and nearby sources
 
         # read data from image header, if requested
         if fits_filename is not None:

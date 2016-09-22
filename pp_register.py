@@ -319,8 +319,6 @@ if __name__ == '__main__':
     parser.add_argument("-snr", help='sextractor SNR threshold', default=3)
     parser.add_argument("-minarea", help='sextractor SNR threshold',
                         default=0)
-    parser.add_argument("-aprad", help='aperture radius for photometry (px)', 
-                        default=0)
     parser.add_argument("-cat", help='manually select reference catalog', 
                         default=None) 
     parser.add_argument('images', help='images to process', nargs='+')
@@ -328,7 +326,6 @@ if __name__ == '__main__':
     args = parser.parse_args()         
     sex_snr = float(args.snr)
     source_minarea = float(args.minarea)
-    aprad = float(args.aprad)
     mancat = args.cat
     filenames = args.images
 
@@ -353,8 +350,7 @@ if __name__ == '__main__':
     obsparam = _pp_conf.telescope_parameters[telescope]
 
     # set aperture photometry aperture radius
-    if aprad == 0:
-        aprad = obsparam['aprad_default']
+    aprad = obsparam['aprad_default']
 
     # set minarea from obsparam
     if source_minarea == 0:

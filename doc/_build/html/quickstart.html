@@ -58,6 +58,7 @@
 <li><a class="reference internal" href="#running-pp">Running PP</a><ul>
 <li><a class="reference internal" href="#fully-automated-mode">Fully Automated Mode</a></li>
 <li><a class="reference internal" href="#semi-automated-mode-walkthrough">Semi-Automated Mode Walkthrough</a></li>
+<li><a class="reference internal" href="#manual-target-identification">Manual Target Identification</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pp-diagnostics">PP Diagnostics</a></li>
@@ -173,13 +174,46 @@ analysis process. If you intend to perform the analysis fully
 manually, please note the individual functions have to be called in
 the following order:</p>
 <ul class="simple">
-<li><a class="reference internal" href="functions.html#pp_prepare" title="pp_prepare"><code class="xref py py-func docutils literal"><span class="pre">pp_prepare()</span></code></a></li>
-<li><a class="reference internal" href="functions.html#pp_register" title="pp_register"><code class="xref py py-func docutils literal"><span class="pre">pp_register()</span></code></a></li>
-<li><a class="reference internal" href="functions.html#pp_photometry" title="pp_photometry"><code class="xref py py-func docutils literal"><span class="pre">pp_photometry()</span></code></a></li>
-<li><a class="reference internal" href="functions.html#pp_calibrate" title="pp_calibrate"><code class="xref py py-func docutils literal"><span class="pre">pp_calibrate()</span></code></a></li>
-<li><code class="xref py py-func docutils literal"><span class="pre">pp_distill()</span></code></li>
+<li><a class="reference internal" href="functions.html#pp_prepare" title="pp_prepare"><code class="xref py py-func docutils literal"><span class="pre">pp_prepare()</span></code></a>: prepare the input images and implant rough
+WCS information into the image header</li>
+<li><a class="reference internal" href="functions.html#pp_register" title="pp_register"><code class="xref py py-func docutils literal"><span class="pre">pp_register()</span></code></a>: use <code class="docutils literal"><span class="pre">SCAMP</span></code> to register all input images
+based on the implanted rough WCS information; different catalogs are
+tried until all images have been registered ; this function calls
+<a class="reference internal" href="functions.html#pp_extract" title="pp_extract"><code class="xref py py-func docutils literal"><span class="pre">pp_extract()</span></code></a> automatically</li>
+<li><a class="reference internal" href="functions.html#pp_photometry" title="pp_photometry"><code class="xref py py-func docutils literal"><span class="pre">pp_photometry()</span></code></a>: derive instrumental magnitudes using a
+curve-of-growth analysis, or a manually provided aperture radius</li>
+<li><a class="reference internal" href="functions.html#pp_calibrate" title="pp_calibrate"><code class="xref py py-func docutils literal"><span class="pre">pp_calibrate()</span></code></a>: photometrically calibrate instrumental
+magnitudes and create a <cite>SQLite</cite> database file for each image; note
+that this function has to be called even if you plan on using
+instrumental magnitudes only (use the <cite>-instrumental</cite> option)</li>
+<li><a class="reference internal" href="functions.html#pp_distill" title="pp_distill"><code class="xref py py-func docutils literal"><span class="pre">pp_distill()</span></code></a>: extract target information from the photometry
+databases created by the previous task; see the function reference
+for the different options of target identification</li>
 </ul>
-<p>TBD</p>
+</div>
+<div class="section" id="manual-target-identification">
+<h3>Manual Target Identification<a class="headerlink" href="#manual-target-identification" title="Permalink to this headline">¶</a></h3>
+<p>In case the target has no identifier, or positions/ephemerides cannot
+be obtained automatically (e.g., space debris, newly discovered
+asteroids, etc.), or you want to verify the calibration accuracy using
+a manually selected control star in the field, the target has to be
+identified manually from the image data using <a class="reference internal" href="functions.html#pp_manident" title="pp_manident"><code class="xref py py-func docutils literal"><span class="pre">pp_manident()</span></code></a>.</p>
+<p>Image data are at minimum required to have passed <a class="reference internal" href="functions.html#pp_prepare" title="pp_prepare"><code class="xref py py-func docutils literal"><span class="pre">pp_prepare()</span></code></a>,
+<a class="reference internal" href="functions.html#pp_photometry" title="pp_photometry"><code class="xref py py-func docutils literal"><span class="pre">pp_photometry()</span></code></a>, and <a class="reference internal" href="functions.html#pp_calibrate" title="pp_calibrate"><code class="xref py py-func docutils literal"><span class="pre">pp_calibrate()</span></code></a>; <a class="reference internal" href="functions.html#pp_manident" title="pp_manident"><code class="xref py py-func docutils literal"><span class="pre">pp_manident()</span></code></a>
+may also be called after a full <a class="reference internal" href="functions.html#pp_run" title="pp_run"><code class="xref py py-func docutils literal"><span class="pre">pp_run()</span></code></a> call. In order to
+identify the target in all images, <a class="reference internal" href="functions.html#pp_manident" title="pp_manident"><code class="xref py py-func docutils literal"><span class="pre">pp_manident()</span></code></a> allows you to
+browse through all images and click on the target. The trajectory of
+the target is fit using a spline function. Quitting
+<a class="reference internal" href="functions.html#pp_manident" title="pp_manident"><code class="xref py py-func docutils literal"><span class="pre">pp_manident()</span></code></a> creates a <code class="docutils literal"><span class="pre">positions.dat</span></code> file, which can be
+used as input for <a class="reference internal" href="functions.html#pp_distill" title="pp_distill"><code class="xref py py-func docutils literal"><span class="pre">pp_distill()</span></code></a> using the <cite>-positions</cite> option.</p>
+<p>The manual target identification also allows the user to extract
+photometry from images with highly trailed background stars. In that
+case, the resulting photometry will consist of instrumental
+magnitudes. Hence, <a class="reference internal" href="functions.html#pp_register" title="pp_register"><code class="xref py py-func docutils literal"><span class="pre">pp_register()</span></code></a> does not have to be called and
+<a class="reference internal" href="functions.html#pp_calibrate" title="pp_calibrate"><code class="xref py py-func docutils literal"><span class="pre">pp_calibrate()</span></code></a> should be called using the <cite>-instrumental</cite>
+option. Positions used in the target identification and listed in the
+final photometry file are based on the rough WCS information implanted
+by <a class="reference internal" href="functions.html#pp_prepare" title="pp_prepare"><code class="xref py py-func docutils literal"><span class="pre">pp_prepare()</span></code></a> and should not be trusted!</p>
 </div>
 </div>
 <div class="section" id="pp-diagnostics">

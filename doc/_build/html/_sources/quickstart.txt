@@ -84,17 +84,53 @@ analysis process. If you intend to perform the analysis fully
 manually, please note the individual functions have to be called in
 the following order:
 
-* :func:`pp_prepare`
+* :func:`pp_prepare`: prepare the input images and implant rough
+  WCS information into the image header
 
-* :func:`pp_register`
+* :func:`pp_register`: use ``SCAMP`` to register all input images
+  based on the implanted rough WCS information; different catalogs are
+  tried until all images have been registered ; this function calls
+  :func:`pp_extract` automatically
 
-* :func:`pp_photometry`
+* :func:`pp_photometry`: derive instrumental magnitudes using a
+  curve-of-growth analysis, or a manually provided aperture radius
 
-* :func:`pp_calibrate`
+* :func:`pp_calibrate`: photometrically calibrate instrumental
+  magnitudes and create a `SQLite` database file for each image; note
+  that this function has to be called even if you plan on using
+  instrumental magnitudes only (use the `-instrumental` option)
 
-* :func:`pp_distill`
+* :func:`pp_distill`: extract target information from the photometry
+  databases created by the previous task; see the function reference
+  for the different options of target identification
 
-TBD
+
+Manual Target Identification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In case the target has no identifier, or positions/ephemerides cannot
+be obtained automatically (e.g., space debris, newly discovered
+asteroids, etc.), or you want to verify the calibration accuracy using
+a manually selected control star in the field, the target has to be
+identified manually from the image data using :func:`pp_manident`.
+
+Image data are at minimum required to have passed :func:`pp_prepare`,
+:func:`pp_photometry`, and :func:`pp_calibrate`; :func:`pp_manident`
+may also be called after a full :func:`pp_run` call. In order to
+identify the target in all images, :func:`pp_manident` allows you to
+browse through all images and click on the target. The trajectory of
+the target is fit using a spline function. Quitting
+:func:`pp_manident` creates a ``positions.dat`` file, which can be
+used as input for :func:`pp_distill` using the `-positions` option.
+
+The manual target identification also allows the user to extract
+photometry from images with highly trailed background stars. In that
+case, the resulting photometry will consist of instrumental
+magnitudes. Hence, :func:`pp_register` does not have to be called and
+:func:`pp_calibrate` should be called using the `-instrumental`
+option. Positions used in the target identification and listed in the
+final photometry file are based on the rough WCS information implanted
+by :func:`pp_prepare` and should not be trusted!
 
 
 PP Diagnostics

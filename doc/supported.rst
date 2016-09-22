@@ -90,6 +90,9 @@ If you are interested in using catalogs other than those listed,
 please let me know.
 
 
+
+.. _supported filters:
+
 Supported Catalog Transformations
 ---------------------------------
 

@@ -64,6 +64,7 @@ def manual_positions(posfile, catalogs, display=True):
                                                  ('ra', float), 
                                                  ('dec', float),
                                                  ('MJD', float)])
+
     try:
         assert len(positions) == len(catalogs)
     except AssertionError:
@@ -82,7 +83,7 @@ def manual_positions(posfile, catalogs, display=True):
                         'dec.deg'    :  positions[cat_idx]['dec']})
         
     if display:
-        print len(objects)/len(catalogs), 'objects found'
+        print len(objects)/len(catalogs), 'object(s) found'
 
     return objects
 
@@ -310,8 +311,9 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
     objects += pick_controlstar(catalogs, display=display)
 
     ### check Horizons for primary target (if a moving target)
-    objects += moving_primary_target(catalogs, man_targetname, offset, 
-                                     display=display)
+    if posfile is None and fixed_targets_file is None:
+        objects += moving_primary_target(catalogs, man_targetname, offset, 
+                                         display=display)
 
     ### add fixed target
     if fixed_targets_file is not None:
