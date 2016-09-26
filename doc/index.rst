@@ -18,8 +18,8 @@ Extractor aperture photometry. PP has been designed for asteroid
 observations, but can be used with any kind of imaging data.
 
 
-Scope
------
+Scope and Applicability
+-----------------------
 
 PP has been designed to provide automated photometry for the majority
 of data coming from small to medium-sized observatories. It is not
@@ -27,11 +27,24 @@ intended to provide high-accuracy photometry, nor is it designed to
 work on extremely sparse or crowded fields. PP requires a field of
 view of a few arcminutes to ensure that sufficient background stars
 are available for registration and photometric calibration. For a
-field several arcminutes across, photometric uncertaintes are of the
-order of 0.03 mag, if sufficient cataloged background stars are
-available. Feel free to try PP on your data, but please be aware that
-it has its limits.
+field several arcminutes across, calibrated photometric uncertaintes
+are usually better than 0.05 mag, if sufficient non-saturated
+background stars with cataloged brightness are available. Feel free to
+try PP on your data, but please be aware that it has its limitations.
 
+The following features are currently available as part of PP:
+
+* automated aperture photometry based on a curve-of-growth analysis
+* photometric calibration in ugriz, BVRI, JHK based on catalog coverage
+* full support of moving target photometry
+* target identification based on tabulated positions for fixed targets
+  and moving targets, target identifier for moving targets
+
+Future versions of the pipeline will support newly available catalogs
+for astrometry and photometry (e.g., GAIA) and enable the extraction
+of serendipitously observed targets of interests, e.g., variable stars
+or moving targets. If you are interesting in using PP for a specific
+task, let me know!
 
 
 Contents
@@ -46,7 +59,7 @@ Contents
    functions
    diagnostics
    problems
-
+   changelog
 
 License and Contact
 -------------------
@@ -56,7 +69,7 @@ The Photometry Pipeline is distributed under the GNU GPLv3 license.
 Copyright (C) 2016  Michael Mommert 
 
 Feel free to contact me in case of questions or suggestions: michael
-(at) mommert . nau . edu
+. mommert (at) nau . edu
 
 
 

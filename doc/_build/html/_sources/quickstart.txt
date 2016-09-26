@@ -104,6 +104,7 @@ the following order:
   databases created by the previous task; see the function reference
   for the different options of target identification
 
+.. _manual target identification:
 
 Manual Target Identification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

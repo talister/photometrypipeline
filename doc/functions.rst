@@ -314,13 +314,52 @@ the logical order:
    `-positions` or `-fixedtargets` option is used, JPL Horizons will
    not be queried.
 
-   
-.. function:: pp_manident (images)
 
-   stuff
+Functions that provide additional functionality:
+   
+   
+.. function:: pp_manident ([-zoom float], images)
+
+   manual target identification
+
+   :param zoom: zoom factor applied to images when loaded; number
+                greater than one will increase the size and vice
+                versa; default zoom value is 0.5
 
    :param images: images to run `pp_manident` on
 
+   This function allows to manually identify a target in the images
+   provided and creates a file with the target's position in each
+   image; the resulting file can be used by :func:`pp_distill` to
+   extract target photometry. Loading all images might take a while,
+   the loading progress is displayed. Once all images have been
+   loaded, the first image is displayed in a window with green
+   circles, indicating sources identified by :func:`pp_extract`. You
+   can browse between the images with the `a` and `d` keys, or display
+   the next frame with a right-click. Left-click on the target in at
+   least two different images (the target circle color will turn to
+   red) will make this function interpolate the target trajectory
+   using second-order splines or third-order splines, if more manual
+   positions are provided. Browsing between the images will show the
+   interpolated (or extrapolated) target position indicated with a
+   yellow circle. If the target is incorrectly identified in some
+   images, click on it again to mark it manually (red circle) which
+   will automatically update the spline interpolation. Once the target
+   is properly identified in all images, hit `q` to close the window
+   to write the positions file (`positions.dat`). A few notes: (1)
+   :func:`pp_manident` uses WCS coordinates to identify the target;
+   the images do not necessarily have to be registered, i.e., the fake
+   WCS information provided by :func:`pp_prepare` will work perfectly
+   fine, allowing the user you to apply this function also on
+   un-registered images; however, be aware that the coordinates listed
+   in the `positions.dat` file might not be *real* RA and Dec; (2)
+   :func:`pp_manident` relies on source catalogs created by
+   :func:`pp_extract` so either :func:`pp_extract`, or better
+   :func:`pp_photometry` have to be run over the images previously;
+   please refer to the :ref:`manual target identification` walkthrough
+   for a recipe on how to use this function.
+
+		  
 
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp

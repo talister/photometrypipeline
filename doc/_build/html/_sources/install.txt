@@ -27,7 +27,9 @@ Python 2.7 modules (available from the `Python Package Index`_ through
 * `astropy`_
 * `matplotlib`_
 * `callhorizons`_
+* `Python Imaging Library`_ (only required for manual target identification)
 
+  
 and some freely available software:
 
 * `Source Extractor`_ 
@@ -56,7 +58,58 @@ In order to get the latest version of PP, simply change into
 Telescope Setup
 ~~~~~~~~~~~~~~~
 
-all the stuff that goes into ``setup/telescopes.py``...
+PP critically relies on information provided in the FITS image headers
+to handle data properly. While the FITS format is
+standardized, header keywords are not, leading to additional
+complications in the interpretation of FITS files. In order to be able
+to work with a multitude of different telescopes and instruments, PP
+comes with guidelines of how to read FITS files coming from different
+telescopes/instruments. These guidelines are imprinted in the
+``setup/telescopes.py`` file.
+
+
+The '`telescope file`' includes for each telescope/instrument
+combination a dictionary (``*_param``) that translates general
+descriptions for FITS header keywords into specific keywords used by
+the respective telescope/instrument combination. For example, the
+telescope pointing RA keyword might be named ``RA`` for one telescope,
+but ``TELRA`` for another -- PP will refer to either of those as
+``ra``. The `telescope file` catches these degeneracies and allows the
+pipeline to understand images coming from a variety of telescopes.
+The meanings of the individual keys in this dictionary are explained
+in the comments of the respective key. Furthermore, each
+telescope/instrument combination must have parameter files for Source
+Extractor and SCAMP (SWARP is currently not supported). Mask files are
+used by Source Extractor to mask certain regions of the image detector
+-- mask files are only required if field vignetting or image artifacts
+(e.g., high noise levels in certain areas of the detector) strongly
+affect the detection of sources in the field.
+
+If you want to include you own telescope into the `telescope file`,
+follow these steps:
+
+1. Copy any ``*_param`` dictionary in ``setup/telescopes.py`` and give
+   it a unique identifier (e.g., ``MYTELESCOPE``)
+2. Look at the image header of one of your science images and identify
+   the different fields of the ``*_param`` file. Replace the
+   dictionary item values accordingly.
+3. In the ``setup/`` directory, copy the Source Extractor (``.sex``)
+   and SCAMP (``.scamp``) (and maybe even the SWARP (``.swarp``)
+   parameter files from either telescope and name them after your
+   telescope (e.g., ``mytelescope.scamp``).
+4. Add your telescope's identifier to the ``implemented_telescopes`` list in
+   ``setup/telescopes.py``, as well as the ``telescope_parameters``
+   dictionary. Finally, add your telescope's identifier to the
+   ``instrument_identifiers`` dictionary: the value is your
+   telescope's identifier, the key is the ``INSTRUME`` header keyword
+   (this is present in most FITS data).
+5. Run :func:`pp_prepare` over one of your images. Check with `ds9` or
+   some other tool if the image orientation provided by
+   :func:`pp_prepare` is correct. If not, play with the `flipx`,
+   `flipy` parameters in your `telescope file`.
+
+If this sounds too confusing, send me one of your images in an email
+and I will take care of implementing your telescope.
 
 
 .. _github: https://github.com/mommermi/photometrypipeline
@@ -68,6 +121,7 @@ all the stuff that goes into ``setup/telescopes.py``...
 .. _astropy: http://www.astropy.org/
 .. _matplotlib: http://matplotlib.org/
 .. _callhorizons: https://pypi.python.org/pypi/CALLHORIZONS
+.. _Python Imaging Library: http://www.pythonware.com/products/pil/
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp
 .. _r345: http://www.astromatic.net/wsvn/public/dl.php?repname=public+software.scamp&path=%2Ftrunk%2F&rev=0&isdir=1

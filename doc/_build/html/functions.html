@@ -448,18 +448,55 @@ the consistency of the derive magnitude zeropoints. If either the
 not be queried.</p>
 </dd></dl>
 
+<p>Functions that provide additional functionality:</p>
 <dl class="function">
 <dt id="pp_manident">
-<code class="descname">pp_manident</code><span class="sig-paren">(</span><em>images</em><span class="sig-paren">)</span><a class="headerlink" href="#pp_manident" title="Permalink to this definition">¶</a></dt>
-<dd><p>stuff</p>
+<code class="descname">pp_manident</code><span class="sig-paren">(</span><span class="optional">[</span><em>-zoom float</em>, <span class="optional">]</span><em>images</em><span class="sig-paren">)</span><a class="headerlink" href="#pp_manident" title="Permalink to this definition">¶</a></dt>
+<dd><p>manual target identification</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>images</strong> &#8211; images to run <cite>pp_manident</cite> on</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>zoom</strong> &#8211; zoom factor applied to images when loaded; number
+greater than one will increase the size and vice
+versa; default zoom value is 0.5</li>
+<li><strong>images</strong> &#8211; images to run <cite>pp_manident</cite> on</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
+<p>This function allows to manually identify a target in the images
+provided and creates a file with the target&#8217;s position in each
+image; the resulting file can be used by <a class="reference internal" href="#pp_distill" title="pp_distill"><code class="xref py py-func docutils literal"><span class="pre">pp_distill()</span></code></a> to
+extract target photometry. Loading all images might take a while,
+the loading progress is displayed. Once all images have been
+loaded, the first image is displayed in a window with green
+circles, indicating sources identified by <a class="reference internal" href="#pp_extract" title="pp_extract"><code class="xref py py-func docutils literal"><span class="pre">pp_extract()</span></code></a>. You
+can browse between the images with the <cite>a</cite> and <cite>d</cite> keys, or display
+the next frame with a right-click. Left-click on the target in at
+least two different images (the target circle color will turn to
+red) will make this function interpolate the target trajectory
+using second-order splines or third-order splines, if more manual
+positions are provided. Browsing between the images will show the
+interpolated (or extrapolated) target position indicated with a
+yellow circle. If the target is incorrectly identified in some
+images, click on it again to mark it manually (red circle) which
+will automatically update the spline interpolation. Once the target
+is properly identified in all images, hit <cite>q</cite> to close the window
+to write the positions file (<cite>positions.dat</cite>). A few notes: (1)
+<a class="reference internal" href="#pp_manident" title="pp_manident"><code class="xref py py-func docutils literal"><span class="pre">pp_manident()</span></code></a> uses WCS coordinates to identify the target;
+the images do not necessarily have to be registered, i.e., the fake
+WCS information provided by <a class="reference internal" href="#pp_prepare" title="pp_prepare"><code class="xref py py-func docutils literal"><span class="pre">pp_prepare()</span></code></a> will work perfectly
+fine, allowing the user you to apply this function also on
+un-registered images; however, be aware that the coordinates listed
+in the <cite>positions.dat</cite> file might not be <em>real</em> RA and Dec; (2)
+<a class="reference internal" href="#pp_manident" title="pp_manident"><code class="xref py py-func docutils literal"><span class="pre">pp_manident()</span></code></a> relies on source catalogs created by
+<a class="reference internal" href="#pp_extract" title="pp_extract"><code class="xref py py-func docutils literal"><span class="pre">pp_extract()</span></code></a> so either <a class="reference internal" href="#pp_extract" title="pp_extract"><code class="xref py py-func docutils literal"><span class="pre">pp_extract()</span></code></a>, or better
+<a class="reference internal" href="#pp_photometry" title="pp_photometry"><code class="xref py py-func docutils literal"><span class="pre">pp_photometry()</span></code></a> have to be run over the images previously;
+please refer to the <a class="reference internal" href="quickstart.html#manual-target-identification"><span>Manual Target Identification</span></a> walkthrough
+for a recipe on how to use this function.</p>
 </dd></dl>
 
 </div>
