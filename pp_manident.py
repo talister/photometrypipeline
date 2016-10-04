@@ -131,9 +131,9 @@ class Clicker:
         """ read in all image data, scale images """
         for idx, filename in enumerate(filenames):
             if idx > 0:
-                print '\b\b\b\b%3d' % idx,
+                print '\b\b\b\b%3d' % idx+1,
             else:
-                print '%3d' % idx,
+                print '%3d' % idx+1,
             sys.stdout.flush()
 
             ## read image data
@@ -316,7 +316,7 @@ if __name__ == "__main__":
                 app.ldac[image_idx][interp_idx]['YWIN_WORLD'],
                 app.mjd[image_idx]))
 
-    print image_idx, 'target positions written to file positions.dat'
+    print image_idx+1, 'target positions written to file positions.dat'
 
     outf.close()
 

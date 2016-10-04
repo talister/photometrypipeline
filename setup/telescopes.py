@@ -120,7 +120,8 @@ dctlmi_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTERS',  # filter keyword
-    'filter_translations'  : {'V': 'V', 'R': 'R', 'B': 'B', 'VR': None},
+    'filter_translations'  : {'V': 'V', 'R': 'R', 'B': 'B', 'VR': None,
+                              'I': 'I'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword

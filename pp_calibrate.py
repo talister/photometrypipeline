@@ -394,7 +394,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     
     ### obtain photometric catalog(s) of the field based on settings in
     # setup/telescope.py and the image filter
-    if manfilter is not None:
+    if manfilter is not False:
         filtername = manfilter
     else:
         if len(filternames) == 1:
@@ -490,8 +490,11 @@ if __name__ == '__main__':
     instrumental = args.instrumental
     filenames = args.images
 
+
     if instrumental:
         manfilter = None
+    else:
+        manfilter = False
 
     # check if input filenames is actually a list
     if len(filenames) == 1:
