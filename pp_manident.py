@@ -131,9 +131,9 @@ class Clicker:
         """ read in all image data, scale images """
         for idx, filename in enumerate(filenames):
             if idx > 0:
-                print '\b\b\b\b%3d' % idx+1,
+                print '\b\b\b\b%3d' % (idx+1),
             else:
-                print '%3d' % idx+1,
+                print '%3d' % (idx+1),
             sys.stdout.flush()
 
             ## read image data
