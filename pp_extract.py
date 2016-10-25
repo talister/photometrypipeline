@@ -198,15 +198,15 @@ class extractor(threading.Thread):
                                             obsparam['exptime']])/2./86400.
             out['time'] = midtimjd
 
-            hdu[0].header['APRAD'] = \
-                (",".join([str(aprad) for aprad in self.param['aprad']]), \
-                 'aperture phot radius (px)')
-            hdu[0].header['SEXSNR'] = \
-                (self.param['sex_snr'], 
-                 'Sextractor detection SNR threshold')
-            hdu[0].header['SEXAREA'] = \
-                (self.param['source_minarea'], 
-                 'Sextractor source area threshold (px)')
+            # hdu[0].header['APRAD'] = \
+            #     (",".join([str(aprad) for aprad in self.param['aprad']]), \
+            #      'aperture phot radius (px)')
+            # hdu[0].header['SEXSNR'] = \
+            #     (self.param['sex_snr'], 
+            #      'Sextractor detection SNR threshold')
+            # hdu[0].header['SEXAREA'] = \
+            #     (self.param['source_minarea'], 
+            #      'Sextractor source area threshold (px)')
             out['fits_header'] = hdu[0].header
 
             hdu.flush()
@@ -239,7 +239,7 @@ def extract_multiframe(filenames, parameters):
 
 
     # obtain telescope information from image header or override manually
-    hdu = fits.open(filenames[0], ignore_missing_end=True)
+    hdu = fits.open(filenames[0], ignore_missing_end=True, verify='silentfix')
 
     if 'telescope' not in parameters or parameters['telescope'] is None: 
         try:
@@ -302,13 +302,14 @@ def extract_multiframe(filenames, parameters):
         binning_x = hdu[0].header[parameters['obsparam']['binning'][0]]
         binning_y = hdu[0].header[parameters['obsparam']['binning'][1]]
     bin_string = '%d,%d' % (binning_x, binning_y)
-
+    
+    hdu.close()
 
     if bin_string in parameters['obsparam']['mask_file']:
         mask_file = parameters['obsparam']['mask_file'][bin_string]
         parameters['mask_file'] = mask_file
 
-    hdu.close()
+
 
     ### thread and queue handling
 

@@ -60,7 +60,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
     
     # check if images have been run through pp_prepare
     try:
-        midtime_jd = fits.open(filenames[0], 
+        midtime_jd = fits.open(filenames[0], verify='silentfix', 
                                ignore_missing_end=True)[0].header['MIDTIMJD']
     except KeyError:
         raise KeyError(('%s image header incomplete, have the data run ' + 
@@ -116,8 +116,10 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         ### check if sufficient reference stars are available in refcat
         logging.info('check if sufficient reference stars in catalog %s' %
                      refcat)
-        hdulist = fits.open(filenames[len(filenames)/2],
-                            ignore_missing_end=True)
+
+
+        hdulist = fits.open(filenames[len(filenames)/2])
+
         ra = float(hdulist[0].header['CRVAL1'])
         dec = float(hdulist[0].header['CRVAL2'])
         rad = max([float(hdulist[0].header[obsparam['extent'][0]])*
@@ -237,7 +239,8 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         fake_wcs_keys =  ['RADECSYS', 'CTYPE1', 'CTYPE2', 'CRVAL1', 'CRVAL2', 
                           'CRPIX1', 'CRPIX2', 'CD1_1', 'CD1_2', 'CD2_1', 
                           'CD2_2', 'RADESYS']
-        hdu = fits.open(filename, mode='update', ignore_missing_end=True)
+        hdu = fits.open(filename, mode='update', verify='silentfix',
+                        ignore_missing_end=True)
         for fake_key in fake_wcs_keys:
             hdu[0].header[fake_key] = ''
 
@@ -334,7 +337,8 @@ if __name__ == '__main__':
     # check that they are the same for all images
     instruments = []
     for filename in filenames:
-        hdulist = fits.open(filename, ignore_missing_end=True)
+        hdulist = fits.open(filename, ignore_missing_end=True,
+                            verify='silentfix')
         header = hdulist[0].header
         for key in _pp_conf.instrument_keys:
             if key in header:

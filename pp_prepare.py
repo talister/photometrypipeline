@@ -125,7 +125,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             print 'preparing', filename
 
         # open image file
-        hdulist = fits.open(filename, mode='update', verify='ignore', 
+        hdulist = fits.open(filename, mode='update', verify='silentfix', 
                             ignore_missing_end=True)
         header = hdulist[0].header
 
@@ -191,8 +191,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                 header.remove(key)
             elif key in ['CTYPE1', 'CRPIX1', 'CRVAL1', 'CROTA1', 'CROTA2', 
                        'CFINT1', 'CTYPE2', 'CRPIX2', 'CRVAL2', 
-                       'CFINT2',  
-                       'LTM1_1', 'LTM2_2', 'WAT0_001', 'LTV1', 
+                       'CFINT2', 'LTM1_1', 'LTM2_2', 'WAT0_001', 'LTV1', 
                          'LTV2', 'PIXXMIT', 'PIXOFFST']:
                 # removed 'CDELT1', 'CDELT2', 'CRDELT1', 'CRDELT2' from list
                 # used by LOWELL31, LOWELL90
@@ -340,7 +339,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         header['CD2_2']  = (ynorm * numpy.cos(this_rotate/180.*numpy.pi) * \
                 obsparam['secpix'][1]*binning_y/3600., \
                                              'PP: fake Coordinate matrix')
-
+        
         #### crop center from LOWELL42 frames
         if obsparam['telescope_keyword'] == 'LOWELL42': 
             imdata = imdata[100:-100,100:-100]
