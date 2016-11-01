@@ -20,8 +20,6 @@ Photometry Pipeline Configuation File
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-
-
 ##### telescope/instrument configurations
 
 # VATT, VATT4k
@@ -1239,3 +1237,20 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'RATIR':         ratir_param,
                         #'SL74SHA':       sl74sha_param,
                         'SOARGOODMAN':   soargoodman_param}
+
+
+#### append mytelescopes.py, if available
+#
+# mytelescopes.py allows you to setup your own telescope; that file is
+# not part of the github repository, hence it will not be affected by
+# pulls and pushes
+#
+# an example mytelescopes.py file is available on the PP documentation
+# website: 
+
+
+
+try:
+    import mytelescopes
+except ImportError:
+    pass

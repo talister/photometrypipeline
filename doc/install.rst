@@ -41,17 +41,17 @@ Installation walkthroughs for MAC OS and Ubuntu 15.10 will be available here, so
 Setup
 -----
 
-In order to be able to use PP anywhere on your machine, you
-have to add ``photometrypipeline/`` to your `PYTHONPATH` variable, and
-you have to create a `PHOTPIPEDIR` variable on your system that points
-to the same directory (include both commands in your ``.bashrc``,
-``.cshrc``, or ``.profile`` file.)
+In order to be able to use PP anywhere on your machine, you have to
+add the full path of the ``photometrypipeline/`` directory to your
+`PYTHONPATH` and `PATH` variables, and you have to create a
+`PHOTPIPEDIR` variable on your system that points to the same
+directory (include these commands in your ``.bashrc``, ``.cshrc``, or
+``.profile`` file.)
 
 In order to get the latest version of PP, simply change into
 ``photometrypipeline/`` and type::
 
   git pull
-
 
 .. _telescope_setup:
 
@@ -59,13 +59,17 @@ Telescope Setup
 ~~~~~~~~~~~~~~~
 
 PP critically relies on information provided in the FITS image headers
-to handle data properly. While the FITS format is
-standardized, header keywords are not, leading to additional
-complications in the interpretation of FITS files. In order to be able
-to work with a multitude of different telescopes and instruments, PP
-comes with guidelines of how to read FITS files coming from different
+to handle data properly. While the FITS format is standardized, header
+keywords are not, leading to additional complications in the
+interpretation of FITS files. In order to be able to work with a
+multitude of different telescopes and instruments, PP comes with
+guidelines of how to read FITS files coming from different
 telescopes/instruments. These guidelines are imprinted in the
-``setup/telescopes.py`` file.
+``setup/telescopes.py`` file. In order to prevent compatibility
+issues, you should not change this file directly. Instead, please
+create and use a ``setup/mytelescopes.py`` as described below. You can
+implement as many telescopes as you want in this file. The advantage
+is that the file will not be changed as a result of git pull requests.
 
 
 The '`telescope file`' includes for each telescope/instrument
@@ -88,17 +92,18 @@ affect the detection of sources in the field.
 If you want to include you own telescope into the `telescope file`,
 follow these steps:
 
-1. Copy any ``*_param`` dictionary in ``setup/telescopes.py`` and give
-   it a unique identifier (e.g., ``MYTELESCOPE``)
+1. Download the `mytelescopes.py`_ file into your ``setup/`` directory
+   and duplicate the ``mytelescope_param`` dictionary. Change the
+   ``MYTELESCOPE`` identifier of the duplicate and give it a unique
+   name (e.g., ``42INCH_CCD``). 
 2. Look at the image header of one of your science images and identify
    the different fields of the ``*_param`` file. Replace the
    dictionary item values accordingly.
 3. In the ``setup/`` directory, copy the Source Extractor (``.sex``)
-   and SCAMP (``.scamp``) (and maybe even the SWARP (``.swarp``)
-   parameter files from either telescope and name them after your
-   telescope (e.g., ``mytelescope.scamp``).
+   and SCAMP (``.scamp``) parameter files from either telescope and
+   name them after your telescope (e.g., ``42inch_ccd.scamp``).
 4. Add your telescope's identifier to the ``implemented_telescopes`` list in
-   ``setup/telescopes.py``, as well as the ``telescope_parameters``
+   ``setup/mytelescopes.py``, as well as the ``telescope_parameters``
    dictionary. Finally, add your telescope's identifier to the
    ``instrument_identifiers`` dictionary: the value is your
    telescope's identifier, the key is the ``INSTRUME`` header keyword
@@ -125,3 +130,4 @@ and I will take care of implementing your telescope.
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp
 .. _r345: http://www.astromatic.net/wsvn/public/dl.php?repname=public+software.scamp&path=%2Ftrunk%2F&rev=0&isdir=1
+.. _mytelescopes.py: http://134.114.60.45/photometrypipeline/mytelescopes.py

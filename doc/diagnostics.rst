@@ -227,6 +227,6 @@ identification of corrupted frames.
 .. _image of that frame: http://134.114.60.45/photometrypipeline/example_7813/.diagnostics//mscience0300.fits.png
 .. _registration website: http://134.114.60.45/photometrypipeline/example_7813/.diagnostics/registration.html
 .. _detailed information: http://134.114.60.45/photometrypipeline/example_7813/.diagnostics/calibration.html
-.. _SCAMP manual: http://astromatic.iap.fr/wordpress/wp-content/uploads/2009/01/pdf-dist.png
+.. _SCAMP manual: https://www.astromatic.net/pubsvn/software/scamp/trunk/doc/scamp.pdf
 .. _this: http://134.114.60.45/photometrypipeline/example_7813/diagnostics.html
 .. _dedicated photometry page: http://134.114.60.45/photometrypipeline/example_7813/.diagnostics/7813_results.html

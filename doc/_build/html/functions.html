@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Functions &mdash; Photometry Pipeline 0.9 documentation</title>
+    <title>Functions &#8212; Photometry Pipeline 0.9 documentation</title>
     
     <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="supported.html" title="Supported Observatories"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Photometry Pipeline 0.9 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Photometry Pipeline 0.9 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -67,14 +67,11 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -119,7 +116,7 @@ limited by using the <cite>-prefix</cite> option)</li>
 </tr>
 </tbody>
 </table>
-<p>The use of <cite>pp_run</cite> is discussed in the <a class="reference internal" href="quickstart.html#quickstart"><span>Quickstart</span></a> reference.</p>
+<p>The use of <cite>pp_run</cite> is discussed in the <a class="reference internal" href="quickstart.html#quickstart"><span class="std std-ref">Quickstart</span></a> reference.</p>
 <p>This wrapper should work successfully for most data sets. If the
 analysis fails at some point - or provides inadequate results -
 every single step in the pipeline can be run manually, providing
@@ -141,13 +138,13 @@ the logical order:</p>
 <li><strong>-dec</strong> &#8211; (optional) manually sets the frame center declination</li>
 <li><strong>-flipx</strong> &#8211; (optional) forces the image&#8217;s x-axis to be flipped
 in wcs coordinates relative to the respective
-<a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> setting</li>
+<a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> setting</li>
 <li><strong>-flipy</strong> &#8211; (optional) forces the image&#8217;s y-axis to be flipped
 in wcs coordinates relative to the respective
-<a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> setting</li>
+<a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> setting</li>
 <li><strong>-rotate</strong> &#8211; (optional) rotates the image&#8217;s orientation in the sky
 (East-of-North) relative to the respective
-<a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> setting</li>
+<a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> setting</li>
 <li><strong>-target</strong> &#8211; (optional) the target name to be used in all
 images, this overwrites the <code class="docutils literal"><span class="pre">OBJECT</span></code> keyword in the
 FITS headers; note to replace blanks with
@@ -189,9 +186,9 @@ Extractor</cite> parameter file</li>
 pixels; if no aperture radius is given here, the
 default aperture radius for this
 telescope/instrument combination is used (see
-<a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> reference)</li>
+<a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> reference)</li>
 <li><strong>-telescope</strong> &#8211; (optional) manual override for the telescope
-identifier (see <a class="reference internal" href="supported.html#supported-observatories"><span>Supported Observatories</span></a>)</li>
+identifier (see <a class="reference internal" href="supported.html#supported-observatories"><span class="std std-ref">Supported Observatories</span></a>)</li>
 <li><strong>-ignore_saturation</strong> &#8211; (optional) using this option will not
 flag saturated sources; as a result,
 they are not rejected in the
@@ -221,12 +218,12 @@ function manually.</p>
 the registration, default: 3</li>
 <li><strong>-minarea</strong> &#8211; (optional) minimum number of connected pixels
 above the SNR threshold for a valid source,
-default: <a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> setting</li>
+default: <a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> setting</li>
 <li><strong>-cat</strong> &#8211; (optional) reference catalog override for astrometric
 calibration (a list of supported catalogs is listed
-here: <a class="reference internal" href="supported.html#supported-catalogs"><span>Supported Reference Catalogs</span></a>); if not specific
+here: <a class="reference internal" href="supported.html#supported-catalogs"><span class="std std-ref">Supported Reference Catalogs</span></a>); if not specific
 catalog is requested, those listed in the
-<a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> reference are tried</li>
+<a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> reference are tried</li>
 <li><strong>images</strong> &#8211; images to run <cite>pp_register</cite> on</li>
 </ul>
 </td>
@@ -240,7 +237,7 @@ are passed on to <a class="reference internal" href="#pp_extract" title="pp_extr
 specify the source properties.  <cite>pp_register</cite> utilizes <cite>SCAMP</cite> to
 match the source catalogs with astrometric catalogs as specified
 for this telescope/instrument combination (see
-<a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> reference), or as provided by the user with
+<a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> reference), or as provided by the user with
 the <cite>-cat</cite> option. Catalogs are accessed through the <a class="reference external" href="http://vizier.u-strasbg.fr/vizier/">CDS Vizier</a>
 server. Among others, <cite>SCAMP</cite> outputs two diagnostic numbers:
 <code class="docutils literal"><span class="pre">AS_CONTRAST</span></code> and <code class="docutils literal"><span class="pre">XY_CONTRAST</span></code>. The image registration
@@ -270,7 +267,7 @@ instrumental magnitudes</p>
 in the analysis, default: 2</li>
 <li><strong>-minarea</strong> &#8211; (optional) minimum number of connected pixels
 above the SNR threshold for a valid source,
-default: <a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> setting</li>
+default: <a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> setting</li>
 <li><strong>-aprad</strong> &#8211; (optional) if this option is used, the
 curve-of-growth analysis is skipped and instrumental
 magnitudes are derived with this aperture radius</li>
@@ -343,10 +340,10 @@ stars; if this option is not used, the default is
 reference stars)</li>
 <li><strong>-catalog</strong> &#8211; (optional) manual override for the reference
 catalog; a list of available reference catalogs
-is available here: <a class="reference internal" href="supported.html#supported-catalogs"><span>Supported Reference Catalogs</span></a>) or
+is available here: <a class="reference internal" href="supported.html#supported-catalogs"><span class="std std-ref">Supported Reference Catalogs</span></a>) or
 using this routine&#8217;s help function; if this
 option is not used, the photometric reference
-catalogs list in the <a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> are
+catalogs list in the <a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> are
 used</li>
 <li><strong>-filter</strong> &#8211; (optional) manual override for the filter used in
 the observations; if this option is not used, the
@@ -373,12 +370,12 @@ photometry database for each image</li>
 matched with photometric catalogs in order to derive the magnitude
 zeropoint of each input image. Photometric catalogs are accessed
 through <a class="reference external" href="http://vizier.u-strasbg.fr/vizier/">CDS Vizier</a>, as specified in the respective
-<a class="reference internal" href="install.html#telescope-setup"><span>Telescope Setup</span></a> setting, or as specified by the <cite>-catalog</cite>
+<a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> setting, or as specified by the <cite>-catalog</cite>
 option. If <cite>-catalog</cite> is not used, a number of catalogs are tried;
 if it is used, only one catalog is tried. If no sources are
 available from either catalog, the function finishes using
 instrumental magnitudes. Filter transformations are implemented as
-documented in <a class="reference internal" href="supported.html#supported-filters"><span>Supported Catalog Transformations</span></a>. The calibration process
+documented in <a class="reference internal" href="supported.html#supported-filters"><span class="std std-ref">Supported Catalog Transformations</span></a>. The calibration process
 requires a minimum number of matched sources in the field
 (currently 3) and uses an iterative Chi2 fitting process as
 documented in Mommert (2016).</p>
@@ -495,7 +492,7 @@ in the <cite>positions.dat</cite> file might not be <em>real</em> RA and Dec; (2
 <a class="reference internal" href="#pp_manident" title="pp_manident"><code class="xref py py-func docutils literal"><span class="pre">pp_manident()</span></code></a> relies on source catalogs created by
 <a class="reference internal" href="#pp_extract" title="pp_extract"><code class="xref py py-func docutils literal"><span class="pre">pp_extract()</span></code></a> so either <a class="reference internal" href="#pp_extract" title="pp_extract"><code class="xref py py-func docutils literal"><span class="pre">pp_extract()</span></code></a>, or better
 <a class="reference internal" href="#pp_photometry" title="pp_photometry"><code class="xref py py-func docutils literal"><span class="pre">pp_photometry()</span></code></a> have to be run over the images previously;
-please refer to the <a class="reference internal" href="quickstart.html#manual-target-identification"><span>Manual Target Identification</span></a> walkthrough
+please refer to the <a class="reference internal" href="quickstart.html#manual-target-identification"><span class="std std-ref">Manual Target Identification</span></a> walkthrough
 for a recipe on how to use this function.</p>
 </dd></dl>
 
@@ -519,12 +516,12 @@ for a recipe on how to use this function.</p>
         <li class="right" >
           <a href="supported.html" title="Supported Observatories"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Photometry Pipeline 0.9 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Photometry Pipeline 0.9 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Michael Mommert.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
+        &#169; Copyright 2016, Michael Mommert.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>
