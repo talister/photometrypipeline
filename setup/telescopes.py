@@ -1180,6 +1180,56 @@ soargoodman_param = {
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
+# Observatoire de Haute-Provence, 120cm, CCD
+ohp120_param = {
+    'telescope_instrument' : 'OHP120cm/CCD', # telescope/instrument name
+    'telescope_keyword'    : 'OHP120',      # telescope/instrument keyword
+    'observatory_code'     : '511',         # MPC observatory code
+    'secpix'               : (0.385, 0.385), # pixel size (arcsec) before binning
+
+    # image orientation preferences
+    'flipx'                : True,
+    'flipy'                : True,
+    'rotate'               : 0,
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('XBINNING', 'YBINNING'), # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointing, Dec 
+    'radec_separator'      : 'XXX',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTER',  # filter keyword
+    'filter_translations'  : {'R_Cousins': 'R'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+    # source extractor settings
+    'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'aprad_default'        : 8, # default aperture radius in px 
+    'aprad_range'          : [2, 15], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/ohp120.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/ohp120.scamp', 
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
+}
+
+
 
 ##### access functions for telescope configurations
 
@@ -1188,7 +1238,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'ARC35AGILE', 'MAGIMACS', 'LOWELL31', 'LOWELL42',
                           'LOWELL72',
                           'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS',
-                          'WIYN09HDI', 'RATIR', 'SOARGOODMAN',
+                          'WIYN09HDI', 'RATIR', 'SOARGOODMAN', 'OHP120',
                           #'SL74SAH',
                           'GENERIC']
 
@@ -1216,7 +1266,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'C3':                'RATIR',
                           'C4':                'RATIR',
                           #'SHA':               'SL74SHA',
-                          'Goodman Spectrograph': 'SOARGOODMAN'}
+                          'Goodman Spectrograph': 'SOARGOODMAN',
+                          'Andor Tech':        'OHP120'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K' :       vatt4k_param, 
@@ -1236,7 +1287,8 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'GENERIC':       generic_param,
                         'RATIR':         ratir_param,
                         #'SL74SHA':       sl74sha_param,
-                        'SOARGOODMAN':   soargoodman_param}
+                        'SOARGOODMAN':   soargoodman_param,
+                        'OHP120':        ohp120_param}
 
 
 #### append mytelescopes.py, if available
@@ -1245,12 +1297,12 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
 # not part of the github repository, hence it will not be affected by
 # pulls and pushes
 #
-# an example mytelescopes.py file is available on the PP documentation
-# website: 
-
-
+# an example mytelescopes.py file is available here:
+# http://134.114.60.45/photometrypipeline/mytelescopes.py
+# more information are available on the PP documentation website:
+# http://mommermi.github.io/pp/install.html
 
 try:
-    import mytelescopes
-except ImportError:
+    execfile(rootpath+'/setup/mytelescopes.py')
+except IOError:
     pass

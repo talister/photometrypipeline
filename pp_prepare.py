@@ -30,7 +30,9 @@ import logging
 import subprocess
 import argparse, shlex
 import time
+import callhorizons
 from astropy.io import fits
+
 
 ### pipeline-specific modules
 import _pp_conf
@@ -267,8 +269,39 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                                        'PP: old value for %s' % key)
             header[key] = (value, 'PP: manually updated')
 
+        # check if RA, Dec, airmass headers are available; else: query horizons
+        # to get approximate information
+        if (obsparam['ra'] not in header or 
+            obsparam['dec'] not in header or 
+            obsparam['airmass'] not in header):
+
+            logging.info('Either RA, Dec, or airmass missing from image ' +
+                         'header; pull approximate information for Horizons') 
+
+            # obtain approximate ra and dec (and airmass) from JPL Horizons
+            eph = callhorizons.query(header[obsparam['object']].
+                                     replace('_', ' '))
+            eph.set_discreteepochs(header['MIDTIMJD'])
+            try:
+                n = eph.get_ephemerides(obsparam['observatory_code'])
+            except ValueError:
+                logging.warning('Target (%s) is not an asteroid' % 
+                                header[obsparam['object']])
+                n = None
+
+            if n is None:
+                raise KeyError(('%s is not an asteroid known to JPL Horizons' %
+                                header[obsparam['object']]))
+
+            header[obsparam['ra']] = (eph['RA'][0], 'PP: queried from Horizons')
+            header[obsparam['dec']] = (eph['DEC'][0], 
+                                       'PP: queried from Horizons')
+            header[obsparam['airmass']] = (eph['airmass'][0], 
+                                           'PP: queried from Horizons')
+
         ##### add fake wcs information that is necessary to run SCAMP
 
+        # read out ra and dec from header
         if obsparam['radec_separator'] == 'XXX':
             ra_deg  = float(header[obsparam['ra']])
             dec_deg = float(header[obsparam['dec']])
@@ -288,7 +321,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             ra_deg = float(man_ra)
             dec_deg = float(man_dec)
 
-        #### note to self: put this into code block below
+        ### special treatment for UKIRT/WFCAM
         if obsparam['telescope_keyword'] == 'UKIRTWFCAM':
             ra_deg = float(header['TELRA'])/24.*360. - \
                      float(header['JITTER_X'])/3600.
@@ -404,13 +437,18 @@ if __name__ == '__main__':
     ### read telescope information from fits headers
     instruments = []
     for filename in filenames:
-        hdulist = fits.open(filename, verify='ignore', 
-                            ignore_missing_end=True)
+        try:
+            hdulist = fits.open(filename, verify='ignore', 
+                                ignore_missing_end=True)
+        except IOError:
+            raise IOError('File %s does not exist! Abort.' % filename)
+
         header = hdulist[0].header
         for key in _pp_conf.instrument_keys:
             if key in header:
                 instruments.append(header[key])
         hdulist.close()
+
 
     if len(instruments) == 0 and telescope is None:
         raise KeyError('cannot identify telescope/instrument; please update' + \
@@ -430,7 +468,7 @@ if __name__ == '__main__':
 
     header_update = {}
     if man_target is not None:
-        header_update['OBJECT'] = man_target
+        header_update[obsparam['object']] = man_target
 
     # run prepare wrapper
     preparation = prepare(filenames, obsparam, header_update, 
