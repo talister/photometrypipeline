@@ -35,6 +35,9 @@ observatories/instruments:
 +--------------------------+--------------------+----------------+
 | SOAR 4.1m                | Goodman            | SOARGOODMAN    |
 +--------------------------+--------------------+----------------+
+| Telescopio Nazionale     | DOLORES            | TNGDOLORES     |
+| Galileo                  |                    |                |
++--------------------------+--------------------+----------------+
 | Vatican Advanced         | VATT4k             | VATT4K         |
 | Technology Telescope     |                    |                |
 +--------------------------+--------------------+----------------+
