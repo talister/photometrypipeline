@@ -194,7 +194,8 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             elif key in ['CTYPE1', 'CRPIX1', 'CRVAL1', 'CROTA1', 'CROTA2', 
                        'CFINT1', 'CTYPE2', 'CRPIX2', 'CRVAL2', 
                        'CFINT2', 'LTM1_1', 'LTM2_2', 'WAT0_001', 'LTV1', 
-                         'LTV2', 'PIXXMIT', 'PIXOFFST']:
+                         'LTV2', 'PIXXMIT', 'PIXOFFST', 'PC1_1', 'PC1_2',
+                         'PC2_1', 'PC2_2', 'CUNIT1', 'CUNIT2']:
                 # removed 'CDELT1', 'CDELT2', 'CRDELT1', 'CRDELT2' from list
                 # used by LOWELL31, LOWELL90
 

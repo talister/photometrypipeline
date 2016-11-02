@@ -1230,6 +1230,59 @@ ohp120_param = {
 }
 
 
+# Telescopio Nazionale Galileo, DOLORES
+tngdolores_param = {
+    'telescope_instrument' : 'TNG/DOLORES', # telescope/instrument name
+    'telescope_keyword'    : 'TNGDOLORES',      # telescope/instrument keyword
+    'observatory_code'     : 'Z19',         # MPC observatory code
+    'secpix'               : (0.252, 0.252), # pixel size (arcsec) before binning
+
+    # image orientation preferences
+    'flipx'                : True,
+    'flipy'                : True,
+    'rotate'               : 0,
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('CRDELT1', 'CRDELT2'), # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointing, Dec 
+    'radec_separator'      : 'XXX',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJCAT',  # object name keyword 
+    'filter'               : 'FLT_ID',  # filter keyword
+    'filter_translations'  : {'B_JOHN_10': 'B'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+    # source extractor settings
+    'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'aprad_default'        : 8, # default aperture radius in px 
+    'aprad_range'          : [2, 15], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/tngdolores.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file'    : rootpath+'/setup/tngdolores.scamp', 
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
+}
+
+
+
+
+
 
 ##### access functions for telescope configurations
 
@@ -1240,7 +1293,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS',
                           'WIYN09HDI', 'RATIR', 'SOARGOODMAN', 'OHP120',
                           #'SL74SAH',
-                          'GENERIC']
+                          'TNGDOLORES', 'GENERIC']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword 
@@ -1267,7 +1320,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'C4':                'RATIR',
                           #'SHA':               'SL74SHA',
                           'Goodman Spectrograph': 'SOARGOODMAN',
-                          'Andor Tech':        'OHP120'}
+                          'Andor Tech':        'OHP120',
+                          'LRS':               'TNGDOLORES'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K' :       vatt4k_param, 
@@ -1288,7 +1342,8 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'RATIR':         ratir_param,
                         #'SL74SHA':       sl74sha_param,
                         'SOARGOODMAN':   soargoodman_param,
-                        'OHP120':        ohp120_param}
+                        'OHP120':        ohp120_param,
+                        'TNGDOLORES':    tngdolores_param}
 
 
 #### append mytelescopes.py, if available
