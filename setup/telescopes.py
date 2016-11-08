@@ -1208,8 +1208,11 @@ ohp120_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
-    'filter_translations'  : {'R_Cousins': 'R'},
+    'filter_translations'  : {'R_Cousins': 'R', 'V_Cousins': 'V',
+                              'B_Cousins': 'B', 'H-alpha': None,
+                              'i_Gunn': 'i'},
                              # filtername translation dictionary
+
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
 
@@ -1258,7 +1261,8 @@ tngdolores_param = {
                                          # pp_prepare
     'object'               : 'OBJCAT',  # object name keyword 
     'filter'               : 'FLT_ID',  # filter keyword
-    'filter_translations'  : {'B_JOHN_10': 'B'},
+    'filter_translations'  : {'B_JOHN_10': 'B', 'V_JOHN_11': 'V',
+                              'R_JOHN_12': 'R', 'I_JOHN_13': 'I'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
