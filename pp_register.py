@@ -117,7 +117,6 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         logging.info('check if sufficient reference stars in catalog %s' %
                      refcat)
 
-
         hdulist = fits.open(filenames[len(filenames)/2])
 
         ra = float(hdulist[0].header['CRVAL1'])

@@ -464,7 +464,6 @@ if __name__ == '__main__':
                             'use GENERIC telescope')
             telescope = 'GENERIC'
 
-
     obsparam = _pp_conf.telescope_parameters[telescope]
 
     header_update = {}

@@ -342,7 +342,6 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
                   ", ".join(set([obj['ident'] for obj in objects]))))
 
 
-
     ##### extract source data for identified targets
 
     data = []
@@ -361,7 +360,6 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
                                [obj['ra.deg'] for obj in objects_thiscat],
                                [obj['dec.deg'] for obj in objects_thiscat]],
                               ['20A', 'D', 'D'])
-
 
         # identify magnitudes
         mag_keys = ['MAG_APER', 'MAGERR_APER']
@@ -388,6 +386,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
                    extract_this_catalog=['ra.deg', 'dec.deg', 'ident'],
                    extract_other_catalog=extract_other_catalog+mag_keys,
                    tolerance=None)
+
 
         for i in range(len(match[0][0])):
             # derive calibrated magnitudes, if available
