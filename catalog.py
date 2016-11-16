@@ -739,19 +739,26 @@ class catalog:
                                       + (0.587*mags[4])**2 \
                                       + ((mags[0]-mags[1])*0.022)**2 \
                                       + 0.011**2)
-
             elif targetfilter == 'R':
                 nmags[0]   = mags[1] - 0.272*(mags[1] - mags[2]) - 0.159 
                 nmags[1] = numpy.sqrt(((1-0.272)*mags[4])**2 \
                                       + (0.272*mags[5])**2 \
                                       + ((mags[1]-mags[2])*0.092)**2 \
                                       + 0.022**2)
+            # elif targetfilter == 'I':                    
+            #     nmags[0]   = mags[2] - 0.337*(mags[1] - mags[2]) - 0.370 
+            #     nmags[1] = numpy.sqrt(((1+0.337)*mags[5])**2 \
+            #                           + (0.337*mags[4])**2 \
+            #                           + ((mags[1]-mags[2])*0.191)**2 \
+            #                           + 0.041**2)
+            
+            ##### experimental!!!!! Based on Connor's transformations
             elif targetfilter == 'I':                    
-                nmags[0]   = mags[2] - 0.337*(mags[1] - mags[2]) - 0.370 
-                nmags[1] = numpy.sqrt(((1+0.337)*mags[5])**2 \
-                                      + (0.337*mags[4])**2 \
+                nmags[0]   = mags[2] - 0.2526*(mags[1] - mags[2]) - 0.3636 
+                nmags[1] = numpy.sqrt(((1+0.2526)*mags[5])**2 \
+                                      + (0.2526*mags[4])**2 \
                                       + ((mags[1]-mags[2])*0.191)**2 \
-                                      + 0.041**2)
+                                      + 0.028**2)
 
             # add new filter and according uncertainty to catalog
             self.add_field('_'+targetfilter+'mag', nmags[0])
