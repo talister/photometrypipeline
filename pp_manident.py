@@ -12,9 +12,9 @@ import os, sys
 import numpy
 import warnings
 from Tkinter import *
-import Image
-import ImageTk
-import ImageDraw
+from PIL import Image
+from PIL import ImageTk
+from PIL import ImageDraw
 import argparse
 from astropy.io import fits
 from scipy.ndimage import interpolation as interp

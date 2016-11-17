@@ -27,7 +27,7 @@ Python 2.7 modules (available from the `Python Package Index`_ through
 * `astropy`_
 * `matplotlib`_
 * `callhorizons`_
-* `Python Imaging Library`_ (only required for manual target identification)
+* `Pillow`_ (only required for manual target identification)
 
   
 and some freely available software:
@@ -126,7 +126,7 @@ and I will take care of implementing your telescope.
 .. _astropy: http://www.astropy.org/
 .. _matplotlib: http://matplotlib.org/
 .. _callhorizons: https://pypi.python.org/pypi/CALLHORIZONS
-.. _Python Imaging Library: http://www.pythonware.com/products/pil/
+.. _Pillow: http://python-pillow.org/
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp
 .. _r345: http://www.astromatic.net/wsvn/public/dl.php?repname=public+software.scamp&path=%2Ftrunk%2F&rev=0&isdir=1
