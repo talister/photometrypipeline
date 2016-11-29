@@ -451,14 +451,15 @@ if __name__ == '__main__':
         hdulist.close()
 
 
-    if len(instruments) == 0 and telescope is None:
-        raise KeyError('cannot identify telescope/instrument; please update' + \
-                       '_pp_conf.instrument_keys accordingly')
+    ### commented out: if instrument not identified, use GENERIC
+    # if len(instruments) == 0 and telescope is None:
+    #     raise KeyError('cannot identify telescope/instrument; please update' + \
+    #                    '_pp_conf.instrument_keys accordingly')
         
     if telescope is None:
         try:
             telescope = _pp_conf.instrument_identifiers[instruments[0]]
-        except KeyError:
+        except:
             print 'cannot identify telescope/instrument; use GENERIC telescope'
             logging.warning('cannot identify telescope/instrument; ' + 
                             'use GENERIC telescope')
