@@ -124,33 +124,79 @@ def pick_controlstar(catalogs, display=True):
     return objects
 
 
-def moving_primary_target(catalogs, man_targetname, offset, display=True):
-
+def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None, 
+                          display=True):
+    """ 
+    is_asteroid == True:  this object is an asteroid
+    is_asteroid == False: this object is a planet/moon/spacecraft
+    is_asteroid == None:  no information on target nature
+    """
+       
     if display:
-        print '# check JPL Horizons for primary target... ',
+        print '# check JPL Horizons for primary target... '
         sys.stdout.flush()
     logging.info('check JPL Horizons for primary target')
 
     obsparam = _pp_conf.telescope_parameters[
                         catalogs[0].origin.split(';')[0].strip()]
 
-    message_shown = False
     objects = []
+
+    ### check for target nature, if unknown
+    if is_asteroid is None:
+        cat = catalogs[0]
+        targetname = cat.obj.replace('_', ' ')
+        for smallbody in [True, False]:
+            eph = callhorizons.query(targetname, smallbody=smallbody)
+            eph.set_discreteepochs(cat.obstime[0]) 
+            n = 0
+            try:
+                n = eph.get_ephemerides(obsparam['observatory_code'])
+            except ValueError:
+                if display and smallbody is True:
+                    print "'%s' is not an asteroid" % targetname
+                    logging.warning("'%s' is not an asteroid" % 
+                                    targetname)
+                if display and smallbody is False:
+                    print "'%s' is not a Solar System object" % targetname
+                    logging.warning("'%s' is not a Solar System object" % 
+                                    targetname)
+                pass
+            if n > 0:
+                is_asteroid = smallbody
+                break
+    
+    ### if is_asteroid is still None, this object is not in the Horizons db
+    if is_asteroid is None:
+        return objects
+
+    message_shown = False
+
+    ### query information for each image
     for cat_idx, cat in enumerate(catalogs):
         targetname = cat.obj.replace('_', ' ')
         if man_targetname is not None:
             targetname = man_targetname.replace('_', ' ')
             cat.obj = targetname
-        eph = callhorizons.query(targetname)
+        eph = callhorizons.query(targetname, smallbody=is_asteroid)
         eph.set_discreteepochs(cat.obstime[0])
 
         try:
             n = eph.get_ephemerides(obsparam['observatory_code'])
         except ValueError:
-            if display and not message_shown:
-                print 'is \'%s\' an asteroid?' % targetname
-            logging.warning('Target (%s) is not an asteroid' % targetname)
-            n = None
+            # if is_asteroid:
+            #     if display and not message_shown:
+            #         print 'is \'%s\' an asteroid?' % targetname
+            #     logging.warning('Target (%s) is not an asteroid' % targetname)
+                
+            # else:
+            #     if display and not message_shown:
+            #         print ('is \'%s\' a different Solar System object?' % 
+            #                )targetname
+            #     logging.warning('Target (%s) is not a Solar System object' % 
+            #                     targetname)
+            #     n = None
+            pass
             
         if n is None or n == 0:
             logging.warning('WARNING: No position from Horizons! '+\
@@ -164,8 +210,8 @@ def moving_primary_target(catalogs, man_targetname, offset, display=True):
             objects.append({'ident': cat.obj,
                             'obsdate.jd': cat.obstime[0],
                             'cat_idx'   : cat_idx,
-                            'ra.deg'    : eph[0]['RA']+offset[0]/3600.,
-                            'dec.deg'   : eph[0]['DEC']+offset[1]/3600.})
+                            'ra.deg'    : eph[0]['RA']-offset[0]/3600.,
+                            'dec.deg'   : eph[0]['DEC']-offset[1]/3600.})
             logging.info('Successfully grabbed Horizons position for %s ' %
                          cat.obj.replace('_', ' '))
             logging.info('HORIZONS call: %s' % eph.url)
