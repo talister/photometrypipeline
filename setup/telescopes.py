@@ -940,8 +940,8 @@ generic_param = {
 
 
     # image orientation preferences
-    'flipx'                : True, 
-    'flipy'                : True, 
+    'flipx'                : False, 
+    'flipy'                : False, 
     'rotate'               : 0, 
 
     # instrument-specific FITS header keywords
@@ -1317,6 +1317,7 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'SNIFS':             'UH88SNIFS',
                           'hdi':               'WIYN09HDI',
                           'ArtemisHSC':        'GENERIC',
+                          'GENERIC':           'GENERIC',
                           'C0':                'RATIR',
                           'C1':                'RATIR',
                           'C2':                'RATIR',
