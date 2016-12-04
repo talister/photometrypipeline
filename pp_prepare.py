@@ -86,7 +86,8 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                     'binning factor in both axes'            : 'binning',
                     'image center RA (keyword or degrees)'   : 'ra',
                     'image center DEC (keyword or degrees)'  : 'dec',
-                    'filter used (clear if none was used)'   : 'filter'}
+                    'filter used (clear if none was used)'   : 'filter',
+                    'observation midtime'                    : 'date_keyword'}
 
         for description, keyword in keywords.items():
 
@@ -105,20 +106,23 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                 implants['BINY'] = (float(inp), 'PP: user-defined')
             if keyword is 'ra':
                 obsparam['ra'] = inp
-                # check for separator
-                try:
-                    dummy = float(header[inp])
-                    obsparam['radec_separator'] = 'XXX'
-                except ValueError:
-                    if ':' in header[inp]:
-                        obsparam['radec_separator'] = ':'
-                    if ' ' in header[inp].strip():
-                        obsparam['radec_separator'] = ' '
+                # # check for separator
+                # try:
+                #     dummy = float(header[inp])
+                #     obsparam['radec_separator'] = 'XXX'
+                # except ValueError:
+                #     if ':' in header[inp]:
+                #         obsparam['radec_separator'] = ':'
+                #     if ' ' in header[inp].strip():
+                #         obsparam['radec_separator'] = ' '
             if keyword is 'dec':
                 obsparam['dec'] = inp
             if keyword is 'filter':
                 implants[obsparam['filter']] = (inp, 'PP: user-defined')
-
+            if keyword is 'date_keyword':
+                obsparam['date_keyword'] = inp
+                
+                
     ##### prepare image headers for photometry pipeline
 
     for filename in filenames:
