@@ -87,7 +87,8 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                     'image center RA (keyword or degrees)'   : 'ra',
                     'image center DEC (keyword or degrees)'  : 'dec',
                     'filter used (clear if none was used)'   : 'filter',
-                    'observation midtime'                    : 'date_keyword'}
+                    'observation midtime'                    : 'date_keyword',
+                    'exposure time (seconds)'                : 'exptime'}
 
         for description, keyword in keywords.items():
 
@@ -105,7 +106,11 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                 implants['BINX'] = (float(inp), 'PP: user-defined')
                 implants['BINY'] = (float(inp), 'PP: user-defined')
             if keyword is 'ra':
-                obsparam['ra'] = inp
+                try:
+                    implants['OBJCTRA'] = (float(inp), 'PP: user_defined')
+                    obsparam['radec_separator'] = 'XXX'
+                except TypeError:
+                    obsparam['ra'] = inp
                 # # check for separator
                 # try:
                 #     dummy = float(header[inp])
@@ -116,12 +121,19 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                 #     if ' ' in header[inp].strip():
                 #         obsparam['radec_separator'] = ' '
             if keyword is 'dec':
-                obsparam['dec'] = inp
+                try:
+                    implants['OBJCTDEC'] = (float(inp), 'PP: user_defined')
+                    obsparam['radec_separator'] = 'XXX'
+                except TypeError:
+                    obsparam['dec'] = inp
             if keyword is 'filter':
                 implants[obsparam['filter']] = (inp, 'PP: user-defined')
             if keyword is 'date_keyword':
                 obsparam['date_keyword'] = inp
-                
+            if keyword is 'exptime':
+                implants['EXPTIME'] = (float(inp), 'PP: user-defined')
+
+        implants['INSTRUME'] = ('GENERIC', 'PP: manually set')
                 
     ##### prepare image headers for photometry pipeline
 
