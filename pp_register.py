@@ -71,10 +71,14 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
     if mancat is not None:
         obsparam['astrometry_catalogs'] = [mancat]
 
+    # use each catalog twice
     obsparam['astrometry_catalogs'] = [catcat for cat in
                                        obsparam['astrometry_catalogs']
                                        for catcat in [cat]*
                                        _pp_conf.n_registration_repetitions ]
+
+    n_success_last_iteration = None
+
     for cat_idx, refcat in enumerate(obsparam['astrometry_catalogs']):
 
         ##### run extract routines
@@ -214,6 +218,10 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         # registration succeeded for all images
         if len(badfits) == 0:
             break
+        # same number of good fits as for the last iteration
+        # break out!
+        elif len(goodfits) == n_success_last_iteration:
+            break
         # registration failed for most (or all) images
         else:
             logging.info(' > match failed for %d/%d images' % \
@@ -228,6 +236,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                 print 'Not all images matched ' \
                     + '- try again for different catalog, if available'
 
+        n_success_last_iteration = len(goodfits)
 
     ##### update image headers with wcs solutions where registration
     ##### was successful
