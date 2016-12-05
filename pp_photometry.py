@@ -362,7 +362,14 @@ def photometry(filenames, sex_snr, source_minarea, aprad,
                                        display=display, 
                                        diagnostics=diagnostics)
         aprad = cog['optimum_aprad']
-
+    else:
+        ## add manually selected aprad to image headers
+        for filename in filenames:
+            hdu = fits.open(filename, mode='update', ignore_missing_end=True)
+            hdu[0].header['APRAD'] = (aprad, 
+                                      'manual aperture phot radius (px)')
+            hdu.flush()
+            hdu.close()
 
     # run extract using (optimum) aprad
     photpar['aprad'] = aprad
