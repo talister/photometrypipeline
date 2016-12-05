@@ -33,6 +33,9 @@ import sqlite3 as sql
 from scipy import spatial
 from astropy.io import fits
 import scipy.optimize as optimization
+from astroquery.vizier import Vizier
+import astropy.units as u
+import astropy.coordinates as coord
 
 # pipeline-related modules (only needed for testing)
 import _pp_conf 
@@ -176,6 +179,177 @@ class catalog:
 
     ### online catalog access
         
+    def download_gaiadr1(self, ra_deg, dec_deg, rad_deg,
+                         max_sources, max_mag=20, display_progress=True,
+                         write_ldac=False):
+        """
+        preliminary implementation of Gaia DR1 access
+        todo: use astroquery Vizier access for all catalogs later on
+        """
+
+        ### setup Vizier query
+        # note: column filters uses original Vizier column names
+        # -> green column names in Vizier
+        vquery = Vizier(#columns=['RA_ICRS', 'DE_ICRS', 'pmRA',
+                                # 'pmDE', 'phot_g_mean_mag'],
+                        column_filters={"phot_g_mean_mag":"<12"},
+                        row_limit = max_sources)
+
+        logging.info('query Vizier for Gaia data')
+        if display_progress:
+            print 'query Vizier for Gaia data'
+            
+        self.data = vquery.query_region(coord.SkyCoord(ra=ra_deg,
+                                                       dec=dec_deg,
+                                                       unit=(u.deg, u.deg),
+                                                       frame='icrs'),
+                                        width=("%fd" % rad_deg),
+                                        catalog="I/337/gaia")[0]
+
+        ### rename column names using PP conventions
+        self.data.rename_column('RA_ICRS', 'ra.deg')
+        self.data.rename_column('DE_ICRS', 'dec.deg')
+        self.data.rename_column('e_RA_ICRS', 'e_ra.deg')
+        self.data['e_ra.deg'].convert_unit_to(u.deg)
+        #print self.data['e_ra.deg'].unit
+        self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
+        self.data['e_dec.deg'].convert_unit_to(u.deg)
+        self.data.rename_column('__Gmag_', 'GAIAmag')
+
+        self.history = '%d sources downloaded' % len(self.data)
+
+        print self.data.columns
+
+        
+        if write_ldac:
+            
+            ### create primary header (empty)
+            primaryhdu = fits.PrimaryHDU(header=fits.Header())
+
+            ### create header table
+            hdr_col = fits.Column(name='Field Header Card', format='1680A', 
+                                  array=['generated from query to Vizier'])
+            hdrhdu = fits.BinTableHDU.from_columns(fits.ColDefs([hdr_col]))
+            hdrhdu.header['EXTNAME'] = ('LDAC_IMHEAD')
+            
+            ### create data table
+            colname_dic = {'ra.deg': 'XWIN_WORLD', 'dec.deg': 'YWIN_WORLD',
+                           'e_ra.deg': 'ERRAWIN_WORLD', 'e_dec.deg': 'ERRBWIN_WORLD',
+                           'GAIAmag': 'MAG'}
+            format_dic = {'%14.10f': 'F8', '%9.3f': 'F8', '%6.3f': 'F8'}
+            data_cols = []
+            for col_name in self.data.columns:
+                if not col_name in colname_dic.keys():
+                    continue
+                data_cols.append(fits.Column(name=colname_dic[col_name],
+                                               format=format_dic[self.data[col_name].format],
+                                               array=self.data[col_name]))
+            data_cols.append(fits.Column(name='FLAGS', format='I2',
+                                         array=numpy.zeros(len(self.data))))
+            data_cols.append(fits.Column(name='OBSDATE', format='F4',
+                                         array=numpy.ones(len(self.data))*2015.0))
+            # data_cols.append(fits.Column(name='MAGERR', format='F8',
+            #                              array=numpy.ones(len(self.data))*0.05))
+
+                
+            datahdu = fits.BinTableHDU.from_columns(fits.ColDefs(data_cols))
+            datahdu.header['EXTNAME'] = ('LDAC_OBJECTS')
+            
+            # ### create LDAC_IMHEAD (field information)
+            # # header will be created automatically with binary table 
+            # # create header table
+            # data_array = \
+            #              [("SIMPLE  =                    T / This is a FITS file\n" +
+            #                "BITPIX  =                    0 /\n" +
+            #                "NAXIS   =                    2 / 2D data\n" +
+            #                "NAXIS1  =              %5d / Number of rows\n" +
+            #                "NAXIS2  =              %5d / Number of columns\n" + 
+            #                "EXTEND  =                    T / FITS extensions\n" +
+            #                "EQUINOX =        2000.00000000 / Mean equinox\n" +
+            #                "RADESYS = 'ICRS    '           / Astrometric system\n" +
+            #                "CTYPE1  = 'RA---%s'           / WCS projection type\n" +
+            #                "CUNIT1  = '        '           / Axis unit\n" +
+            #                "CRVAL1  =   %15.8e / World coordinate on this axis\n" +
+            #                "CRPIX1  =   %15.8e / Reference pixel on this axis\n" +
+            #                "CD1_1   =   %e / Linear projection matrix\n" +
+            #                "CD1_2   =   0.000000000000E+00 / Linear projection matrix\n" +
+            #                "CTYPE2  = 'DEC--%s'           / WCS projection type\n" +
+            #                "CUNIT2  = '        '           / Axis unit\n" +
+            #                "CRVAL2  =   %15.8e / World coordinate on this axis\n" +
+            #                "CRPIX2  =   %15.8e / Reference pixel on this axis\n" +
+            #                "CD2_1   =   0.000000000000E+00 / Linear projection matrix\n" +
+            #                "CD2_2   =   %e / Linear projection matrix\n") %
+            #               (self.shape[0], self.shape[0], \
+            #                projection_type, ctr[0], self.shape[0]/2., pixel_scale_deg[0], \
+            #                projection_type, ctr[1], self.shape[0]/2., pixel_scale_deg[1])]
+            # ### todo: check if all these header information is necessary
+            # ### also check if the fake pixel resolution works with scamp 
+
+            # column = fits.Column(name='Field Header Card', format='1680A', 
+            #                      array=data_array)
+            # cols = fits.ColDefs([column])
+            # hdu_imhead = fits.BinTableHDU.from_columns(cols)
+            # hdu_imhead.header['EXTNAME'] = ('LDAC_IMHEAD') 
+            # # manually add table name to the header 
+            
+            # ### create LDAC_OBJECTS (catalog data)
+            # # based on Source Extractor field names
+            # column_array = []
+            # nsrc = 0
+            # for key in self.fields:
+            #     # world coordinates and other angles
+            #     if key.find('WORLD') > -1 or key.find('THETA'):
+            #         column_array.append(fits.Column \
+            #                             (name=key, format='1D', \
+            #                              unit='deg', disp='E15', \
+            #                              array=self[key]))
+            #     # image coordinates and angles
+            #     elif key.find('IMAGE') > -1:
+            #         column_array.append(fits.Column \
+            #                             (name=key, format='1D', \
+            #                              unit='pix', disp='E12', \
+            #                              array=self[key]))
+            #     # fluxes
+            #     elif key.find('FLUX') > -1:
+            #         column_array.append(fits.Column \
+            #                             (name=key, format='1D', \
+            #                              unit='flux', disp='E12', \
+            #                              array=self[key]))
+            #     # magnitudes
+            #     elif key.find('MAG') > -1:
+            #         column_array.append(fits.Column \
+            #                             (name=key, format='1D', \
+            #                              unit='mag', disp='E12', \
+            #                              array=self[key]))
+            #     else:
+            #         logging.warning(('cannot interpret field %s in writing' +\
+            #                          'catalog %s') % (key, self.catalogname))
+                    
+            #     nsrc = len(self[key])
+                
+            # columns = fits.ColDefs(column_array)
+            # hdu_objects = fits.BinTableHDU.from_columns(columns)
+            # hdu_objects.header['EXTNAME'] = ('LDAC_OBJECTS')
+            # # manually add table name to the header 
+            
+            # # combine HDUs and write fil
+            hdulist = fits.HDUList([primaryhdu, hdrhdu, datahdu])
+            hdulist.writeto('GaiaDR1.ldac', clobber=True)
+            
+            # logging.info('wrote %d sources from %s to LDAC file' % 
+            #              (nsrc, self.filename))
+            
+            # return nsrc
+
+
+
+
+
+            
+        else:
+            return len(self.data)
+        
+
     def download_catalog(self, ra_deg, dec_deg, rad_deg,
                          max_sources, sort=None, save_catalog=True,
                          display_progress=True):
@@ -1180,3 +1354,9 @@ class catalog:
 
 # cat4 = catalog('')
 # print cat4.read_database('test.db'), 'sources read from database file'
+
+
+### test preliminary Gaia implementation
+cat = catalog('Gaia')
+cat.download_gaiadr1(294.99525, 30.065194, 0.75, 10000, max_mag=16, write_ldac=True)
+#print cat[0]
