@@ -53,7 +53,8 @@ logging.basicConfig(filename = _pp_conf.log_filename,
                     datefmt  = _pp_conf.log_datefmt)
 
 
-def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
+def run_the_pipeline(filenames, man_targetname, man_filtername,
+                     fixed_aprad, source_tolerance):
     """
     wrapper to run the photometry pipeline
     """
@@ -183,6 +184,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername, fixed_aprad):
     registration = pp_register.register(filenames, telescope, sex_snr,
                                         source_minarea, aprad,
                                         None, obsparam,
+                                        source_tolerance,
                                         display=True,
                                         diagnostics=True)
     
@@ -329,6 +331,10 @@ if __name__ == '__main__':
                         default=None)
     parser.add_argument('-fixed_aprad', help='fixed aperture radius (px)', 
                         default=0)
+    parser.add_argument('-source_tolerance', 
+                        help='tolerance on source properties for registration',
+                        choices=['none', 'low', 'medium', 'high'], 
+                        default='high')
     parser.add_argument('images', help='images to process or \'all\'', 
                         nargs='+')
 
@@ -337,6 +343,7 @@ if __name__ == '__main__':
     man_targetname = args.target
     man_filtername = args.filter
     fixed_aprad = float(args.fixed_aprad)
+    source_tolerance = args.source_tolerance
     filenames = args.images
 
 
@@ -372,7 +379,7 @@ if __name__ == '__main__':
     else:
         # call run_the_pipeline only on filenames
         run_the_pipeline(filenames, man_targetname, man_filtername, 
-                         fixed_aprad)
+                         fixed_aprad, source_tolerance)
         pass
 
 

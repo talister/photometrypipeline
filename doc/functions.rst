@@ -19,6 +19,10 @@ below. All functions presented here can be called from the terminal.
    :param -fixed_aprad: (optional) use this fixed aperture radius for
                         all data instead of finding the aperture
                         radius in a curve-of-growth analysis
+   :param -source_tolerance: (optional) this parameter defines the
+                             level at which sources are rejected in
+                             the image registration process; see
+                             :func:`pp_register` for details.
 		   
 
    :param images: images on which the pipeline is supposed to run,
@@ -118,6 +122,21 @@ the logical order:
                 here: :ref:`supported_catalogs`); if not specific
                 catalog is requested, those listed in the
                 :ref:`telescope_setup` reference are tried
+   :param -source_tolerance: (optional) this parameter defines the
+                             cumulative level at which sources are
+                             rejected in the image registration
+                             process (in the following sequence, each
+                             level includes the previous rejection
+                             scheme): `none`: only flawless sources
+                             are used in the registration; `low`:
+                             sources with bright neighbors are
+                             considered; `medium`: blended sources are
+                             considered; `high`: saturated sources are
+                             considered; the default is `high`; see
+                             the `Source Extractor`_ manual section on
+                             internal flags for details.
+
+
    :param images: images to run `pp_register` on
 
    `pp_register` automatically calls :func:`pp_extract` to identify

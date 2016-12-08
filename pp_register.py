@@ -47,7 +47,8 @@ logging.basicConfig(filename = _pp_conf.log_filename,
 
 
 def register(filenames, telescope, sex_snr, source_minarea, aprad,
-             mancat, obsparam, display=False, diagnostics=False):
+             mancat, obsparam, source_tolerance, display=False,
+             diagnostics=False):
     """
     registration wrapper
     output: diagnostic properties
@@ -148,8 +149,20 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         logging.info('run SCAMP on %d image files, match with catalog %s ' % 
                      (len(filenames), refcat))
 
+        # translate source_tolerance into SCAMP properties
+        #   code      SCAMP_code   keep
+        #   'none'    0x00ff       only unflagged sources
+        #   'low'     0x00fe       sources with bright neighbors
+        #   'medium'  0x00fd       blended sources
+        #   'high'    0x00fc       saturated sources
+        st_code = {'none':   '0x00ff',
+                   'low':    '0x00fe',
+                   'medium': '0x00fd',
+                   'high':   '0x00fc'}[source_tolerance]
+
         # assemble arguments for scamp, run it, and wait for it
         commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
+                      ' -ASTR_FLAGSMASK '+st_code+' -FLAGS_MASK '+st_code+ \
                       ' -ASTREF_CATALOG '+refcat+' '+fileline
         scamp = subprocess.Popen(shlex.split(commandline))
         scamp.wait()
@@ -332,12 +345,17 @@ if __name__ == '__main__':
                         default=0)
     parser.add_argument("-cat", help='manually select reference catalog', 
                         default=None) 
+    parser.add_argument('-source_tolerance', 
+                        help='tolerance on source properties for registration',
+                        choices=['none', 'low', 'medium', 'high'], 
+                        default='high')
     parser.add_argument('images', help='images to process', nargs='+')
 
     args = parser.parse_args()         
     sex_snr = float(args.snr)
     source_minarea = float(args.minarea)
     mancat = args.cat
+    source_tolerance = args.source_tolerance
     filenames = args.images
 
 
@@ -371,6 +389,7 @@ if __name__ == '__main__':
     # run registration wrapper
     registration = register(filenames, telescope, sex_snr,
                             source_minarea, aprad, mancat, obsparam,
+                            source_tolerance,
                             display=True, diagnostics=True)
 
 

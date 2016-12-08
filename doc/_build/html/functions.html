@@ -106,6 +106,10 @@ calibration step</li>
 <li><strong>-fixed_aprad</strong> &#8211; (optional) use this fixed aperture radius for
 all data instead of finding the aperture
 radius in a curve-of-growth analysis</li>
+<li><strong>-source_tolerance</strong> &#8211; (optional) this parameter defines the
+level at which sources are rejected in
+the image registration process; see
+<a class="reference internal" href="#pp_register" title="pp_register"><code class="xref py py-func docutils literal"><span class="pre">pp_register()</span></code></a> for details.</li>
 <li><strong>images</strong> &#8211; images on which the pipeline is supposed to run,
 wildcard symbols (<code class="docutils literal"><span class="pre">'*'</span></code>, <code class="docutils literal"><span class="pre">'?'</span></code>) can be used; or,
 by using <code class="docutils literal"><span class="pre">all</span></code>, PP runs on all FITS files in
@@ -224,6 +228,19 @@ calibration (a list of supported catalogs is listed
 here: <a class="reference internal" href="supported.html#supported-catalogs"><span class="std std-ref">Supported Reference Catalogs</span></a>); if not specific
 catalog is requested, those listed in the
 <a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> reference are tried</li>
+<li><strong>-source_tolerance</strong> &#8211; (optional) this parameter defines the
+cumulative level at which sources are
+rejected in the image registration
+process (in the following sequence, each
+level includes the previous rejection
+scheme): <cite>none</cite>: only flawless sources
+are used in the registration; <cite>low</cite>:
+sources with bright neighbors are
+considered; <cite>medium</cite>: blended sources are
+considered; <cite>high</cite>: saturated sources are
+considered; the default is <cite>high</cite>; see
+the <a class="reference external" href="http://www.astromatic.net/software/sextractor">Source Extractor</a> manual section on
+internal flags for details.</li>
 <li><strong>images</strong> &#8211; images to run <cite>pp_register</cite> on</li>
 </ul>
 </td>
