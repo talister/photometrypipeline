@@ -1150,7 +1150,8 @@ soargoodman_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
-    'filter_translations'  : {'Rc': 'R', 'V':'V', 'B':'B'},
+    'filter_translations'  : {'Rc': 'R', 'V':'V', 'B':'B', 'u':'u', 
+                              'g': 'g', 'r': 'r', 'i': 'i', 'z': 'z'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
