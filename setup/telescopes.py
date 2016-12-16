@@ -121,7 +121,7 @@ dctlmi_param = {
     'filter_translations'  : {'V': 'V', 'R': 'R', 'B': 'B', 'VR': None,
                               'I': 'I', 'SDSS-U' : 'u', 'SDSS-G' : 'g',
                               'SDSS-R' : 'r', 'SDSS-I' : 'i', 
-                              'SDSS-Z' : 'z'}, },
+                              'SDSS-Z' : 'z'}, 
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
