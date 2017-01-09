@@ -42,10 +42,12 @@ def setup_diagnostics():
 warnings.simplefilter(action = "ignore", category = RuntimeWarning)
 from astropy import wcs
 from astropy.io import fits
+import numpy
 warnings.filterwarnings('ignore', category=wcs.FITSFixedWarning)
 warnings.filterwarnings('ignore', category=fits.column.VerifyWarning)
 warnings.filterwarnings('ignore', category=fits.card.VerifyWarning)
-
+# following warning gets cast by Gaia query: XXX.convert_unit_to(u.deg)
+warnings.filterwarnings('ignore', category=numpy.ma.core.MaskedArrayFutureWarning)
 
 ### read photometry pipeline root path from environment variable
 rootpath = os.environ.get('PHOTPIPEDIR')

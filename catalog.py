@@ -190,9 +190,10 @@ class catalog:
         ### setup Vizier query
         # note: column filters uses original Vizier column names
         # -> green column names in Vizier
-        vquery = Vizier(#columns=['RA_ICRS', 'DE_ICRS', 'pmRA',
-                                # 'pmDE', 'phot_g_mean_mag'],
-                        column_filters={"phot_g_mean_mag":"<12"},
+        vquery = Vizier(columns=['RA_ICRS', 'DE_ICRS', 'e_RA_ICRS',
+                                 'e_DE_ICRS', 'pmRA',
+                                 'pmDE', 'phot_g_mean_mag'],
+                        column_filters={"phot_g_mean_mag":("<%f" % max_mag)},
                         row_limit = max_sources)
 
         logging.info('query Vizier for Gaia data')
@@ -210,8 +211,9 @@ class catalog:
         self.data.rename_column('RA_ICRS', 'ra.deg')
         self.data.rename_column('DE_ICRS', 'dec.deg')
         self.data.rename_column('e_RA_ICRS', 'e_ra.deg')
+        print self.data['e_ra.deg'].unit
         self.data['e_ra.deg'].convert_unit_to(u.deg)
-        #print self.data['e_ra.deg'].unit
+        print self.data['e_ra.deg'].unit
         self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
         self.data['e_dec.deg'].convert_unit_to(u.deg)
         self.data.rename_column('__Gmag_', 'GAIAmag')
@@ -334,7 +336,7 @@ class catalog:
             
             # # combine HDUs and write fil
             hdulist = fits.HDUList([primaryhdu, hdrhdu, datahdu])
-            hdulist.writeto('GaiaDR1.ldac', clobber=True)
+            hdulist.writeto('astrometry_reference.ldac', clobber=True)
             
             # logging.info('wrote %d sources from %s to LDAC file' % 
             #              (nsrc, self.filename))
@@ -1356,7 +1358,7 @@ class catalog:
 # print cat4.read_database('test.db'), 'sources read from database file'
 
 
-### test preliminary Gaia implementation
-cat = catalog('Gaia')
-cat.download_gaiadr1(294.99525, 30.065194, 0.75, 10000, max_mag=16, write_ldac=True)
-#print cat[0]
+# ### test preliminary Gaia implementation
+# cat = catalog('Gaia')
+# cat.download_gaiadr1(294.99525, 30.065194, 0.75, 100000, max_mag=15, write_ldac=True)
+# #print cat[0]

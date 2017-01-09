@@ -144,9 +144,23 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         logging.info('run SCAMP on %d image files, match with catalog %s ' % 
                      (len(filenames), refcat))
 
+
+
+
+        
         # assemble arguments for scamp, run it, and wait for it
+        # commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
+        #               ' -ASTREF_CATALOG '+refcat+' '+fileline
         commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
-                      ' -ASTREF_CATALOG '+refcat+' '+fileline
+                      ' -ASTREF_CATALOG FILE -ASTREFCAT_NAME astrometry_reference.ldac '+fileline
+
+
+
+
+
+
+
+        
         scamp = subprocess.Popen(shlex.split(commandline))
         scamp.wait()
 
