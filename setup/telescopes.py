@@ -70,7 +70,9 @@ vatt4k_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/vatt4k.scamp', 
-
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+    
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
                               'DATE-OBS,TIME-OBS,RA,DEC,SECPIX,AIRMASS,' +
@@ -80,7 +82,7 @@ vatt4k_param = {
     'swarp-config-file'    : rootpath+'/setup/vatt4k.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 

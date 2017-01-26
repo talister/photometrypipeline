@@ -144,18 +144,28 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         logging.info('run SCAMP on %d image files, match with catalog %s ' % 
                      (len(filenames), refcat))
 
-
-
+        # in case of Gaia, query vizier and create 'Gaia.cat'
+        if refcat == 'GAIA':
+            astcat = catalog(refcat)
+            n_sources = astcat.download_catalog(ra, dec,
+                                        rad+obsparam['reg_search_radius'],
+                                                100000, 
+                                                max_mag=obsparam['reg_max_mag'],
+                                                save_catalog=True)
 
         
+
         # assemble arguments for scamp, run it, and wait for it
-        # commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
-        #               ' -ASTREF_CATALOG '+refcat+' '+fileline
-        commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
-                      ' -ASTREF_CATALOG FILE -ASTREFCAT_NAME astrometry_reference.ldac '+fileline
+        if refcat == 'GAIA':
+            commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
+                          ' -ASTREF_CATALOG FILE' + \
+                          ' -ASTREFCAT_NAME GAIA.cat '+fileline
+        else:
+            commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
+                      ' -ASTREF_CATALOG '+refcat+' '+fileline
 
 
-
+        print commandline
 
 
 

@@ -101,7 +101,8 @@ allcatalogs = {'URAT-1'  : 'urat1',
                'APASS9'  : 'apass9',
                'CMC15'   : 'cmc15',
                'PPMXL'   : 'ppmxl',
-               'USNO-B1' : 'usno-b1'}
+               'USNO-B1' : 'usno-b1',
+               'GAIA'    : 'gaia-dr1'}
 
 # catalog magnitude systems
 allcatalogs_magsys = {'URAT-1'  : 'Vega',
@@ -110,7 +111,8 @@ allcatalogs_magsys = {'URAT-1'  : 'Vega',
                       'APASS9'  : 'Vega',
                       'CMC15'   : 'Vega',
                       'PPMXL'   : 'Vega',
-                      'USNO-B1' : 'Vega'}
+                      'USNO-B1' : 'Vega',
+                      'GAIA'    : 'Vega'}
 
 # catalog brightness fields for sorting
 allcatalogs_mag = {'URAT-1'  : 'Vmag',
@@ -119,7 +121,8 @@ allcatalogs_mag = {'URAT-1'  : 'Vmag',
                    'APASS9'  : 'Vmag',
                    'CMC15'   : 'r_mag',
                    'PPMXL'   : 'r1mag',
-                   'USNO-B1' : 'r1mag'}
+                   'USNO-B1' : 'r1mag',
+                   'GAIA'    : '__Gmag_'}
 
 
 
@@ -161,5 +164,5 @@ minstars = 0.5
 #### support 
 
 # path to local variable star database file
-# if you 
+# make sure set this variable accordingly if you want to use the catalog
 vsx_database_file = os.environ.get('PPVARSTARSDB')
