@@ -54,6 +54,19 @@ extractQueue = Queue.Queue(2000)
 threadLock = threading.Lock()   
 
 
+# Determine the Source Extractor executable name: sex or sextractor.
+for cmd in ['sex', 'sextractor']:
+    try:
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        del p
+        break
+    except FileNotFoundError:
+        continue
+else:
+    raise FileNotFoundError('Source Extractor command not found.')
+sextractor_cmd = cmd
+del cmd
+
 ##### extractor class definition
 
 class extractor(threading.Thread):
@@ -112,8 +125,9 @@ class extractor(threading.Thread):
                     optionstring += ' -SATUR_LEVEL 1000000'
                     optionstring += ' -SATUR_KEY NOPE'
 
-            commandline = 'sex -c %s %s %s' % \
-                          (self.param['obsparam']['sex-config-file'], 
+            commandline = '%s -c %s %s %s' % \
+                          (sextractor_cmd,
+                           self.param['obsparam']['sex-config-file'], 
                            optionstring, filename)
 
             logging.info('call Source Extractor as: %s' % commandline)
