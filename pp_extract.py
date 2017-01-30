@@ -60,7 +60,7 @@ for cmd in ['sex', 'sextractor']:
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         del p
         break
-    except FileNotFoundError:
+    except OSError:
         continue
 else:
     raise FileNotFoundError('Source Extractor command not found.')
