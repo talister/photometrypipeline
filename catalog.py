@@ -198,36 +198,125 @@ class catalog:
         ### setup Vizier query
         # note: column filters uses original Vizier column names
         # -> green column names in Vizier
-        vquery = Vizier(columns=['RA_ICRS', 'DE_ICRS', 'e_RA_ICRS',
-                                 'e_DE_ICRS', 'pmRA',
-                                 'pmDE', 'phot_g_mean_mag'],
-                        column_filters={"phot_g_mean_mag":("<%f" % max_mag)},
-                        row_limit = max_sources)
 
         logging.info('query Vizier for Gaia data; ra=%f, dec=%f, rad=%d deg' %
                      (ra_deg, dec_deg, rad_deg))
 
-        print 'Accessing Gaia data through Vizier... ', 
+        print ('Accessing %s data through Vizier... ' % self.catalogname), 
         sys.stdout.flush()
-        
-        self.data = vquery.query_region(coord.SkyCoord(ra=ra_deg,
-                                                       dec=dec_deg,
-                                                       unit=(u.deg, u.deg),
-                                                       frame='icrs'),
-                                        width=("%fd" % rad_deg),
-                                        catalog="I/337/gaia")[0]
 
+        #print Vizier.get_catalogs('2MASS')
+        
+        if self.catalogname == 'GAIA':
+            vquery = Vizier(columns=['RA_ICRS', 'DE_ICRS', 'e_RA_ICRS',
+                                     'e_DE_ICRS', 'pmRA',
+                                     'pmDE', 'phot_g_mean_mag'],
+                            column_filters={"phot_g_mean_mag":
+                                            ("<%f" % max_mag)},
+                            row_limit = max_sources)
+            self.data = vquery.query_region(coord.SkyCoord(ra=ra_deg,
+                                                           dec=dec_deg,
+                                                           unit=(u.deg, u.deg),
+                                                           frame='icrs'),
+                                            width=("%fd" % rad_deg),
+                                            catalog="I/337/gaia")[0]
+            ### rename column names using PP conventions
+            self.data.rename_column('RA_ICRS', 'ra.deg')
+            self.data.rename_column('DE_ICRS', 'dec.deg')
+            self.data.rename_column('e_RA_ICRS', 'e_ra.deg')
+            self.data['e_ra.deg'].convert_unit_to(u.deg)
+            self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
+            self.data['e_dec.deg'].convert_unit_to(u.deg)
+            self.data.rename_column('__Gmag_', 'mag')
+
+        elif self.catalogname == '2MASS':
+            vquery = Vizier(columns=['RAJ2000', 'DEJ2000', 'errMaj',
+                                     'errMin', 'errPA', 'Jmag'],
+                            column_filters={"Jmag":
+                                            ("<%f" % max_mag)},
+                            row_limit = max_sources)
+            self.data = vquery.query_region(coord.SkyCoord(ra=ra_deg,
+                                                           dec=dec_deg,
+                                                           unit=(u.deg, u.deg),
+                                                           frame='icrs'),
+                                            width=("%fd" % rad_deg),
+                                            catalog="II/246/out")[0]
+            ### rename column names using PP conventions
+            self.data.rename_column('RAJ2000', 'ra.deg')
+            self.data.rename_column('DEJ2000', 'dec.deg')
+            #self.data.rename_column('e_RA_ICRS', 'e_ra.deg')
+            #self.data['e_ra.deg'].convert_unit_to(u.deg)
+            #self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
+            #self.data['e_dec.deg'].convert_unit_to(u.deg)
+            #self.data.rename_column('', 'GAIAmag')
+
+        elif self.catalogname == 'URAT-1':
+            vquery = Vizier(columns=['RAJ2000', 'DEJ2000', 'sigm',
+                                     'f.mag'],
+                            column_filters={"f.mag":
+                                            ("<%f" % max_mag)},
+                            row_limit = max_sources)
+            self.data = vquery.query_region(coord.SkyCoord(ra=ra_deg,
+                                                           dec=dec_deg,
+                                                           unit=(u.deg, u.deg),
+                                                           frame='icrs'),
+                                            width=("%fd" % rad_deg),
+                                            catalog="I/329/urat1")[0]
+            ### rename column names using PP conventions
+            self.data.rename_column('RAJ2000', 'ra.deg')
+            self.data.rename_column('DEJ2000', 'dec.deg')
+            #self.data.rename_column('e_RA_ICRS', 'e_ra.deg')
+            #self.data['e_ra.deg'].convert_unit_to(u.deg)
+            #self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
+            #self.data['e_dec.deg'].convert_unit_to(u.deg)
+            self.data.rename_column('f.mag', 'mag')
+
+        elif self.catalogname == 'APASS9':
+            vquery = Vizier(columns=['RAJ2000', 'DEJ2000', 'e_RAJ2000',
+                                     'e_DEJ2000', 'Vmag'],
+                            column_filters={"Vmag":
+                                            ("<%f" % max_mag)},
+                            row_limit = max_sources)
+            self.data = vquery.query_region(coord.SkyCoord(ra=ra_deg,
+                                                           dec=dec_deg,
+                                                           unit=(u.deg, u.deg),
+                                                           frame='icrs'),
+                                            width=("%fd" % rad_deg),
+                                            catalog="I/329/urat1")[0]
+            ### rename column names using PP conventions
+            self.data.rename_column('RAJ2000', 'ra.deg')
+            self.data.rename_column('DEJ2000', 'dec.deg')
+            #self.data.rename_column('e_RA_ICRS', 'e_ra.deg')
+            #self.data['e_ra.deg'].convert_unit_to(u.deg)
+            #self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
+            #self.data['e_dec.deg'].convert_unit_to(u.deg)
+            self.data.rename_column('Vmag', 'mag')
+
+        elif self.catalogname == 'SDSS-R9':
+            vquery = Vizier(columns=['RAJ2000', 'DEJ2000', 'e_RAJ2000',
+                                     'e_DEJ2000', 'gmag'],
+                            column_filters={"gmag":
+                                            ("<%f" % max_mag)},
+                            row_limit = max_sources)
+            self.data = vquery.query_region(coord.SkyCoord(ra=ra_deg,
+                                                           dec=dec_deg,
+                                                           unit=(u.deg, u.deg),
+                                                           frame='icrs'),
+                                            width=("%fd" % rad_deg),
+                                            catalog="V/139/sdss9")[0]
+            ### rename column names using PP conventions
+            self.data.rename_column('RAJ2000', 'ra.deg')
+            self.data.rename_column('DEJ2000', 'dec.deg')
+            #self.data.rename_column('e_RA_ICRS', 'e_ra.deg')
+            #self.data['e_ra.deg'].convert_unit_to(u.deg)
+            #self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
+            #self.data['e_dec.deg'].convert_unit_to(u.deg)
+            self.data.rename_column('gmag', 'mag')
+            
+        
         print ('%d sources retrieved.' % len(self.data))
         logging.info('%d sources retrieved' % len(self.data))
         
-        ### rename column names using PP conventions
-        self.data.rename_column('RA_ICRS', 'ra.deg')
-        self.data.rename_column('DE_ICRS', 'dec.deg')
-        self.data.rename_column('e_RA_ICRS', 'e_ra.deg')
-        self.data['e_ra.deg'].convert_unit_to(u.deg)
-        self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
-        self.data['e_dec.deg'].convert_unit_to(u.deg)
-        self.data.rename_column('__Gmag_', 'GAIAmag')
 
         self.history = '%d sources downloaded' % len(self.data)
         
@@ -247,19 +336,19 @@ class catalog:
             colname_dic = {'ra.deg': 'X_WORLD', 'dec.deg': 'Y_WORLD',
                            'e_ra.deg': 'ERRA_WORLD',
                            'e_dec.deg': 'ERRB_WORLD',
-                           'GAIAmag': 'MAG'}
+                           'mag': 'MAG'}
             format_dic = {'ra.deg': '1D', 'dec.deg': '1D',
                           'e_ra.deg': '1E',
                           'e_dec.deg': '1E',
-                          'GAIAmag': '1E'}
+                          'mag': '1E'}
             disp_dic = {'ra.deg': 'E15', 'dec.deg': 'E15',
                         'e_ra.deg': 'E12',
                         'e_dec.deg': 'E12',
-                        'GAIAmag': 'F8.4'}
+                        'mag': 'F8.4'}
             unit_dic = {'ra.deg': 'deg', 'dec.deg': 'deg',
                         'e_ra.deg': 'deg',
                         'e_dec.deg': 'deg',
-                        'GAIAmag': 'mag'}
+                        'mag': 'mag'}
 
             data_cols = []
             for col_name in self.data.columns:
@@ -1316,9 +1405,9 @@ class catalog:
 # print cat4.read_database('test.db'), 'sources read from database file'
 
 
-# ### test preliminary Gaia implementation
-# cat = catalog('Gaia')
-# #cat.download_gaiadr1(294.99525, 30.065194, 0.75, 100000, max_mag=15, write_ldac=True)
-# cat.download_gaiadr1(239.708791667, 6.10333333333, 0.211666666667, 100, max_mag=20, write_ldac=True)
+### test preliminary Gaia implementation
+cat = catalog('SDSS-R9')
+cat.download_gaiadr1(294.99525, 0.065194, 0.5, 10, max_mag=15, write_ldac=True)
+#cat.download_gaiadr1(239.708791667, 6.10333333333, 0.211666666667, 100, max_mag=20, write_ldac=True)
 
-# print len(cat.data.columns)
+print len(cat.data.columns)
