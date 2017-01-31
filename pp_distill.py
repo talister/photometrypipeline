@@ -146,6 +146,8 @@ def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None,
     if is_asteroid is None:
         cat = catalogs[0]
         targetname = cat.obj.replace('_', ' ')
+        if man_targetname is not None:
+            targetname = man_targetname.replace('_', ' ')
         for smallbody in [True, False]:
             eph = callhorizons.query(targetname, smallbody=smallbody)
             eph.set_discreteepochs(cat.obstime[0]) 
