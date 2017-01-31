@@ -1153,7 +1153,8 @@ soargoodman_param = {
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
     'filter_translations'  : {'Rc': 'R', 'V':'V', 'B':'B', 'u':'u', 
-                              'g': 'g', 'r': 'r', 'i': 'i', 'z': 'z'},
+                              'g-SDSS': 'g', 'r-SDSS': 'r', 'i-SDSS': 'i', 
+                              'z-SDSS': 'z'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -1164,7 +1165,8 @@ soargoodman_param = {
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/soargoodman.sex',
-    'mask_file'            : {'1,1' : rootpath+'/setup/mask_soargoodman_1x1.fits'},
+    'mask_file'            : {'1,1' : rootpath+'/setup/mask_soargoodman_1x1.fits',
+                              '2,2' : rootpath+'/setup/mask_soargoodman_2x2.fits'},
     #                        mask files as a function of x,y binning
 
     # scamp settings
