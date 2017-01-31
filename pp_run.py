@@ -370,7 +370,7 @@ if __name__ == '__main__':
                 print '\n RUN PIPELINE IN %s' % root
                 os.chdir(root)
                 run_the_pipeline(filenames, man_targetname, man_filtername,
-                                 fixed_aprad)
+                                 fixed_aprad, source_tolerance)
                 os.chdir(_masterroot_directory)
             else:
                 print '\n NOTHING TO DO IN %s' % root
