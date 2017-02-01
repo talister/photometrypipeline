@@ -8,6 +8,7 @@ import os
 import sys
 import logging
 import warnings
+import string
 
 # import pipeline-specific modules
 from toolbox import *
@@ -88,6 +89,9 @@ pp_process_idx = 0
 # any unique header keyword works as a potential identifier
 instrument_keys = ['INSTRUME', 'LCAMMOD', 'HEAD']
 
+### Translation table to transform target names to file names
+# space and / to _
+target2filename = string.maketrans(' /', '__')
 
 ### available catalogs
 
