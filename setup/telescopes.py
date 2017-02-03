@@ -54,7 +54,7 @@ vatt4k_param = {
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
     'filter_translations'  : {'TOP 2 BOT 1': 'V', 'TOP 3 BOT 1': 'R', 
-                              'TOP 4 BOT 1': None, 'TOP 5 BOT 1': 'B'},
+                              'TOP 4 BOT 1': 'I', 'TOP 5 BOT 1': 'B'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
