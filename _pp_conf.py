@@ -48,6 +48,7 @@ warnings.filterwarnings('ignore', category=fits.column.VerifyWarning)
 warnings.filterwarnings('ignore', category=fits.card.VerifyWarning)
 # following warning gets cast by Gaia query: XXX.convert_unit_to(u.deg)
 warnings.filterwarnings('ignore', category=numpy.ma.core.MaskedArrayFutureWarning)
+warnings.filterwarnings('ignore', category=UserWarning)
 
 ### read photometry pipeline root path from environment variable
 rootpath = os.environ.get('PHOTPIPEDIR')
@@ -93,36 +94,15 @@ instrument_keys = ['INSTRUME', 'LCAMMOD']
 
 ### available catalogs
 
-# translate PP catalog identifier to Vizier identifier
-# http://vizier.u-strasbg.fr/viz-bin/vizHelp?cats/U.htx
-allcatalogs = {'URAT-1'  : 'urat1',
-               '2MASS'   : '2mass-psc',
-               'SDSS-R9' : 'sdss9',
-               'APASS9'  : 'apass9',
-               'CMC15'   : 'cmc15',
-               'PPMXL'   : 'ppmxl',
-               'USNO-B1' : 'usno-b1',
-               'GAIA'    : 'gaia-dr1'}
+# list of available catalogs
+allcatalogs = ['URAT-1', '2MASS', 'SDSS-R9', 'APASS9', 'GAIA']
 
 # catalog magnitude systems
 allcatalogs_magsys = {'URAT-1'  : 'Vega',
                       '2MASS'   : 'Vega',
                       'SDSS-R9' : 'AB',
                       'APASS9'  : 'Vega',
-                      'CMC15'   : 'Vega',
-                      'PPMXL'   : 'Vega',
-                      'USNO-B1' : 'Vega',
                       'GAIA'    : 'Vega'}
-
-# catalog brightness fields for sorting
-allcatalogs_mag = {'URAT-1'  : 'Vmag',
-                   '2MASS'   : 'Jmag',
-                   'SDSS-R9' : 'gmag',
-                   'APASS9'  : 'Vmag',
-                   'CMC15'   : 'r_mag',
-                   'PPMXL'   : 'r1mag',
-                   'USNO-B1' : 'r1mag',
-                   'GAIA'    : '__Gmag_'}
 
 
 

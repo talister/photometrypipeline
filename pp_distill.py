@@ -417,10 +417,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
         # build field lists for observed catalogs
         match_keys_other_catalog, extract_other_catalog = [], []
         for key in ['ra.deg', 'dec.deg', 'XWIN_IMAGE', 'YWIN_IMAGE', 'FLAGS']:
-            if key in cat.fieldnames.keys():
-                match_keys_other_catalog.append(cat.fieldnames[key])
-                extract_other_catalog.append(cat.fieldnames[key])
-            else:
+            if key in cat.fields:
                 match_keys_other_catalog.append(key)
                 extract_other_catalog.append(key)
 

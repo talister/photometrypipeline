@@ -151,8 +151,8 @@ def curve_of_growth_analysis(filenames, parameters,
         ### identify target and extract its curve-of-growth
         n_target_identified = 0
         if not parameters['background_only']:
-            residuals = numpy.sqrt((data['XWIN_WORLD']-target_ra)**2 + \
-                                   (data['YWIN_WORLD']-target_dec)**2)
+            residuals = numpy.sqrt((data['ra.deg']-target_ra)**2 + \
+                                   (data['dec.deg']-target_dec)**2)
             target_idx = numpy.argmin(residuals)
             if residuals[target_idx] > _pp_conf.pos_epsilon/3600.:
                 logging.warning(('WARNING: frame %s, large residual to '+ \
