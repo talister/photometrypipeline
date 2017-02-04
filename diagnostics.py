@@ -72,18 +72,29 @@ def create_website(filename, content=''):
     return None
 
 
-def append_website(filename, content, insert_at='</BODY>'):
+def append_website(filename, content, insert_at='</BODY>', 
+                   replace_below='X?!do not replace anything!?X'):
     """ 
-    append content to an existing website
+    append content to an existing website: 
+    insert content before line that contains `insert_at`
+    replace lines between `replace_below` and `insert_at` (by 
+    default, nothing is replaced)
     """
     # read existing code
     existing_html = open(filename, 'r').readlines()
 
     # insert content into existing html
     outf = open(filename, 'w')
+    delete = False
     for line in existing_html:
-        if line.find(insert_at) > -1:
+        if replace_below in line:
+            delete = True
+            continue
+        if insert_at in line:
             outf.writelines(content)
+            delete = False
+        if delete:
+            continue
         outf.writelines(line)
     outf.close()
 
@@ -363,7 +374,8 @@ def add_registration(data, extraction_data):
     html += 'see <A HREF=\"%s\">registration website</A> for details\n' % \
             _pp_conf.reg_filename
 
-    append_website(_pp_conf.index_filename, html)
+    append_website(_pp_conf.index_filename, html, 
+                   replace_below="<H2>Registration Results</H2>\n")
 
     return None
 
@@ -468,7 +480,9 @@ def add_photometry(data, extraction):
     html += ("<P> Current strategy for finding the optimum aperture " + \
              "radius: %s\n" % data['aprad_strategy'])
 
-    append_website(_pp_conf.index_filename, html)
+    append_website(_pp_conf.index_filename, html,
+                   replace_below=("<H2>Photometric Calibration" +
+                                  " - Aperture Size </H2>\n"))
 
     return None
 
@@ -677,7 +691,9 @@ def add_calibration(data):
             _pp_conf.cal_filename
     html += "<P><IMG SRC=\"%s\">\n" % ('.diagnostics/' + data['zpplot'])
 
-    append_website(_pp_conf.index_filename, html)
+    append_website(_pp_conf.index_filename, html,
+                   replace_below=("<H2>Photometric Calibration " +
+                                  "- Catalog Match </H2>\n"))
 
     return None
 
@@ -896,7 +912,8 @@ def add_results(data):
     for target in data['targetnames']:
         html += "<P><IMG SRC=\"%s\">\n" % data['lightcurveplots'][target]
         html += "<IMG SRC=\"%s\">\n" % data['gifs'][target]
-    append_website(_pp_conf.index_filename, html)    
+    append_website(_pp_conf.index_filename, html, 
+                   replace_below="<H2>Photometry Results</H2>\n")    
 
     return None
 

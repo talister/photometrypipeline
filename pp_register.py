@@ -47,7 +47,8 @@ logging.basicConfig(filename = _pp_conf.log_filename,
 
 
 def register(filenames, telescope, sex_snr, source_minarea, aprad,
-             mancat, obsparam, display=False, diagnostics=False):
+             mancat, obsparam, source_tolerance, display=False,
+             diagnostics=False):
     """
     registration wrapper
     output: diagnostic properties
@@ -71,10 +72,14 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
     if mancat is not None:
         obsparam['astrometry_catalogs'] = [mancat]
 
+    # use each catalog twice
     obsparam['astrometry_catalogs'] = [catcat for cat in
                                        obsparam['astrometry_catalogs']
                                        for catcat in [cat]*
                                        _pp_conf.n_registration_repetitions ]
+
+    n_success_last_iteration = None
+
     for cat_idx, refcat in enumerate(obsparam['astrometry_catalogs']):
 
         ##### run extract routines
@@ -117,7 +122,8 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         logging.info('check if sufficient reference stars in catalog %s' %
                      refcat)
 
-        hdulist = fits.open(filenames[len(filenames)/2])
+        hdulist = fits.open(filenames[len(filenames)//2],
+                            ignore_missing_end=True)
 
         ra = float(hdulist[0].header['CRVAL1'])
         dec = float(hdulist[0].header['CRVAL2'])
@@ -144,6 +150,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         logging.info('run SCAMP on %d image files, match with catalog %s ' % 
                      (len(filenames), refcat))
 
+<<<<<<< HEAD
         # download catalog and write to ldac file for SCAMP
         astcat = catalog(refcat, display=True)
         n_sources = astcat.download_catalog(ra, dec,
@@ -157,6 +164,23 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                       ' -ASTREF_CATALOG FILE' + \
                       ' -ASTREFCAT_NAME ' + refcat + '.cat ' + fileline
 
+=======
+        # translate source_tolerance into SCAMP properties
+        #   code      SCAMP_code   keep
+        #   'none'    0x00ff       only unflagged sources
+        #   'low'     0x00fe       sources with bright neighbors
+        #   'medium'  0x00fd       blended sources
+        #   'high'    0x00fc       saturated sources
+        st_code = {'none':   '0x00ff',
+                   'low':    '0x00fe',
+                   'medium': '0x00fd',
+                   'high':   '0x00fc'}[source_tolerance]
+
+        # assemble arguments for scamp, run it, and wait for it
+        commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
+                      ' -ASTR_FLAGSMASK '+st_code+' -FLAGS_MASK '+st_code+ \
+                      ' -ASTREF_CATALOG '+refcat+' '+fileline
+>>>>>>> master
         scamp = subprocess.Popen(shlex.split(commandline))
         scamp.wait()
 
@@ -224,6 +248,10 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         # registration succeeded for all images
         if len(badfits) == 0:
             break
+        # same number of good fits as for the last iteration
+        # break out!
+        elif len(goodfits) == n_success_last_iteration:
+            break
         # registration failed for most (or all) images
         else:
             logging.info(' > match failed for %d/%d images' % \
@@ -238,6 +266,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                 print 'Not all images matched ' \
                     + '- try again for different catalog, if available'
 
+        n_success_last_iteration = len(goodfits)
 
     ##### update image headers with wcs solutions where registration
     ##### was successful
@@ -332,13 +361,22 @@ if __name__ == '__main__':
     parser.add_argument("-minarea", help='sextractor SNR threshold',
                         default=0)
     parser.add_argument("-cat", help='manually select reference catalog', 
+<<<<<<< HEAD
                         choices=_pp_conf.allcatalogs, default=None) 
+=======
+                        default=None) 
+    parser.add_argument('-source_tolerance', 
+                        help='tolerance on source properties for registration',
+                        choices=['none', 'low', 'medium', 'high'], 
+                        default='high')
+>>>>>>> master
     parser.add_argument('images', help='images to process', nargs='+')
 
     args = parser.parse_args()         
     sex_snr = float(args.snr)
     source_minarea = float(args.minarea)
     mancat = args.cat
+    source_tolerance = args.source_tolerance
     filenames = args.images
 
 
@@ -372,6 +410,7 @@ if __name__ == '__main__':
     # run registration wrapper
     registration = register(filenames, telescope, sex_snr,
                             source_minarea, aprad, mancat, obsparam,
+                            source_tolerance,
                             display=True, diagnostics=True)
 
 

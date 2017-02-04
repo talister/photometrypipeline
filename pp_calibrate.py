@@ -462,8 +462,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='photometric calibration')
     parser.add_argument('-minstars', help='min number of calibration stars '+\
                         'or fraction', default=0.5)
+<<<<<<< HEAD
     parser.add_argument("-catalog",
                         choices=_pp_conf.allcatalogs,
+=======
+    parser.add_argument("-cat",
+                        choices=_pp_conf.allcatalogs.keys(),
+>>>>>>> master
                         help="use this catalog instead of default one")
     parser.add_argument("-filter", help="manual filter override")
     parser.add_argument("-maxflag", help="maximum flag for all sources", 
@@ -477,15 +482,16 @@ if __name__ == '__main__':
     minstars = float(args.minstars)
     manfilter = args.filter
     maxflag = int(float(args.maxflag))
-    manualcatalog = args.catalog
+    manualcatalog = args.cat
     instrumental = args.instrumental
     filenames = args.images
 
-
+    # manfilter: None: instrumental magnitudes, False: no manfilter provided 
     if instrumental:
         manfilter = None
     else:
-        manfilter = False
+        if manfilter is None:
+            manfilter = False
 
     # check if input filenames is actually a list
     if len(filenames) == 1:

@@ -54,7 +54,7 @@ vatt4k_param = {
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
     'filter_translations'  : {'TOP 2 BOT 1': 'V', 'TOP 3 BOT 1': 'R', 
-                              'TOP 4 BOT 1': None, 'TOP 5 BOT 1': 'B'},
+                              'TOP 4 BOT 1': 'I', 'TOP 5 BOT 1': 'B'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -121,7 +121,9 @@ dctlmi_param = {
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTERS',  # filter keyword
     'filter_translations'  : {'V': 'V', 'R': 'R', 'B': 'B', 'VR': None,
-                              'I': 'I'},
+                              'I': 'I', 'SDSS-U' : 'u', 'SDSS-G' : 'g',
+                              'SDSS-R' : 'r', 'SDSS-I' : 'i', 
+                              'SDSS-Z' : 'z'}, 
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -1152,7 +1154,9 @@ soargoodman_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
-    'filter_translations'  : {'Rc': 'R', 'V':'V', 'B':'B'},
+    'filter_translations'  : {'Rc': 'R', 'V':'V', 'B':'B', 'u':'u', 
+                              'g-SDSS': 'g', 'r-SDSS': 'r', 'i-SDSS': 'i', 
+                              'z-SDSS': 'z'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -1163,7 +1167,8 @@ soargoodman_param = {
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/soargoodman.sex',
-    'mask_file'            : {'1,1' : rootpath+'/setup/mask_soargoodman_1x1.fits'},
+    'mask_file'            : {'1,1' : rootpath+'/setup/mask_soargoodman_1x1.fits',
+                              '2,2' : rootpath+'/setup/mask_soargoodman_2x2.fits'},
     #                        mask files as a function of x,y binning
 
     # scamp settings
