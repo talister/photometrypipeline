@@ -56,8 +56,14 @@ if rootpath == None:
     print 'ERROR: PHOTPIPEDIR variable has not been set'
     sys.exit(0)
 
+# ### TBD
+# # define and read telescope setup parameters (obsparam)
+# telescope_parameters = {}
+# instrument_identifiers = {}
+# implemented_telescopes= []
 
-# read telescope setup parameters (obsparam)
+# execfile(rootpath + '/setup/vatt4k.py')
+
 execfile(rootpath+'/setup/telescopes.py')
 
 

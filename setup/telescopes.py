@@ -139,6 +139,8 @@ dctlmi_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/dctlmi.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
@@ -204,6 +206,8 @@ arc35arctic_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/arc35arctic.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJNAME,' +
@@ -268,6 +272,8 @@ arc35agile_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/arc35agile.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJNAME,' +
@@ -344,6 +350,8 @@ magimacs_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/magimacs.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -408,6 +416,8 @@ ca123dlrmkiii_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/ca123dlrmkiii.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -470,6 +480,8 @@ lowell31_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/lowell31.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER1,FILTER2,EXPTIME,OBJECT,' +
@@ -534,6 +546,8 @@ lowell42_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/lowell42.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,CCDSUM,FILTNAME,EXPTIME,'+
@@ -599,6 +613,8 @@ lowell72_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/lowell72.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,CRDELT1, CRDELT2,FILTNME3,' +
@@ -665,6 +681,8 @@ ctio09_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/ctio09.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTERS,EXPTIME,OBJECT,' +
@@ -728,6 +746,8 @@ ctio10_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/ctio10.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -790,6 +810,8 @@ ctio13ccd_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/andicam.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
@@ -863,6 +885,8 @@ uh88snifs_param = {
     #                        keywords to be copied in image
     #                        combination using swarp
     'swarp-config-file'    : rootpath+'/setup/uh88snifs.swarp',  
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
@@ -917,6 +941,8 @@ wiyn09hdi_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/wiyn09hdi.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER1,EXPTIME,OBJECT,' +
@@ -982,6 +1008,8 @@ generic_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/generic.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
@@ -1044,6 +1072,8 @@ ratir_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/ratir.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT' +
@@ -1173,6 +1203,8 @@ soargoodman_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/soargoodman.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -1233,6 +1265,8 @@ ohp120_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/ohp120.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
@@ -1284,6 +1318,8 @@ tngdolores_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/tngdolores.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 

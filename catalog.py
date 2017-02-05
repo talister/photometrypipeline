@@ -352,7 +352,7 @@ class catalog:
                                      'e_RAJ2000',
                                      'e_DEJ2000', 'umag', 'e_umag',
                                      'gmag', 'e_gmag', 'rmag', 'e_rmag',
-                                     'imag', 'e_imag'],
+                                     'imag', 'e_imag', 'zmag', 'e_zmag'],
                             column_filters={"gmag":
                                             ("<%f" % max_mag)},
                             row_limit = max_sources)
