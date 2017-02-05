@@ -360,7 +360,6 @@ if __name__ == '__main__':
                         default='high')
     parser.add_argument("-cat", help='manually select reference catalog', 
                         choices=_pp_conf.allcatalogs, default=None) 
-                        default=None) 
     parser.add_argument('images', help='images to process', nargs='+')
 
     args = parser.parse_args()         

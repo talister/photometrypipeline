@@ -256,14 +256,16 @@ match the source catalogs with astrometric catalogs as specified
 for this telescope/instrument combination (see
 <a class="reference internal" href="install.html#telescope-setup"><span class="std std-ref">Telescope Setup</span></a> reference), or as provided by the user with
 the <cite>-cat</cite> option. Catalogs are accessed through the <a class="reference external" href="http://vizier.u-strasbg.fr/vizier/">CDS Vizier</a>
-server. Among others, <cite>SCAMP</cite> outputs two diagnostic numbers:
-<code class="docutils literal"><span class="pre">AS_CONTRAST</span></code> and <code class="docutils literal"><span class="pre">XY_CONTRAST</span></code>. The image registration
-generally has succeeded if both numbers are greater than 2.5 - the
-higher the contrast numbers, the better the fit.  Unless every
-image has been registered properly, each catalog is matched twice
-using information from the last <cite>SCAMP</cite> run. The routine ends if
-all images have been registered properly or all catalogs have been
-used twice.</p>
+server; the downloaded catalog is written as a <code class="docutils literal"><span class="pre">.cat</span></code> file into
+the working directory for later inspection.  Among others, <cite>SCAMP</cite>
+outputs two diagnostic numbers: <code class="docutils literal"><span class="pre">AS_CONTRAST</span></code> and
+<code class="docutils literal"><span class="pre">XY_CONTRAST</span></code>. The image registration generally has succeeded if
+both numbers are greater than 2.5 - the higher the contrast
+numbers, the better the fit.  Unless every image has been
+registered properly, each catalog is matched twice using
+information from the last <cite>SCAMP</cite> run. The routine ends if all
+images have been registered properly or all catalogs have been used
+twice.</p>
 <p>The diagnostic output of this function is a table of the <cite>SCAMP</cite>
 output parameters and a presentation of each image overplotted with
 the catalog sources used in the matching.</p>

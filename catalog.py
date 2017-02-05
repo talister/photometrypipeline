@@ -58,7 +58,6 @@ class catalog:
         self.origin       = '' # where does the data come from?
         self.history      = '' # catalog history
         self.magsys       = '' # [AB|Vega|instrumental]
-        #self.fieldnames   = {} # unified field names
         self.display      = display
         
     #### data access functions
@@ -150,31 +149,6 @@ class catalog:
             self.data.add_column(Column(numpy.array(field_arrays[i]),
                                         name=field_names[i], 
                                         format=field_types[i]))
-
-        # print self.data.columns
-            
-        # # create FITS_rec from scratch, or append to existing array
-        # if type(self.data) == list:
-        #     hdu = fits.BinTableHDU.from_columns(new_cols)
-        # else:
-        #     old_cols = []
-        #     for idx, field in enumerate(self.fields):
-        #         old_cols.append(fits.Column(name=field, 
-        #                                 format=self.data.columns[idx].format, 
-        #                                 array=self[field]))
-        #         # # add field with translated fieldname, if available
-        #         # if field in self.fieldnames.values():
-        #         #     rev_fieldnames = {val:key for key,val in 
-        #         #                       self.fieldnames.items()}
-        #         #     field = rev_fieldnames[field]
-        #         #     old_cols.append(fits.Column(name=field, 
-        #         #                         format=self.data.columns[idx].format, 
-        #         #                         array=self[field]))
-
-        #     hdu = fits.BinTableHDU.from_columns(fits.ColDefs(old_cols) +
-        #                                         fits.ColDefs(new_cols))
-
-        # self.data = hdu.data
 
         return len(field_arrays)
 
@@ -618,10 +592,6 @@ class catalog:
         table_cmd = "CREATE TABLE data ("
         for key_idx, key in enumerate(self.fields):
             db_key = key
-            # # translate unified fieldnames
-            # for unikey, unival in self.fieldnames.items():
-            #     if key == unival:
-            #         db_key = unikey
             if type(self.data[key][0]) == numpy.float32 \
                or type(self.data[key][0]) == numpy.float64:
                 table_cmd += "'%s' REAL" % db_key
@@ -733,7 +703,6 @@ class catalog:
         """
 
         ### TBD: modify this function to make use of table functionality
-        
         
         if len(self.data) == 0:
             return 0
@@ -1049,19 +1018,10 @@ class catalog:
             (e.g., postions)
             return: requested fields for matched sources 
             note: will only match exclusive pairs
+
+            TBD: replace this routine with something that uses 
+                 astropy.table functionality; how about astropy.coord matching?
         """
-
-        # # replace unified fieldnames with actual field names
-        # # where applicable
-        # for lst in [match_keys_this_catalog, extract_this_catalog]:
-        #     for idx, item in enumerate(lst):
-        #         if item in self.fieldnames:
-        #             lst[idx] = self.fieldnames[item]
-        # for lst in [match_keys_other_catalog, extract_other_catalog]:
-        #     for idx, item in enumerate(lst):
-        #         if item in self.fieldnames:
-        #             lst[idx] = catalog.fieldnames[item]
-
 
         this_tree = spatial.KDTree(zip(self[match_keys_this_catalog[0]].data,
                                        self[match_keys_this_catalog[1]].data))

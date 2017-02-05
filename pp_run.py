@@ -350,14 +350,18 @@ if __name__ == '__main__':
     ##### if filenames = ['all'], walk through directories and run pipeline
     # each dataset
     _masterroot_directory = os.getcwd()
-    if len(filenames) == 1 and filenames[0]=='all' and prefix is not None:
+
+
+    if len(filenames) == 1 and filenames[0]=='all':
 
         # dump data set information into summary file
         _pp_conf.use_diagnostics_summary = True
         diag.create_summary()
 
         # turn prefix and fits suffixes into regular expression
-        regex = re.compile('^'+prefix+'.*[fits|FITS|Fits|fts|FTS]$')
+        if prefix is None:
+            prefix = ''
+        regex = re.compile('^'+prefix+'.*[fits|FITS|fit|FIT|Fits|fts|FTS]$')
 
         # walk through directories underneath
         for root, dirs, files in os.walk(_masterroot_directory):
@@ -369,6 +373,7 @@ if __name__ == '__main__':
             if len(filenames) > 0:
                 print '\n RUN PIPELINE IN %s' % root
                 os.chdir(root)
+
                 run_the_pipeline(filenames, man_targetname, man_filtername,
                                  fixed_aprad, source_tolerance)
                 os.chdir(_masterroot_directory)
