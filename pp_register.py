@@ -150,7 +150,6 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         logging.info('run SCAMP on %d image files, match with catalog %s ' % 
                      (len(filenames), refcat))
 
-<<<<<<< HEAD
         # download catalog and write to ldac file for SCAMP
         astcat = catalog(refcat, display=True)
         n_sources = astcat.download_catalog(ra, dec,
@@ -158,13 +157,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                                             100000, 
                                             max_mag=obsparam['reg_max_mag'],
                                             save_catalog=True)
-        
-        # assemble arguments for scamp, run it, and wait for it
-        commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
-                      ' -ASTREF_CATALOG FILE' + \
-                      ' -ASTREFCAT_NAME ' + refcat + '.cat ' + fileline
 
-=======
         # translate source_tolerance into SCAMP properties
         #   code      SCAMP_code   keep
         #   'none'    0x00ff       only unflagged sources
@@ -175,12 +168,13 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                    'low':    '0x00fe',
                    'medium': '0x00fd',
                    'high':   '0x00fc'}[source_tolerance]
-
+        
         # assemble arguments for scamp, run it, and wait for it
         commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
                       ' -ASTR_FLAGSMASK '+st_code+' -FLAGS_MASK '+st_code+ \
-                      ' -ASTREF_CATALOG '+refcat+' '+fileline
->>>>>>> master
+                      ' -ASTREF_CATALOG FILE' + \
+                      ' -ASTREFCAT_NAME ' + refcat + '.cat ' + fileline
+
         scamp = subprocess.Popen(shlex.split(commandline))
         scamp.wait()
 
@@ -360,16 +354,13 @@ if __name__ == '__main__':
     parser.add_argument("-snr", help='sextractor SNR threshold', default=3)
     parser.add_argument("-minarea", help='sextractor SNR threshold',
                         default=0)
-    parser.add_argument("-cat", help='manually select reference catalog', 
-<<<<<<< HEAD
-                        choices=_pp_conf.allcatalogs, default=None) 
-=======
-                        default=None) 
     parser.add_argument('-source_tolerance', 
                         help='tolerance on source properties for registration',
                         choices=['none', 'low', 'medium', 'high'], 
                         default='high')
->>>>>>> master
+    parser.add_argument("-cat", help='manually select reference catalog', 
+                        choices=_pp_conf.allcatalogs, default=None) 
+                        default=None) 
     parser.add_argument('images', help='images to process', nargs='+')
 
     args = parser.parse_args()         
