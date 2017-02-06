@@ -3,6 +3,7 @@ configuration file for photometry pipeline
 
 2016-01-27, michael.mommert@nau.edu
 """
+from __future__ import print_function
 
 import os
 import sys
@@ -53,7 +54,7 @@ warnings.filterwarnings('ignore', category=UserWarning)
 ### read photometry pipeline root path from environment variable
 rootpath = os.environ.get('PHOTPIPEDIR')
 if rootpath == None:
-    print 'ERROR: PHOTPIPEDIR variable has not been set'
+    print('ERROR: PHOTPIPEDIR variable has not been set')
     sys.exit(0)
 
 # ### TBD

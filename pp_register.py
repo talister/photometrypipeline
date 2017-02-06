@@ -3,6 +3,7 @@
 """ PP_REGISTER - wcs register frames 
     v1.0: 2015-12-30, michael.mommert@nau.edu
 """
+from __future__ import print_function
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -86,7 +87,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         # ignore saturation: saturated stars are bright and might be necessary 
         # for SCAMP
         if display:
-            print '* extract sources from %d frames' % len(filenames)
+            print('* extract sources from %d frames' % len(filenames))
 
         extractparameters = {'sex_snr':sex_snr,
                              'source_minarea':source_minarea, \
@@ -98,7 +99,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
 
         if extraction is None:
             if display:
-                print 'ERROR: extraction was not successful'
+                print('ERROR: extraction was not successful')
             logging.error('extraction was not successful')
             return None
     
@@ -110,7 +111,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
 
         if len(ldac_files) == 0:
             if display:
-                print 'ERROR: no sources detected in image files'
+                print('ERROR: no sources detected in image files')
                 logging.error('no sources detected in image files')
             return {'goodfits': [], 'badfits': filenames}
 
@@ -232,12 +233,12 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
 
         logging.info(' > match succeeded for %d/%d images' % \
                      (len(goodfits), len(filenames)))
-        print '\n################################# ' + \
-            'REGISTRATION SUMMARY:\n###'
-        print '### %d/%d images have been registered successfully' % \
-            (len(goodfits), len(filenames))
-        print '###\n###############################' + \
-            '#######################\n'
+        print('\n################################# ' + \
+            'REGISTRATION SUMMARY:\n###')
+        print('### %d/%d images have been registered successfully' % \
+            (len(goodfits), len(filenames)))
+        print('###\n###############################' + \
+            '#######################\n')
 
         # registration succeeded for all images
         if len(badfits) == 0:
@@ -257,8 +258,8 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
             logging.critical('Not all images matched ' \
                              + '- try again or different catalog, if available')
             if display:
-                print 'Not all images matched ' \
-                    + '- try again for different catalog, if available'
+                print('Not all images matched ' \
+                    + '- try again for different catalog, if available')
 
         n_success_last_iteration = len(goodfits)
 
@@ -306,7 +307,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         
     if len(badfits) == len(filenames):
         if display:
-            print 'ERROR: registration failed for all images'
+            print('ERROR: registration failed for all images')
         logging.error('ERROR: registration failed for all images')
         return output
         

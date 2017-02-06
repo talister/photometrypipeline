@@ -4,6 +4,7 @@ CATALOG - class structure for dealing with astronomical catalogs,
 
 version 0.9, 2016-01-27, michael.mommert@nau.edu
 """
+from __future__ import print_function
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -180,9 +181,9 @@ class catalog:
         # -> green column names in Vizier
 
         if self.display:
-            print ('query Vizier for %s at %7.3f/%+8.3f in ' \
+            print(('query Vizier for %s at %7.3f/%+8.3f in ' \
                    + 'a %.2f deg radius') % \
-                   (self.catalogname, ra_deg, dec_deg, rad_deg),
+                   (self.catalogname, ra_deg, dec_deg, rad_deg), end=' ')
             sys.stdout.flush()
         logging.info(('query Vizier for %s at %7.3f/%+8.3f in ' \
                    + 'a %.2f deg radius') % \
@@ -206,7 +207,7 @@ class catalog:
                                                 catalog="I/337/gaia")[0]
             except IndexError:
                 if self.display:
-                    print 'no data available from %s' % self.catalogname
+                    print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
 
@@ -243,7 +244,7 @@ class catalog:
                                                 catalog="II/246/out")[0]
             except IndexError:
                 if self.display:
-                    print 'no data available from %s' % self.catalogname
+                    print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
 
@@ -296,7 +297,7 @@ class catalog:
                                                 catalog="I/329/urat1")[0]
             except IndexError:
                 if self.display:
-                    print 'no data available from %s' % self.catalogname
+                    print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
 
@@ -336,7 +337,7 @@ class catalog:
                                                 catalog="II/336/apass9")[0]
             except IndexError:
                 if self.display:
-                    print 'no data available from %s' % self.catalogname
+                    print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
 
@@ -362,7 +363,7 @@ class catalog:
                                                 catalog="V/139/sdss9")[0]
             except IndexError:
                 if self.display:
-                    print 'no data available from %s' % self.catalogname
+                    print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
                 
@@ -415,8 +416,8 @@ class catalog:
         hdulist  = fits.open(filename, ignore_missing_end=True)
 
         if len(hdulist) < 3:
-            print ('ERROR: %s seems to be empty; check LOG file if ' + 
-                   'Source Extractor ran properly') % filename
+            print(('ERROR: %s seems to be empty; check LOG file if ' + 
+                   'Source Extractor ran properly') % filename)
             logging.error(('ERROR: %s seems to be empty; check LOG file if ' + 
                    'Source Extractor ran properly') % filename)
             return None
@@ -640,7 +641,7 @@ class catalog:
             db = db_conn.cursor()
         except:
             if self.display:
-                print 'ERROR: could not find database', filename
+                print('ERROR: could not find database', filename)
                 logging.error('ERROR: could not find database', filename)
             return []
 
@@ -998,8 +999,8 @@ class catalog:
 
         else:
             if self.display:
-                print 'ERROR: no transformation from %s to %s available' % \
-                    (self.catalogname, targetfilter)
+                print('ERROR: no transformation from %s to %s available' % \
+                    (self.catalogname, targetfilter))
             return 0
         
 

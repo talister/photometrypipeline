@@ -1,6 +1,7 @@
 """ DIAGNOSTICS - diagnostic routines for photometry pipeline
     v1.0: 2016-02-25, michael.mommert@nau.edu
 """
+from __future__ import print_function
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -151,7 +152,7 @@ def create_index(filenames, directory, obsparam, display=False):
     """
 
     if display:
-        print 'create frame index table and frame images'
+        print('create frame index table and frame images')
     logging.info('create frame index table and frame images')
 
     # obtain filtername from first image file

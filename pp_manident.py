@@ -7,6 +7,7 @@
     this code is based in part on viewseries.py:
     http://spider.wadsworth.org/spider_doc/spider/docs/python/spipylib/examples/viewseries.py
 """
+from __future__ import print_function
 
 import os, sys
 import numpy
@@ -39,12 +40,12 @@ class Clicker:
         self.mjd    = []
 
         ### load image data
-        print 'please wait, loading images...',
+        print('please wait, loading images...', end=' ')
         sys.stdout.flush()
 
         self.read_all_fits(self.files)
 
-        print 'done!'
+        print('done!')
 
         # create title bar
         self.title = Label(text='%s (%d/%d)' % 
@@ -131,9 +132,9 @@ class Clicker:
         """ read in all image data, scale images """
         for idx, filename in enumerate(filenames):
             if idx > 0:
-                print '\b\b\b\b%3d' % (idx+1),
+                print('\b\b\b\b%3d' % (idx+1), end=' ')
             else:
-                print '%3d' % (idx+1),
+                print('%3d' % (idx+1), end=' ')
             sys.stdout.flush()
 
             ## read image data
@@ -185,7 +186,7 @@ class Clicker:
             self.index = len(self.files) - 1
         filename = self.files[self.index]
         if not os.path.exists(filename):
-            print "Unable to find %s" % filename
+            print("Unable to find %s" % filename)
             self.top.quit()
         self.evar.set(self.index+1)
                     
@@ -316,7 +317,7 @@ if __name__ == "__main__":
                 app.ldac[image_idx][interp_idx]['YWIN_WORLD'],
                 app.mjd[image_idx]))
 
-    print image_idx+1, 'target positions written to file positions.dat'
+    print(image_idx+1, 'target positions written to file positions.dat')
 
     outf.close()
 

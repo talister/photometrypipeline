@@ -2,6 +2,7 @@
 Toolbox for the Photometry Pipeline
 2016-03-09, michael.mommert@nau.edu
 """
+from __future__ import print_function
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -129,9 +130,9 @@ def read_scamp_output():
     abort = False
     for i in range(len(data)):
       if len(headers) != len(data[i]):
-        print 'ERROR: data and header lists from SCAMP output file have ' \
+        print('ERROR: data and header lists from SCAMP output file have ' \
           + 'different lengths for image %s; do the FITS files have the ' \
-          + 'OBJECT keyword populated?' % data[i][headers['Catalog_Name']]
+          + 'OBJECT keyword populated?' % data[i][headers['Catalog_Name']])
         abort = True
     if abort:
       return ()

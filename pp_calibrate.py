@@ -4,6 +4,7 @@
                    and derive magnitude zeropoint
     v1.0: 2016-01-15, michael.mommert@nau.edu
 """
+from __future__ import print_function
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -79,7 +80,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
         n_sources = cat.download_catalog(ra_deg, dec_deg, rad_deg, max_sources)
         
         if display:
-            print n_sources, 'sources downloaded from', catalogname
+            print(n_sources, 'sources downloaded from', catalogname)
         if n_sources < min_sources:
             continue
 
@@ -98,8 +99,8 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                                     cat['_e_'+filtername+'mag'] > mag_accuracy)
 
             if display and n_transformed > 0:
-                print '%s transformed to %s-band: %d sources' % \
-                    (catalogname, filtername, n_transformed)
+                print('%s transformed to %s-band: %d sources' % \
+                    (catalogname, filtername, n_transformed))
             if n_transformed > min_sources:
                 logging.info('more than %d sources (%d), use this catalog' % 
                              (min_sources, n_transformed))
@@ -117,8 +118,8 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             if display:
                 logging.info('%d sources with accurate magnitudes in %s band' %
                              (n_sources, filtername))
-                print '%d sources with accurate magnitudes in %s band' % \
-                    (n_sources, filtername)
+                print('%d sources with accurate magnitudes in %s band' % \
+                    (n_sources, filtername))
 
             if n_sources > min_sources:
                 logging.info('more than %d sources (%d), use this catalog' % 
@@ -134,8 +135,8 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
 
     # end up here if none of the catalogs has n_sources > min_sources
     if display:
-        print 'ERROR: not enough sources in reference catalog %s (%d)' % \
-            (catalogname, n_sources)
+        print('ERROR: not enough sources in reference catalog %s (%d)' % \
+            (catalogname, n_sources))
     logging.warning('not enough sources in reference catalog %s (%d)' % \
                     (catalogname, n_sources))
     return None
@@ -159,7 +160,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                   ref_cat.history])))
 
         if display:
-            print 'zeropoint for %s:' % cat.catalogname,
+            print('zeropoint for %s:' % cat.catalogname, end=' ')
 
         filterkey = filtername+'mag' if filtername+'mag' \
                     in ref_cat.fields else '_'+filtername+'mag'
@@ -206,8 +207,8 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         # fewer than 3 reference stars -> skip this catalog
         if len(residuals) < 3:
             if display:
-                print ('Warning: %d reference stars after source matching ' \
-                       + 'for frame %s') % (len(residuals), cat.catalogname)
+                print(('Warning: %d reference stars after source matching ' \
+                       + 'for frame %s') % (len(residuals), cat.catalogname))
                 logging.warning(('Warning: %d reference stars after source ' \
                                 + 'matching for frame %s') % \
                                 (len(residuals), cat.catalogname))
@@ -292,9 +293,9 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                      'success': True})
 
 
-        print '%6.3f+-%.3f (%d/%d reference stars)' % \
+        print('%6.3f+-%.3f (%d/%d reference stars)' % \
             (clipping_steps[idx][0],clipping_steps[idx][1],
-             len(clipping_steps[idx][3]), len(clipping_steps[0][3]))
+             len(clipping_steps[idx][3]), len(clipping_steps[0][3])))
         
         ### append calibrated magnitudes to catalog
         if filterkey[0] != '_':
@@ -353,7 +354,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         try:
             filtername = hdulist[0].header['FILTER']
         except KeyError:
-            print 'Cannot read filter name from file %s' % filename
+            print('Cannot read filter name from file %s' % filename)
             logging.error('Cannot read filter name from file %s' % filename)
             return None
             
@@ -370,11 +371,11 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         ldac_filename = filename[:filename.find('.fit')]+'.ldac'
         cat = catalog(filename)
         if display:
-            print cat.read_ldac(ldac_filename, filename, maxflag=maxflag,
+            print(cat.read_ldac(ldac_filename, filename, maxflag=maxflag,
                                 object_keyword=obsparam['object'],
                                 exptime_keyword=obsparam['exptime'],
                                 time_keyword='MIDTIMJD'), \
-                '(sources, columns) read from', filename
+                '(sources, columns) read from', filename)
 
         catalogs.append(cat)
 
@@ -396,9 +397,9 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
                           ", ".join(['%s: %s' % (key, val) 
                                      for key,val in filternames.items()]))
             if display:
-                print 'ERROR: ambiguous filters in this image sample (%s)' % \
+                print('ERROR: ambiguous filters in this image sample (%s)' % \
                     ", ".join(['%s: %s' % (key, val) 
-                               for key,val in filternames.items()])
+                               for key,val in filternames.items()]))
             return []
 
     if manualcatalog is not None:
@@ -414,13 +415,13 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         ref_cat = None
 
     if ref_cat == None:
-        print 'Skip calibration - report instrumental magnitudes'
+        print('Skip calibration - report instrumental magnitudes')
         logging.error('Skip calibration - report instrumental magnitudes')
 
         ### write calibrated database files
         logging.info('write calibrated data into database files')
         if display:
-            print 'write calibrated data into database files'
+            print('write calibrated data into database files')
         for cat in catalogs:
             cat.write_database(cat.catalogname+'.db')
 
@@ -446,7 +447,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     ### write calibrated database files
     logging.info('write calibrated data into database files')
     if display:
-        print 'write calibrated data into database files'
+        print('write calibrated data into database files')
     for cat in catalogs:
         cat.write_database(cat.catalogname+'.db')
 
@@ -499,8 +500,8 @@ if __name__ == '__main__':
     try:
         telescope = hdulist[0].header['TEL_KEYW']
     except KeyError:
-        print 'ERROR: cannot find telescope keyword in image header;', \
-            'has this image run through wcs_register?'
+        print('ERROR: cannot find telescope keyword in image header;', \
+            'has this image run through wcs_register?')
         sys.exit(0)
     obsparam = _pp_conf.telescope_parameters[telescope]
 

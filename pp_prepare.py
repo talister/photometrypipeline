@@ -3,6 +3,7 @@
 """ PP_PREPARE - prepare fits images for photometry pipeline
     v1.0: 2016-02-27, michael.mommert@nau.edu
 """
+from __future__ import print_function
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -140,7 +141,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
     for filename in filenames:
 
         if display:
-            print 'preparing', filename
+            print('preparing', filename)
 
         # open image file
         hdulist = fits.open(filename, mode='update', verify='silentfix', 
@@ -321,7 +322,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         # read out ra and dec from header
         if obsparam['radec_separator'] == 'XXX':
 
-            print header[11:15]
+            print(header[11:15])
 
             ra_deg  = float(header[obsparam['ra']])
             dec_deg = float(header[obsparam['dec']])
@@ -479,7 +480,7 @@ if __name__ == '__main__':
         try:
             telescope = _pp_conf.instrument_identifiers[instruments[0]]
         except:
-            print 'cannot identify telescope/instrument; use GENERIC telescope'
+            print('cannot identify telescope/instrument; use GENERIC telescope')
             logging.warning('cannot identify telescope/instrument; ' + 
                             'use GENERIC telescope')
             telescope = 'GENERIC'
