@@ -33,6 +33,10 @@ import sqlite3 as sql
 from scipy import spatial
 from astropy.io import fits
 import scipy.optimize as optimization
+from astroquery.vizier import Vizier
+import astropy.units as u
+import astropy.coordinates as coord
+from astropy.table import Table, Column
 
 # pipeline-related modules (only needed for testing)
 import _pp_conf 
@@ -46,14 +50,14 @@ logging.basicConfig(filename = _pp_conf.log_filename,
 
 class catalog:
     def __init__(self, catalogname, display=False):
-        self.data         = [] # astropy FITS_rec object
+        self.data         = None # will be an astropy table 
         self.catalogname  = catalogname
-        self.obstime      = [None, None] # observation midtime (JD)
+        self.obstime      = [None, None] # observation midtime (JD) +
+                                         # duration
         self.obj          = None # header target name
         self.origin       = '' # where does the data come from?
         self.history      = '' # catalog history
         self.magsys       = '' # [AB|Vega|instrumental]
-        self.fieldnames   = {} # unified field names
         self.display      = display
         
     #### data access functions
@@ -63,24 +67,23 @@ class catalog:
         """
         return: tuple of number of sources and fields
         """
-        return (len(self.data), len(self.data.names))
-
+        try:
+            return (len(self.data), len(self.fields))
+        except AttributeError:
+            return (len(self.data), len(self.data.columns))
+        
     @property
     def fields(self):
         """ 
         return: array of all available fields 
         """
-        return self.data.names + self.fieldnames.keys()
-
+        return self.data.columns
 
     def __getitem__(self, ident):
         """
         return: source or field
         """
-        try:
-            return self.data[ident]
-        except KeyError:
-            return self.data[self.fieldnames[ident]]
+        return self.data[ident]
 
 
     ##### data manipulation functions
@@ -122,7 +125,12 @@ class catalog:
         """
         single-field wrapper for add_fields
         """
-        return self.add_fields([field_name], [field_array], [field_type])
+        ### numpy.recarray treatment
+        #return self.add_fields([field_name], [field_array], [field_type])
+
+        ### astropy.table treatment 
+        return self.data.add_column(Column(field_array, name=field_name,
+                                           format=field_type))
 
 
     def add_fields(self, field_names, field_arrays, field_types):
@@ -130,42 +138,17 @@ class catalog:
         add fields to self.data
         input: field_names, field_arrays, field_types
         output: number of added fields
-        -------------
-        WARNING: self.data != self.data.columns.array
-        this might lead to discrepancies in the number of sources when
-        adding fields
         """
 
         assert len(field_names) == len(field_arrays) == len(field_types)
 
-        new_cols = []
+        if self.data is None:
+            self.data = Table()
+        
         for i in range(len(field_names)):
-            new_cols.append(fits.Column(name=field_names[i], 
-                                        format=field_types[i], 
-                                        array=numpy.array(field_arrays[i])))
-
-        # create FITS_rec from scratch, or append to existing array
-        if type(self.data) == list:
-            hdu = fits.BinTableHDU.from_columns(new_cols)
-        else:
-            old_cols = []
-            for idx, field in enumerate(self.data.columns.names):
-                old_cols.append(fits.Column(name=field, 
-                                        format=self.data.columns[idx].format, 
-                                        array=self[field]))
-                # # add field with translated fieldname, if available
-                # if field in self.fieldnames.values():
-                #     rev_fieldnames = {val:key for key,val in 
-                #                       self.fieldnames.items()}
-                #     field = rev_fieldnames[field]
-                #     old_cols.append(fits.Column(name=field, 
-                #                         format=self.data.columns[idx].format, 
-                #                         array=self[field]))
-
-            hdu = fits.BinTableHDU.from_columns(fits.ColDefs(old_cols) +
-                                                fits.ColDefs(new_cols))
-
-        self.data = hdu.data
+            self.data.add_column(Column(numpy.array(field_arrays[i]),
+                                        name=field_names[i], 
+                                        format=field_types[i]))
 
         return len(field_arrays)
 
@@ -177,159 +160,244 @@ class catalog:
     ### online catalog access
         
     def download_catalog(self, ra_deg, dec_deg, rad_deg,
-                         max_sources, sort=None, save_catalog=True,
-                         display_progress=True):
+                         max_sources, save_catalog=False, 
+                         max_mag=21):
         """ 
         download existing catalog from VIZIER server using self.catalogname
         input: ra_deg, dec_deg, rad_deg, max_sources, (display_progress), 
                (sort=['ascending', 'descending', None])
         return: number of sources downloaded
+
+        astrometric catalogs: ra.deg, dec.deg, e_ra.deg, e_dec.deg,
+                              mag, e_mag, [epoch_jd, Gaia only]
+        photometric catalogs: ra.deg, dec.deg, e_ra.deg, e_dec.deg,
+                              [mags], [e_mags], epoch_jd
         """
 
-        # assemble URL with target field properties to download a FITS table
-        # see: http://vizier.u-strasbg.fr/doc/asu-summary.htx
-        #server = 'http://vizier.cfa.harvard.edu'
-        server = 'http://vizier.u-strasbg.fr'
 
-        # use "server + "/viz-bin/asu-txt?" for text file output
-        url =  server + "/viz-bin/asu-binfits?"
-        url += "-source=" + _pp_conf.allcatalogs[self.catalogname]
-        url += "&-c=%010.7f%+010.7f" % (ra_deg, dec_deg)
-        url += "&-c.rd=%5.3f" % (rad_deg)
-        # for mag uncertainties in URAT, pos uncertainties in 2MASS
-        if self.catalogname.find('SDSS') == -1:
-            url += "&-out.all" 
-        url += "&-out.max=%d" % max_sources 
-        # sort data
-        if sort is not None:
-            if sort == 'ascending':
-                url += "&-sort=" + _pp_conf.allcatalogs_mag[self.catalogname]
-            elif sort == 'descending':
-                url += "&-sort=-" + _pp_conf.allcatalogs_mag[self.catalogname]
-            else:
-                logging.warning('not sure how to sort catalog data (%s)' % sort)
-                print 'not sure how to sort catalog data (%s)' % sort
+        ### setup Vizier query
+        # note: column filters uses original Vizier column names
+        # -> green column names in Vizier
 
-        logging.info('accessing %s on vizier: %s' % (self.catalogname, url))
-
-        #print url
+        if self.display:
+            print ('query Vizier for %s at %7.3f/%+8.3f in ' \
+                   + 'a %.2f deg radius') % \
+                   (self.catalogname, ra_deg, dec_deg, rad_deg),
+            sys.stdout.flush()
+        logging.info(('query Vizier for %s at %7.3f/%+8.3f in ' \
+                   + 'a %.2f deg radius') % \
+                   (self.catalogname, ra_deg, dec_deg, rad_deg))
         
-        ### call server
-        call = urllib2.urlopen(url)
+        field = coord.SkyCoord(ra=ra_deg, dec=dec_deg, unit=(u.deg, u.deg),
+                               frame='icrs')
+        
+        if self.catalogname == 'GAIA':
+            # astrometric catalog
+            vquery = Vizier(columns=['Source', 'RA_ICRS', 'DE_ICRS',
+                                     'e_RA_ICRS', 'e_DE_ICRS', 'pmRA',
+                                     'pmDE', 'phot_g_mean_mag'],
+                            column_filters={"phot_g_mean_mag":
+                                            ("<%f" % max_mag)},
+                            row_limit = max_sources)
 
-        if not display_progress:
-            download = call.read()
+            try:
+                self.data = vquery.query_region(field,
+                                                width=("%fd" % rad_deg),
+                                                catalog="I/337/gaia")[0]
+            except IndexError:
+                if self.display:
+                    print 'no data available from %s' % self.catalogname
+                logging.error('no data available from %s' % self.catalogname)
+                return 0
 
-        else:
-            download = ''
-            last_status = ''
-            file_size_bytes = 0
-            block_size = 81920 # download block size in bytes
 
-            while True:
-                buf = call.read(block_size)
+                ### rename column names using PP conventions
+            self.data.rename_column('Source', 'ident')
+            self.data.rename_column('RA_ICRS', 'ra.deg')
+            self.data.rename_column('DE_ICRS', 'dec.deg')
+            self.data.rename_column('e_RA_ICRS', 'e_ra.deg')
+            self.data['e_ra.deg'].convert_unit_to(u.deg)
+            self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
+            self.data['e_dec.deg'].convert_unit_to(u.deg)
+            self.data.rename_column('__Gmag_', 'mag')
 
-                if not buf:
-                    break
+            self.data.add_column(Column(numpy.ones(len(self.data))*2457023.5,
+                                        name='epoch_jd', unit=u.day))
+            
+            ### TBD:
+            # - implement proper error ellipse handling
+            # - implement propor motion handling for DR2
+            
+        elif self.catalogname == '2MASS':
+            # photometric catalog
+            vquery = Vizier(columns=['2MASS', 'RAJ2000', 'DEJ2000', 'errMaj', 
+                                     'errMin', 'errPA', 'Jmag', 'e_Jmag',
+                                     'Hmag', 'e_Hmag', 'Kmag', 'e_Kmag'],
+                            column_filters={"Jmag":
+                                            ("<%f" % max_mag)},
+                            row_limit = max_sources)
 
-                # cumulate total file size
-                file_size_bytes += len(buf)
-                new_status = 'downloaded %d kB' % (file_size_bytes/1024.)
-                # remove last status and display new one
-                print ''.join(['\r' for i in range(len(last_status))]) + \
-                    new_status,
-                sys.stdout.flush()
+            try:
+                self.data = vquery.query_region(field,
+                                                width=("%fd" % rad_deg),
+                                                catalog="II/246/out")[0]
+            except IndexError:
+                if self.display:
+                    print 'no data available from %s' % self.catalogname
+                logging.error('no data available from %s' % self.catalogname)
+                return 0
 
-                last_status = new_status
-                download += buf
+            ### rename column names using PP conventions
+            self.data.rename_column('_2MASS', 'ident')
+            self.data.rename_column('RAJ2000', 'ra.deg')            
+            self.data.rename_column('DEJ2000', 'dec.deg')
+            self.data['mag'] = self.data['Jmag'] # use J as default mag
+            
+            ### determine RA and Dec positional uncertainties and
+            #   add respective columns
+            self.data['errPA'][self.data['errPA'] == 0] = 1 # workaround
+            
+            arc_xopt = numpy.arctan(-self.data['errMin']/self.data['errMaj']*
+                                    numpy.tan(self.data['errPA'].to(u.rad)))
+            ra_err  = abs(self.data['errMaj']*numpy.cos(arc_xopt)*
+                          numpy.cos(self.data['errPA'].to(u.rad))-
+                          self.data['errMin']*numpy.sin(arc_xopt)*
+                          numpy.sin(self.data['errPA'].to(u.rad)))
+            self.data.add_column(Column(data=ra_err*1000,
+                                        name='e_ra.deg', unit=u.mas),
+                                        index=2)
 
-            print ' - done.'
+            arc_yopt = numpy.arctan(self.data['errMin']/self.data['errMaj']*
+                                    numpy.cos(self.data['errPA'].to(u.rad))/
+                                    numpy.sin(self.data['errPA'].to(u.rad)))
+            dec_err = abs(self.data['errMaj']*numpy.cos(arc_yopt)*
+                          numpy.sin(self.data['errPA'].to(u.rad))+
+                          self.data['errMin']*numpy.sin(arc_yopt)*
+                          numpy.cos(self.data['errPA'].to(u.rad)))
+            self.data.add_column(Column(data=dec_err*1000,
+                                        name='e_dec.deg', unit=u.mas), index=3)
+            
+            # remove error ellipse columns
+            self.data.remove_column('errMaj')
+            self.data.remove_column('errMin')
+            self.data.remove_column('errPA')
 
-        # write FITS table to file
-        fitsfile = open(self.catalogname+'.fits', 'wb')
-        fitsfile.write(download)
-        fitsfile.close()
+        elif self.catalogname == 'URAT-1':
+            # astrometric catalog
+            vquery = Vizier(columns=['URAT1', 'RAJ2000', 'DEJ2000',
+                                     'sigm', 'f.mag', 'e_f.mag',],
+                            column_filters={"f.mag":
+                                            ("<%f" % max_mag)},
+                            row_limit = max_sources)
 
-        # read FITS table and assign to self.data
-        try:
-            hdulist = fits.open(self.catalogname+'.fits', 
-                                ignore_missing_end=True)
-            self.data = hdulist[1].data
-        except IOError:
-            if self.display:
-                print self.catalogname, 'data not successfully downloaded'
-            logging.error('%s data not successfully downloaded' % 
-                          self.catalogname)
-            return 0
-        except IndexError:
-            if self.display:
-                print 'no data available from %s' % self.catalogname
-            logging.error('no data available from %s' % self.catalogname)
-            return 0
+            try:
+                self.data = vquery.query_region(field,
+                                                width=("%fd" % rad_deg),
+                                                catalog="I/329/urat1")[0]
+            except IndexError:
+                if self.display:
+                    print 'no data available from %s' % self.catalogname
+                logging.error('no data available from %s' % self.catalogname)
+                return 0
 
-        # remove catalog file if save_catalog == False
-        if not save_catalog:
-            os.remove(self.catalogname+'.fits')
+            ### rename column names using PP conventions
+            self.data.rename_column('URAT1', 'ident')
+            self.data.rename_column('RAJ2000', 'ra.deg')
+            self.data.rename_column('DEJ2000', 'dec.deg')
+            self.data.rename_column('f.mag', 'mag')
+            self.data.rename_column('e_f.mag', 'e_mag')
 
-        self.history = '%d sources downloaded' % self.shape[0]
+            self.data.add_column(Column(data=self.data['sigm'].data,
+                                        name='e_ra.deg',
+                                        unit=self.data['sigm'].unit),
+                                 index=2)
+            self.data.add_column(Column(data=self.data['sigm'].data,
+                                        name='e_dec.deg',
+                                        unit=self.data['sigm'].unit),
+                                 index=4)
+            self.data.remove_column('sigm')
 
+
+            
+        elif self.catalogname == 'APASS9':
+            # photometric catalog
+            vquery = Vizier(columns=['recno', 'RAJ2000', 'DEJ2000',
+                                     'e_RAJ2000',
+                                     'e_DEJ2000', 'Vmag', 'e_Vmag',
+                                     'Bmag', 'e_Bmag', "g'mag", "e_g'mag",
+                                     "r'mag", "e_r'mag", "i'mag", "e_i'mag"],
+                            column_filters={"Vmag":
+                                            ("<%f" % max_mag)},
+                            row_limit = max_sources)
+
+            try:
+                self.data = vquery.query_region(field,
+                                                width=("%fd" % rad_deg),
+                                                catalog="II/336/apass9")[0]
+            except IndexError:
+                if self.display:
+                    print 'no data available from %s' % self.catalogname
+                logging.error('no data available from %s' % self.catalogname)
+                return 0
+
+            ### rename column names using PP conventions
+            self.data.rename_column('recno', 'ident')
+            self.data.rename_column('RAJ2000', 'ra.deg')
+            self.data.rename_column('DEJ2000', 'dec.deg')
+            self.data.rename_column('e_RAJ2000', 'e_ra.deg')
+            self.data.rename_column('e_DEJ2000', 'e_dec.deg')
+
+        elif self.catalogname == 'SDSS-R9':
+            vquery = Vizier(columns=['SDSS9', 'RAJ2000', 'DEJ2000',
+                                     'e_RAJ2000',
+                                     'e_DEJ2000', 'umag', 'e_umag',
+                                     'gmag', 'e_gmag', 'rmag', 'e_rmag',
+                                     'imag', 'e_imag', 'zmag', 'e_zmag'],
+                            column_filters={"gmag":
+                                            ("<%f" % max_mag)},
+                            row_limit = max_sources)
+            try:
+                self.data = vquery.query_region(field,
+                                                width=("%fd" % rad_deg),
+                                                catalog="V/139/sdss9")[0]
+            except IndexError:
+                if self.display:
+                    print 'no data available from %s' % self.catalogname
+                logging.error('no data available from %s' % self.catalogname)
+                return 0
+                
+            ### rename column names using PP conventions
+            self.data.rename_column('SDSS9', 'ident')
+            self.data.rename_column('RAJ2000', 'ra.deg')
+            self.data.rename_column('DEJ2000', 'dec.deg')
+            self.data.rename_column('e_RAJ2000', 'e_ra.deg')
+            self.data.rename_column('e_DEJ2000', 'e_dec.deg')
+
+            # perform correction to AB system for SDSS
+            # http://www.sdss3.org/dr8/algorithms/fluxcal.php#SDSStoAB 
+            self.data['umag'] -= 0.04
+            self.data['zmag'] += 0.02
+
+        if self.display:
+            print ('%d sources retrieved.' % len(self.data))
+        logging.info('%d sources retrieved' % len(self.data))
+
+        self.history = '%d sources downloaded' % len(self.data)
+
+        # convert all coordinate uncertainties to degrees
+        self.data['e_ra.deg'] = self.data['e_ra.deg'].to(u.deg)
+        self.data['e_dec.deg'] = self.data['e_dec.deg'].to(u.deg)        
+
+        
         # set catalog magnitude system
         self.magsystem = _pp_conf.allcatalogs_magsys[self.catalogname]
 
-        # set unified field names
-        self.fieldnames = {'ra.deg':'RAJ2000', 'dec.deg':'DEJ2000',
-                           'e_ra.deg':'e_RAJ2000', 'e_dec.deg':'e_DEJ2000'}
-        self.fieldnames['ident'] = {'2MASS'  : '_2MASS',
-                                    'URAT-1' : 'URAT1',
-                                    'SDSS-R9': 'SDSS9',
-                                    'APASS9' : 'recno',
-                                    'CMC15'  : 'CMC15',
-                                    'PPMXL'  : 'PPMXL',
-                                    'USNO-B1': 'USNO-B1.0'}[self.catalogname]
-
-        if 'APASS' in self.catalogname:
-            self.fieldnames['gmag'] = "g_mag"
-            self.fieldnames['e_gmag'] = "e_g_mag"
-            self.fieldnames['rmag'] = "r_mag"
-            self.fieldnames['e_rmag'] = "e_r_mag"
-            self.fieldnames['imag'] = "i_mag"
-            self.fieldnames['e_imag'] = "e_i_mag"
-            self.fieldnames['e_Vmag'] = "e_Vmag"
-            self.fieldnames['e_Bmag'] = "e_Bmag"
-            
-        ### catalog additions and corrections
-
-        # determine RA and DEC uncertainties for 2MASS
-        if '2MASS' in self.catalogname:
-            err_a = self['errMaj']
-            err_b = self['errMin']
-            err_theta = self['errPA']/180.*numpy.pi
-            err_theta[err_theta == 0] = 1e-9
-            arc_xopt = numpy.arctan(-err_b/err_a*numpy.tan(err_theta))
-            ra_err  = abs(err_a*numpy.cos(arc_xopt)*numpy.cos(err_theta)- \
-                          err_b*numpy.sin(arc_xopt)*numpy.sin(err_theta))
-            arc_yopt = numpy.arctan(err_b/err_a* \
-                                    numpy.cos(err_theta)/numpy.sin(err_theta))
-            dec_err = abs(err_a*numpy.cos(arc_yopt)*numpy.sin(err_theta)+ \
-                          err_b*numpy.sin(arc_yopt)*numpy.cos(err_theta))
-            # ra_err, dec_err in arcsec
-            self.add_field('e_RAJ2000', ra_err/3600.) 
-            self.add_field('e_DEJ2000', dec_err/3600.)
-
-
-        # perform correction to AB system for SDSS
-        # http://www.sdss3.org/dr8/algorithms/fluxcal.php#SDSStoAB 
-        if 'SDSS' in self.catalogname:
-            self.data['umag'] = self.data['umag'] - 0.04
-            self.data['zmag'] = self.data['zmag'] + 0.02
-
-
-        logging.info('downloaded %d stars from %s' % (self.shape[0],
-                                                      self.catalogname))
-
-        hdulist.close()
-
+        # write ldac catalog
+        if save_catalog:
+            self.write_ldac(self.catalogname+'.cat')
+        
         return self.shape[0]
+        
 
     
     ### FITS/LDAC interface
@@ -355,7 +423,7 @@ class catalog:
         
 
         # load data array
-        self.data = hdulist[2].data
+        self.data = Table(hdulist[2].data)
 
         # set other properties
         telescope = ''
@@ -365,7 +433,6 @@ class catalog:
         self.catalogname = filename
         self.origin      = '%s;%s' % (telescope.strip(), fits_filename)
         self.magsys      = 'instrumental'
-        self.fieldnames  = {'ra.deg':'XWIN_WORLD', 'dec.deg':'YWIN_WORLD'}
 
         # reject flagged sources (if requested)
         if maxflag is not None:
@@ -380,6 +447,12 @@ class catalog:
             self.obstime[1] = float(fitsheader[exptime_keyword])
             self.obj        = fitsheader[object_keyword]
 
+        # rename columns
+        if 'XWIN_WORLD' in self.fields:
+            self.data.rename_column('XWIN_WORLD', 'ra.deg')
+        if 'YWIN_WORLD' in self.fields:
+            self.data.rename_column('YWIN_WORLD', 'dec.deg')
+        
         logging.info('read %d sources in %d columns from LDAC file %s' % 
                      (self.shape[0], self.shape[1], filename))
 
@@ -388,111 +461,74 @@ class catalog:
         return self.shape
 
     
-    def write_ldac(self, filename, wcs_keys=('XWIN_WORLD', 'YWIN_WORLD'), 
-                   projection_type='STG'):
+    def write_ldac(self, ldac_filename):
         """ 
         write data in new FITS_LDAC file (mainly for use in SCAMP) 
         input: filename, ra/dec field names, projection_type
         return: number of sources written to file
         """
-    
-        # derive center coordinates for this field
-        try:
-            ctr = ((max(self[wcs_keys[0]])+min(self[wcs_keys[0]])/2.), 
-                   (max(self[wcs_keys[1]])+min(self[wcs_keys[1]])/2.))
-        except KeyError:
-            print 'ERROR: ldac_tools.write_file cannot find keys', wcs_keys
-            return None
 
         ### create primary header (empty)
-        hdu_primary = fits.PrimaryHDU(header=fits.Header())
+        primaryhdu = fits.PrimaryHDU(header=fits.Header())
 
-        pixel_scale_deg = (1,1) # fake values
-        
-        ### create LDAC_IMHEAD (field information)
-        # header will be created automatically with binary table 
-        # create header table
-        data_array = \
-            [("SIMPLE  =                    T / This is a FITS file\n" +
-              "BITPIX  =                    0 /\n" +
-              "NAXIS   =                    2 / 2D data\n" +
-              "NAXIS1  =              %5d / Number of rows\n" +
-              "NAXIS2  =              %5d / Number of columns\n" + 
-              "EXTEND  =                    T / FITS extensions\n" +
-              "EQUINOX =        2000.00000000 / Mean equinox\n" +
-              "RADESYS = 'ICRS    '           / Astrometric system\n" +
-              "CTYPE1  = 'RA---%s'           / WCS projection type\n" +
-              "CUNIT1  = '        '           / Axis unit\n" +
-              "CRVAL1  =   %15.8e / World coordinate on this axis\n" +
-              "CRPIX1  =   %15.8e / Reference pixel on this axis\n" +
-              "CD1_1   =   %e / Linear projection matrix\n" +
-              "CD1_2   =   0.000000000000E+00 / Linear projection matrix\n" +
-              "CTYPE2  = 'DEC--%s'           / WCS projection type\n" +
-              "CUNIT2  = '        '           / Axis unit\n" +
-              "CRVAL2  =   %15.8e / World coordinate on this axis\n" +
-              "CRPIX2  =   %15.8e / Reference pixel on this axis\n" +
-              "CD2_1   =   0.000000000000E+00 / Linear projection matrix\n" +
-              "CD2_2   =   %e / Linear projection matrix\n") %
-             (self.shape[0], self.shape[0], \
-              projection_type, ctr[0], self.shape[0]/2., pixel_scale_deg[0], \
-              projection_type, ctr[1], self.shape[0]/2., pixel_scale_deg[1])]
-        ### todo: check if all these header information is necessary
-        ### also check if the fake pixel resolution works with scamp 
+        ### create header table
+        hdr_col = fits.Column(name='Field Header Card', format='1680A', 
+                              array=["obtained through Vizier"])
+        hdrhdu = fits.BinTableHDU.from_columns(fits.ColDefs([hdr_col]))
+        hdrhdu.header['EXTNAME'] = ('LDAC_IMHEAD')
+        #hdrhdu.header['TDIM1'] = ('(80, 36)') # remove?
+            
+        ### create data table
+        colname_dic = {'ra.deg': 'X_WORLD', 'dec.deg': 'Y_WORLD',
+                       'e_ra.deg': 'ERRA_WORLD',
+                       'e_dec.deg': 'ERRB_WORLD',
+                       'mag': 'MAG'}
+        format_dic = {'ra.deg': '1D', 'dec.deg': '1D',
+                      'e_ra.deg': '1E',
+                      'e_dec.deg': '1E',
+                      'mag': '1E'}
+        disp_dic = {'ra.deg': 'E15', 'dec.deg': 'E15',
+                    'e_ra.deg': 'E12',
+                    'e_dec.deg': 'E12',
+                    'mag': 'F8.4'}
+        unit_dic = {'ra.deg': 'deg', 'dec.deg': 'deg',
+                    'e_ra.deg': 'deg',
+                    'e_dec.deg': 'deg',
+                    'mag': 'mag'}
 
-        column = fits.Column(name='Field Header Card', format='1680A', 
-                             array=data_array)
-        cols = fits.ColDefs([column])
-        hdu_imhead = fits.BinTableHDU.from_columns(cols)
-        hdu_imhead.header['EXTNAME'] = ('LDAC_IMHEAD') 
-        # manually add table name to the header 
+        data_cols = []
+        for col_name in self.data.columns:
+            if not col_name in colname_dic.keys():
+                continue
+            data_cols.append(fits.Column(name=colname_dic[col_name],
+                                         format=format_dic[col_name],
+                                         array=self.data[col_name],
+                                         unit=unit_dic[col_name],
+                                         disp=disp_dic[col_name]))
 
-        ### create LDAC_OBJECTS (catalog data)
-        # based on Source Extractor field names
-        column_array = []
-        nsrc = 0
-        for key in self.fields:
-            # world coordinates and other angles
-            if key.find('WORLD') > -1 or key.find('THETA'):
-                column_array.append(fits.Column \
-                                    (name=key, format='1D', \
-                                     unit='deg', disp='E15', \
-                                     array=self[key]))
-            # image coordinates and angles
-            elif key.find('IMAGE') > -1:
-                column_array.append(fits.Column \
-                                    (name=key, format='1D', \
-                                     unit='pix', disp='E12', \
-                                     array=self[key]))
-            # fluxes
-            elif key.find('FLUX') > -1:
-                column_array.append(fits.Column \
-                                    (name=key, format='1D', \
-                                     unit='flux', disp='E12', \
-                                     array=self[key]))
-            # magnitudes
-            elif key.find('MAG') > -1:
-                column_array.append(fits.Column \
-                                    (name=key, format='1D', \
-                                     unit='mag', disp='E12', \
-                                     array=self[key]))
-            else:
-                logging.warning(('cannot interpret field %s in writing' +\
-                                 'catalog %s') % (key, self.catalogname))
-
-            nsrc = len(self[key])
+        data_cols.append(fits.Column(name='MAGERR',
+                                     disp='F8.4',
+                                     format='1E',
+                                     unit='mag',
+                                     array=numpy.ones(len(self.data))*0.01))
+        data_cols.append(fits.Column(name='OBSDATE',
+                                     disp='F13.8',
+                                     format='1D',
+                                     unit='yr',
+                                     array=numpy.ones(len(self.data))*2015.0))
                 
-        columns = fits.ColDefs(column_array)
-        hdu_objects = fits.BinTableHDU.from_columns(columns)
-        hdu_objects.header['EXTNAME'] = ('LDAC_OBJECTS')
-        # manually add table name to the header 
-
-        # combine HDUs and write file
-        hdulist = fits.HDUList([hdu_primary, hdu_imhead, hdu_objects])
-        hdulist.writeto(filename, clobber=True)
-
+        datahdu = fits.BinTableHDU.from_columns(fits.ColDefs(data_cols))
+        datahdu.header['EXTNAME'] = ('LDAC_OBJECTS')
+        
+        nsrc = len(self.data)
+            
+        # # combine HDUs and write file
+        hdulist = fits.HDUList([primaryhdu, hdrhdu, datahdu])
+        hdulist.writeto(ldac_filename, clobber=True)
+            
         logging.info('wrote %d sources from %s to LDAC file' % 
-                     (nsrc, self.filename))
-
+                     (nsrc, ldac_filename))
+        
         return nsrc
 
 
@@ -507,9 +543,9 @@ class catalog:
 
         # prepare headerline and formatline
         legend, headerline, formatline  = '', '', ''
-        for idx in range(len(self.data.names)):
-            legend += '%d - %s\n' % (idx, self.data.names[idx])
-            headerline += ('|%13s ' % str(self.data.names[idx]))
+        for idx in range(len(self.fields)):
+            legend += '%d - %s\n' % (idx, self.fields[idx])
+            headerline += ('|%13s ' % str(self.fields[idx]))
             if 'E' in str(self.data.formats[idx]):
                 formatline += '%15E'
             elif 'D' in str(self.data.formats[idx]):
@@ -554,12 +590,8 @@ class catalog:
 
         # create data table
         table_cmd = "CREATE TABLE data ("
-        for key_idx, key in enumerate(self.data.names):
+        for key_idx, key in enumerate(self.fields):
             db_key = key
-            # translate unified fieldnames
-            for unikey, unival in self.fieldnames.items():
-                if key == unival:
-                    db_key = unikey
             if type(self.data[key][0]) == numpy.float32 \
                or type(self.data[key][0]) == numpy.float64:
                 table_cmd += "'%s' REAL" % db_key
@@ -568,7 +600,7 @@ class catalog:
                 table_cmd += "'%s' INTEGER" % db_key 
             if type(self.data[key][0]) == numpy.string_:
                 table_cmd += "'%s' TEXT" % db_key 
-            if key_idx < len(self.data.names)-1:
+            if key_idx < len(self.fields)-1:
                 table_cmd += ", "
 
         table_cmd += ")"
@@ -578,17 +610,17 @@ class catalog:
         sqltypes = {numpy.float32:numpy.float64, numpy.float64:numpy.float64,
                     numpy.int16:numpy.int64, numpy.int32:numpy.int64}
         data_cols = [self.data[key].astype(sqltypes[type(self.data[key][0])]) \
-                     for key in self.data.names]
+                     for key in self.fields]
         data = [[data_cols[j][i] for j in range(len(data_cols))] \
                 for i in range(len(data_cols[0]))]
         db.executemany("INSERT INTO data VALUES (" + \
-                       ','.join(['?' for i in range(len(self.data.names))]) + \
+                       ','.join(['?' for i in range(len(self.fields))]) + \
                        ')', data)
         
         db_conn.commit()
 
         # return number of objects written to database
-        db.execute("SELECT COUNT(DISTINCT %s) FROM data" % self.data.names[0])
+        db.execute("SELECT COUNT(DISTINCT %s) FROM data" % self.fields[0].name)
         n_obj = db.fetchall()[0][0]
         
         logging.info('wrote %d sources from catalog %s to database file %s' %
@@ -623,7 +655,6 @@ class catalog:
         self.obstime[0]  = rows[0][4]
         self.obstime[1]  = rows[0][5]
         self.obj         = rows[0][6].encode('ascii')
-        self.fieldnames  = {}
 
         # query database sources
         db.execute("SELECT * FROM data")
@@ -649,7 +680,7 @@ class catalog:
                    for idx in range(len(data))]
         tbhdu = fits.BinTableHDU.from_columns(columns)
 
-        self.data = tbhdu.data
+        self.data = Table(tbhdu.data)
 
         return self.shape[0]
             
@@ -669,18 +700,20 @@ class catalog:
         return: number of transformed magnitudes
         """
 
+        ### TBD: modify this function to make use of table functionality
+        
         if len(self.data) == 0:
             return 0
 
         ### SDSS to BVRI
-        if ('SDSS' in self.catalogname) and \
-           (targetfilter in {'B', 'V', 'R', 'I'}) and \
-           (self.magsystem == 'AB'):
+        ### transformations based on Chonis & Gaskell 2008, AJ, 135 
+        if (('SDSS' in self.catalogname) and 
+            (targetfilter in {'B', 'V', 'R', 'I'}) and 
+            (self.magsystem == 'AB')):
 
             logging.info(('trying to transform %d SDSS sources to ' \
                           + '%s') % (self.shape[0], targetfilter))
 
-            ### transformations based on Chonis & Gaskell 2008, AJ, 135 
             mags = numpy.array([self['gmag'], self['rmag'],
                                 self['imag'],
                                 self['e_gmag'],
@@ -689,6 +722,15 @@ class catalog:
                                 self['umag'],
                                 self['e_umag']])
 
+            # ### template for adding astropy.table columns
+            # self.data.add_column(Column(self.data['Jmag']+1.7495*cidx**3 
+            #                             - 2.7785*cidx**2
+            #                             + 5.215*cidx + 0.1980,
+            #                             name='_Bmag',
+            #                             unit=u.mag))
+
+
+            
             # lbl   = {'_Bmag':0 , '_e_Bmag': 1, '_Vmag': 2, '_e_Vmag': 3, 
             #          '_Rmag': 4, '_e_Rmag': 5, '_Imag': 6, '_e_Imag': 7}
             # nmags = [numpy.zeros(self.shape[0]) for i in range(len(lbl))]
@@ -833,77 +875,7 @@ class catalog:
             
             return self.shape[0]
 
-       
-        ### 2MASS to Warner BVRI (not accounting for galactic extinction)
-        elif (self.catalogname == '2MASS') and \
-           (targetfilter in {'B', 'V', 'R', 'I'}) and \
-           (self.magsystem == 'Vega'):
-
-            logging.info(('trying to transform %d 2MASS sources to ' \
-                          + 'Warner %s') % (self.shape[0], targetfilter))
-
-            # transformations using the recipe by Warner 2007, MPBu
-            mags  = [self['Jmag'], self['Kmag'], self['e_Jmag']]
-            lbl   = {'_Bmag':0 , '_e_Bmag': 1, '_Vmag': 2, '_e_Vmag': 3, 
-                     '_Rmag': 4, '_e_Rmag': 5, '_Imag': 6, '_e_Imag': 7}
-            nmags = [numpy.zeros(self.shape[0]) for i in range(len(lbl))]
-
-            for idx in range(self.shape[0]):
-                keep = True
-                # remove objects with extreme J-Ks color index
-                cidx = mags[0][idx]-mags[1][idx]
-                if cidx < -0.1 or cidx > 1.0:
-                    keep = False
-                # reject faint stars based on Figure 6 by Hodgkin et
-                # al. 2009, MNRAS
-                if mags[0][idx] > 18 or mags[1][idx] > 17:
-                    keep = False
-
-                if keep:
-                    nmags[lbl['_Bmag']][idx]   = mags[0][idx] + 1.7495*cidx**3 \
-                                                - 2.7785*cidx**2 \
-                                                + 5.215*cidx + 0.1980
-                    nmags[lbl['_e_Bmag']][idx] = numpy.sqrt(0.08*0.08 +
-                                                           mags[2][idx]**2)
-
-                    nmags[lbl['_Vmag']][idx]   = mags[0][idx] + 1.4688*cidx**3 \
-                                                - 2.3250*cidx**2 \
-                                                + 3.5143*cidx + 0.1496
-                    nmags[lbl['_e_Vmag']][idx] = numpy.sqrt(0.05*0.05 + 
-                                                           mags[2][idx]**2)
-
-                    nmags[lbl['_Rmag']][idx]   = mags[0][idx] + 1.1230*cidx**3 \
-                                                - 1.7849*cidx**2 \
-                                                + 2.5105*cidx + 0.1045
-                    nmags[lbl['_e_Rmag']][idx] = numpy.sqrt(0.08*0.08 + 
-                                                           mags[2][idx]**2)
-                
-                    nmags[lbl['_Imag']][idx]   = mags[0][idx] + 0.2963*cidx**3 \
-                                                - 0.4866*cidx**2 \
-                                                + 1.2816*cidx + 0.0724
-                    nmags[lbl['_e_Imag']][idx] = numpy.sqrt(0.03*0.03 + 
-                                                           mags[2][idx]**2)
-                else:
-                    for mag in lbl.keys():
-                        nmags[lbl[mag]][idx] = 99
-              
-            # append nmags arrays to catalog
-            for key, idx in lbl.items():
-                self.add_field(key, nmags[idx])
-                
-            # get rid of sources that have not been transformed
-            self.data = self.data[self['_Vmag'] < 99]
-
-            self.catalogname  += '_transformed'
-            self.history += ', %d transformed to Warner %s (Vega)' % \
-                            (self.shape[0], targetfilter)
-            self.magsystem = 'Vega'
-
-            logging.info('%d sources sucessfully transformed to Warner %s' % \
-                         (self.shape[0], targetfilter))
-            
-            return self.shape[0]
-
+    
 
         ### 2MASS to UKIRT YZJHK)
         elif (self.catalogname.find('2MASS') > -1) and \
@@ -1044,27 +1016,20 @@ class catalog:
             (e.g., postions)
             return: requested fields for matched sources 
             note: will only match exclusive pairs
+
+            TBD: replace this routine with something that uses 
+                 astropy.table functionality; how about astropy.coord matching?
         """
 
-        # replace unified fieldnames with actual field names
-        # where applicable
-        for lst in [match_keys_this_catalog, extract_this_catalog]:
-            for idx, item in enumerate(lst):
-                if item in self.fieldnames:
-                    lst[idx] = self.fieldnames[item]
-        for lst in [match_keys_other_catalog, extract_other_catalog]:
-            for idx, item in enumerate(lst):
-                if item in self.fieldnames:
-                    lst[idx] = catalog.fieldnames[item]
-
-        this_tree = spatial.KDTree(zip(self[match_keys_this_catalog[0]],
-                                   self[match_keys_this_catalog[1]]))
+        this_tree = spatial.KDTree(zip(self[match_keys_this_catalog[0]].data,
+                                       self[match_keys_this_catalog[1]].data))
 
         # kd-tree matching
         if tolerance is not None:
             other_tree = spatial.KDTree(\
-                            zip(catalog[match_keys_other_catalog[0]],
-                                catalog[match_keys_other_catalog[1]]))
+                            zip(catalog[match_keys_other_catalog[0]].data,
+                                catalog[match_keys_other_catalog[1]].data))
+
             match = this_tree.query_ball_tree(other_tree, tolerance)
 
             indices_this_catalog  = filter(lambda x: len(match[x]) == 1, 
@@ -1074,8 +1039,8 @@ class catalog:
             
         else:
             # will find the closest match for each target in this catalog
-            other_cat = zip(catalog[match_keys_other_catalog[0]],
-                            catalog[match_keys_other_catalog[1]])
+            other_cat = zip(catalog[match_keys_other_catalog[0]].data,
+                            catalog[match_keys_other_catalog[1]].data)
 
             match = this_tree.query(other_cat) 
 
@@ -1139,16 +1104,17 @@ class catalog:
 # cat1 = catalog('URAT-1')
 # print cat1.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat1.catalogname
 # print cat1.fields
-                                                   
+# print cat1[0]
+
 # cat2 = catalog('2MASS')
-# print cat2.download_catalog(80, 0, 0.1, 10000), 'sources grabbed from', cat2.catalogname
+# print cat2.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat2.catalogname
 # print cat2[305]
 # print cat2.fields
 
 # cat3 = catalog('SDSS-R9')
-# print cat3.download_catalog(80, 40, 0.05, 10000, sort='ascending'), 'sources grabbed from', cat3.catalogname
-# #print cat3[305]
-# #print cat3.fields
+# print cat3.download_catalog(80, 40, 0.5, 10000), 'sources grabbed from', cat3.catalogname
+#print cat3[305]
+#print cat3.fields
 
 # cat4 = catalog('USNO-B1')
 # print cat4.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat4.catalogname
@@ -1157,7 +1123,7 @@ class catalog:
 
 
 # print cat2.shape, cat2.history
-# print cat2.transform_filters('V'), 'sources transformed to V'      2MASS to BVRI
+# print cat2.transform_filters('V'), 'sources transformed to V'      #2MASS to BVRI
 # print cat2.shape, cat2.history
 
 # print cat2.shape, cat2.history
@@ -1180,3 +1146,11 @@ class catalog:
 
 # cat4 = catalog('')
 # print cat4.read_database('test.db'), 'sources read from database file'
+
+
+# ### test preliminary Gaia implementation
+# cat = catalog('SDSS-R9')
+# cat.download_gaiadr1(294.99525, 0.065194, 0.5, 10, max_mag=15, write_ldac=True)
+# #cat.download_gaiadr1(239.708791667, 6.10333333333, 0.211666666667, 100, max_mag=20, write_ldac=True)
+
+# print len(cat.data.columns)

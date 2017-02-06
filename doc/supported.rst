@@ -60,6 +60,8 @@ photometric calibration:
 +------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+
 | Catalog Name           | Catalog Type             | Registration? | Filter Bands             | Comments                                                   |
 +========================+==========================+===============+==========================+============================================================+
+| Gaia DR1 (`Gaia`_)     | astrometric              | yes           | G                        | all-sky catalog, excellent astrometry                      |
++------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+
 | 2MASS (`2MASS`_)       | astrometric/photometric  | yes           | J, H, Ks, K*             | all-sky NIR catalog, good astrometry                       |
 +------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+
 | URAT-1 (`URAT-1`_)     | astrometric/photometric  | yes (SCAMP    | g, r, i,  B, V, R*,      | good coverage over the Northern hemisphere, photometry from|
@@ -72,16 +74,6 @@ photometric calibration:
 | AAVSO Photometric All  | photometric              | no            | g, r, i, B, V, R*,       | good coverage, good photometry for stars with V<17         | 
 | Sky Survey Release 9   |                          |               | I*                       |                                                            |
 | (`APASS9`_)            |                          |               |                          |                                                            |
-+------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+
-| Carlsberg Meridian     | photometric              | no            | r, J, H, Ks              | -40 deg < declination < 50 deg; J, H, Ks from 2MASS (above)|
-| Catalogue 15 (`CMC15`_)|                          |               |                          | limiting magnitude r < 17 mag                              |
-+------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+
-| PPMXL (`PPMXL`_)       | astrometric              | yes           | J, H, Ks, B, R           | accurate astrometry; J, H, Ks from 2MASS; B, R from USNO-B1|
-|                        |                          |               |                          | (see below). Note that proper motions are not yet taken    |
-|                        |                          |               |                          | into account (this will be integrated in the future).      |
-+------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+
-| USNO-B1 (`USNO-B1`_)   | astrometric              | yes           | B, R, I                  | questionable photometric and astrometric accuracy, but     |
-|                        |                          |               |                          | deepest catalog available (V < 21 mag)                     |
 +------------------------+--------------------------+---------------+--------------------------+------------------------------------------------------------+
 
 The catalog name in brackets is the identifier used by PP; e.g., if
@@ -114,10 +106,9 @@ Independent checks indicate that these transformations are reliable and accurate
 .. _Hodgkin et al. 2009: http://adsabs.harvard.edu/abs/2009MNRAS.394..675H
 
 
+.. _Gaia: http://sci.esa.int/gaia/
 .. _2MASS: http://www.ipac.caltech.edu/2mass/
 .. _URAT-1: http://cdsads.u-strasbg.fr/cgi-bin/nph-bib_query?2015AJ....150..101Z&db_key=AST&nosetcookie=1
 .. _SDSS-R9: http://www.sdss3.org/dr9/
 .. _APASS9: http://www.aavso.org/apass
-.. _CMC15: http://cdsarc.u-strasbg.fr/viz-bin/Cat?I/327
-.. _PPMXL: http://cdsads.u-strasbg.fr/cgi-bin/nph-bib_query?2010AJ....139.2440R&db_key=AST&nosetcookie=1
-.. _USNO-B1: http://cdsads.u-strasbg.fr/cgi-bin/nph-bib_query?2003AJ....125..984M&db_key=AST&nosetcookie=1
+

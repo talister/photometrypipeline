@@ -54,7 +54,7 @@ vatt4k_param = {
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
     'filter_translations'  : {'TOP 2 BOT 1': 'V', 'TOP 3 BOT 1': 'R', 
-                              'TOP 4 BOT 1': None, 'TOP 5 BOT 1': 'B'},
+                              'TOP 4 BOT 1': 'I', 'TOP 5 BOT 1': 'B'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -70,7 +70,9 @@ vatt4k_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/vatt4k.scamp', 
-
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+    
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
                               'DATE-OBS,TIME-OBS,RA,DEC,SECPIX,AIRMASS,' +
@@ -80,7 +82,7 @@ vatt4k_param = {
     'swarp-config-file'    : rootpath+'/setup/vatt4k.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -137,6 +139,8 @@ dctlmi_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/dctlmi.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
@@ -146,7 +150,7 @@ dctlmi_param = {
     'swarp-config-file'    : rootpath+'/setup/dctlmi.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -202,6 +206,8 @@ arc35arctic_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/arc35arctic.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJNAME,' +
@@ -211,7 +217,7 @@ arc35arctic_param = {
     'swarp-config-file'    : rootpath+'/setup/arc35arctic.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -266,6 +272,8 @@ arc35agile_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/arc35agile.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJNAME,' +
@@ -275,7 +283,7 @@ arc35agile_param = {
     'swarp-config-file'    : rootpath+'/setup/arc35agile.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -342,6 +350,8 @@ magimacs_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/magimacs.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -352,7 +362,7 @@ magimacs_param = {
     'swarp-config-file'    : rootpath+'/setup/magimacs.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -406,6 +416,8 @@ ca123dlrmkiii_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/ca123dlrmkiii.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -416,7 +428,7 @@ ca123dlrmkiii_param = {
     'swarp-config-file'    : rootpath+'/setup/ca123dlrmkiii.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -468,6 +480,8 @@ lowell31_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/lowell31.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER1,FILTER2,EXPTIME,OBJECT,' +
@@ -478,7 +492,7 @@ lowell31_param = {
     'swarp-config-file'    : rootpath+'/setup/lowell31.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -532,6 +546,8 @@ lowell42_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/lowell42.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,CCDSUM,FILTNAME,EXPTIME,'+
@@ -543,7 +559,7 @@ lowell42_param = {
     'swarp-config-file'    : rootpath+'/setup/lowell42.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -597,6 +613,8 @@ lowell72_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/lowell72.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,CRDELT1, CRDELT2,FILTNME3,' +
@@ -608,7 +626,7 @@ lowell72_param = {
     'swarp-config-file'    : rootpath+'/setup/lowell72.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -663,6 +681,8 @@ ctio09_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/ctio09.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTERS,EXPTIME,OBJECT,' +
@@ -673,7 +693,7 @@ ctio09_param = {
     'swarp-config-file'    : rootpath+'/setup/ctio09.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -726,6 +746,8 @@ ctio10_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/ctio10.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -736,7 +758,7 @@ ctio10_param = {
     'swarp-config-file'    : rootpath+'/setup/ctio10.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -788,6 +810,8 @@ ctio13ccd_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/andicam.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
@@ -798,7 +822,7 @@ ctio13ccd_param = {
     'swarp-config-file'    : rootpath+'/setup/andicam.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -861,9 +885,11 @@ uh88snifs_param = {
     #                        keywords to be copied in image
     #                        combination using swarp
     'swarp-config-file'    : rootpath+'/setup/uh88snifs.swarp',  
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -915,6 +941,8 @@ wiyn09hdi_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/wiyn09hdi.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER1,EXPTIME,OBJECT,' +
@@ -925,7 +953,7 @@ wiyn09hdi_param = {
     'swarp-config-file'    : rootpath+'/setup/wiyn09hdi.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -980,6 +1008,8 @@ generic_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/generic.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
@@ -989,7 +1019,7 @@ generic_param = {
     'swarp-config-file'    : rootpath+'/setup/generic.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -1042,6 +1072,8 @@ ratir_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/ratir.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT' +
@@ -1052,7 +1084,7 @@ ratir_param = {
     'swarp-config-file'    : rootpath+'/setup/ratir.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -1171,6 +1203,8 @@ soargoodman_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/soargoodman.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -1181,7 +1215,7 @@ soargoodman_param = {
     'swarp-config-file'    : rootpath+'/setup/soargoodman.swarp',  
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -1231,9 +1265,11 @@ ohp120_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/ohp120.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -1282,9 +1318,11 @@ tngdolores_param = {
 
     # scamp settings
     'scamp-config-file'    : rootpath+'/setup/tngdolores.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
 
     # default catalog settings
-    'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'], 
+    'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 

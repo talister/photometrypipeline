@@ -106,9 +106,9 @@ def curve_of_growth_analysis(filenames, parameters,
 
             image = hdu[0].data
 
-            # derive obsmidtime_jd, if not yet in the FITS header
+            # derive MIDTIMJD, if not yet in the FITS header
             obsparam = parameters['obsparam']
-            if not obsparam['obsmidtime_jd'] in hdu[0].header:
+            if not 'MIDTIMJD' in hdu[0].header:
                 exptime = float(hdu[0].header[obsparam['exptime']])
                 if obsparam['date_keyword'].find('|') == -1:
                     date = hdu[0].header[obsparam['date_keyword']]
@@ -120,7 +120,7 @@ def curve_of_growth_analysis(filenames, parameters,
                            hdu[0].header[time_key]
                     date = dateobs_to_jd(date) + exptime/2./86400.
             else:
-                date = hdu[0].header[obsparam['obsmidtime_jd']]
+                date = hdu[0].header['MIDTIMJD']
     
             # call HORIZONS to get target coordinates
             eph = callhorizons.query(targetname)
@@ -151,8 +151,8 @@ def curve_of_growth_analysis(filenames, parameters,
         ### identify target and extract its curve-of-growth
         n_target_identified = 0
         if not parameters['background_only']:
-            residuals = numpy.sqrt((data['XWIN_WORLD']-target_ra)**2 + \
-                                   (data['YWIN_WORLD']-target_dec)**2)
+            residuals = numpy.sqrt((data['ra.deg']-target_ra)**2 + \
+                                   (data['dec.deg']-target_dec)**2)
             target_idx = numpy.argmin(residuals)
             if residuals[target_idx] > _pp_conf.pos_epsilon/3600.:
                 logging.warning(('WARNING: frame %s, large residual to '+ \
