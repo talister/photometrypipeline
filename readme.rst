@@ -20,17 +20,17 @@ Installation
 PP requires `git`_ for the installation, a number of non-standard
 Python modules:
 
-* `numpy`_
-* `scipy`_
-* `astropy`_
-* `matplotlib`_
-* `callhorizons`_
+  * `numpy`_
+  * `scipy`_
+  * `astropy`_
+  * `astroquery`_
+  * `matplotlib`_
+  * `callhorizons`_
 
 and some freely available software:
 
-* `Source Extractor`_ (requires the latest development version r345 to
-  use URAT-1)
-* `SCAMP`_  
+  * `Source Extractor`_
+  * `SCAMP`_  
 
 PP is available from `github`_. You can get the source code by typing
 into your terminal::
@@ -50,6 +50,18 @@ Documentation
 See the documentation for more information: `documentation`_
 
 
+Acknowledgments
+---------------
+
+If you are using PP for your research, please acknowledge PP by citing
+
+* Mommert 2017, PHOTOMETRYPIPELINE: An Automated Pipeline for Calibrated Photometry, Astronomy & Computing (in press).
+
+PP is supported by NASA grants NNX15AE90G and NNX14AN82G and has been
+developed in the framework of the Mission Accessible Near-Earth
+Objects Survey (`MANOS`_).
+
+
 License and Contact
 -------------------
 
@@ -66,6 +78,7 @@ Feel free to contact me in case of questions or suggestions: michael
 .. _numpy: http://www.numpy.org/
 .. _scipy: https://www.scipy.org/
 .. _astropy: http://www.astropy.org/
+.. _astroquery: https://github.com/astropy/astroquery
 .. _matplotlib: http://matplotlib.org/
 .. _callhorizons: https://pypi.python.org/pypi/CALLHORIZONS
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
