@@ -682,8 +682,6 @@ class catalog:
 
         self.data = Table(tbhdu.data)
 
-        print self.fields
-
         return self.shape[0]
             
        
