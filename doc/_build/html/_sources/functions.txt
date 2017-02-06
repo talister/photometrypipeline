@@ -148,14 +148,16 @@ the logical order:
    for this telescope/instrument combination (see
    :ref:`telescope_setup` reference), or as provided by the user with
    the `-cat` option. Catalogs are accessed through the `CDS Vizier`_
-   server. Among others, `SCAMP` outputs two diagnostic numbers:
-   ``AS_CONTRAST`` and ``XY_CONTRAST``. The image registration
-   generally has succeeded if both numbers are greater than 2.5 - the
-   higher the contrast numbers, the better the fit.  Unless every
-   image has been registered properly, each catalog is matched twice
-   using information from the last `SCAMP` run. The routine ends if
-   all images have been registered properly or all catalogs have been
-   used twice.
+   server; the downloaded catalog is written as a ``.cat`` file into
+   the working directory for later inspection.  Among others, `SCAMP`
+   outputs two diagnostic numbers: ``AS_CONTRAST`` and
+   ``XY_CONTRAST``. The image registration generally has succeeded if
+   both numbers are greater than 2.5 - the higher the contrast
+   numbers, the better the fit.  Unless every image has been
+   registered properly, each catalog is matched twice using
+   information from the last `SCAMP` run. The routine ends if all
+   images have been registered properly or all catalogs have been used
+   twice.
 
    The diagnostic output of this function is a table of the `SCAMP`
    output parameters and a presentation of each image overplotted with

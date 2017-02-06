@@ -219,7 +219,7 @@ def create_index(filenames, directory, obsparam, display=False):
                  "<TD>%16.8f</TD><TD>%s</TD>" + \
                  "<TD>%s</TD><TD>%4.2f</TD><TD>%.1f</TD>" + \
                  "<TD>%.1f x %.1f</TD>\n</TR>\n") % \
-            (idx+1, framefilename, filename, header[obsparam['obsmidtime_jd']], 
+            (idx+1, framefilename, filename, header["MIDTIMJD"], 
              objectname,
              header[obsparam['filter']],
              float(header[obsparam['airmass']]),

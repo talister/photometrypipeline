@@ -131,7 +131,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                    float(hdulist[0].header['SECPIXX'])/3600.,
                    float(hdulist[0].header[obsparam['extent'][1]])*
                    float(hdulist[0].header['SECPIXY'])/3600.])
-        checkrefcat = catalog(refcat)
+        checkrefcat = catalog(refcat, display=False)
         n_sources = checkrefcat.download_catalog(ra, dec, rad, 100, 
                                                  save_catalog=False)
         if n_sources < _pp_conf.min_sources_astrometric_catalog:
@@ -150,6 +150,14 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         logging.info('run SCAMP on %d image files, match with catalog %s ' % 
                      (len(filenames), refcat))
 
+        # download catalog and write to ldac file for SCAMP
+        astcat = catalog(refcat, display=True)
+        n_sources = astcat.download_catalog(ra, dec,
+                                            rad+obsparam['reg_search_radius'],
+                                            100000, 
+                                            max_mag=obsparam['reg_max_mag'],
+                                            save_catalog=True)
+
         # translate source_tolerance into SCAMP properties
         #   code      SCAMP_code   keep
         #   'none'    0x00ff       only unflagged sources
@@ -160,11 +168,13 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                    'low':    '0x00fe',
                    'medium': '0x00fd',
                    'high':   '0x00fc'}[source_tolerance]
-
+        
         # assemble arguments for scamp, run it, and wait for it
         commandline = 'scamp -c '+obsparam['scamp-config-file']+ \
                       ' -ASTR_FLAGSMASK '+st_code+' -FLAGS_MASK '+st_code+ \
-                      ' -ASTREF_CATALOG '+refcat+' '+fileline
+                      ' -ASTREF_CATALOG FILE' + \
+                      ' -ASTREFCAT_NAME ' + refcat + '.cat ' + fileline
+
         scamp = subprocess.Popen(shlex.split(commandline))
         scamp.wait()
 
@@ -344,12 +354,12 @@ if __name__ == '__main__':
     parser.add_argument("-snr", help='sextractor SNR threshold', default=3)
     parser.add_argument("-minarea", help='sextractor SNR threshold',
                         default=0)
-    parser.add_argument("-cat", help='manually select reference catalog', 
-                        default=None) 
     parser.add_argument('-source_tolerance', 
                         help='tolerance on source properties for registration',
                         choices=['none', 'low', 'medium', 'high'], 
                         default='high')
+    parser.add_argument("-cat", help='manually select reference catalog', 
+                        choices=_pp_conf.allcatalogs, default=None) 
     parser.add_argument('images', help='images to process', nargs='+')
 
     args = parser.parse_args()         

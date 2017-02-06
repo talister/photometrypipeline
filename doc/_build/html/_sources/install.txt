@@ -25,6 +25,7 @@ Python 2.7 modules (available from the `Python Package Index`_ through
 * `numpy`_
 * `scipy`_
 * `astropy`_
+* `astroquery`_
 * `matplotlib`_
 * `callhorizons`_
 * `Pillow`_ (only required for manual target identification)
@@ -33,9 +34,9 @@ Python 2.7 modules (available from the `Python Package Index`_ through
 and some freely available software:
 
 * `Source Extractor`_ 
-* `SCAMP`_  (requires the latest development version `r345`_ to use URAT-1)
+* `SCAMP`_  
 
-Installation walkthroughs for MAC OS and Ubuntu 15.10 will be available here, soon!
+Installation walkthroughs for MAC OS and Ubuntu will be available here, soon!
   
 
 Setup
@@ -124,6 +125,7 @@ and I will take care of implementing your telescope.
 .. _numpy: http://www.numpy.org/
 .. _scipy: https://www.scipy.org/
 .. _astropy: http://www.astropy.org/
+.. _astroquery: https://github.com/astropy/astroquery
 .. _matplotlib: http://matplotlib.org/
 .. _callhorizons: https://pypi.python.org/pypi/CALLHORIZONS
 .. _Pillow: http://python-pillow.org/

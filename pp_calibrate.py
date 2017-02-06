@@ -47,7 +47,7 @@ logging.basicConfig(filename = _pp_conf.log_filename,
                     datefmt  = _pp_conf.log_datefmt)
 
 
-def skycenter(catalogs, ra_key='XWIN_WORLD', dec_key='YWIN_WORLD'):
+def skycenter(catalogs, ra_key='ra.deg', dec_key='dec.deg'):
     """derive center position and radius from catalogs"""
 
     min_ra  = min([numpy.min(cat[ra_key]) for cat in catalogs])
@@ -75,17 +75,9 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
     for catalogname in preferred_catalogs:
         cat = catalog(catalogname, display)
 
-        if display:
-            print ('obtain %s for %s-band at position %7.3f/%+8.3f in ' \
-                   + 'a %.2f deg radius') % \
-                (catalogname, filtername, ra_deg, dec_deg, rad_deg)
-        logging.info(('obtain %s for %s-band at position %7.3f/%+8.3f ' \
-                      + 'in a %.2f deg radius') % \
-                     (catalogname, filtername, ra_deg, dec_deg, rad_deg))
-
         # load catalog
-        n_sources = cat.download_catalog(ra_deg, dec_deg, rad_deg, max_sources,
-                                         display_progress=True)
+        n_sources = cat.download_catalog(ra_deg, dec_deg, rad_deg, max_sources)
+        
         if display:
             print n_sources, 'sources downloaded from', catalogname
         if n_sources < min_sources:
@@ -193,13 +185,12 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                 match_keys_other_catalog=['ra.deg', 'dec.deg'],
                                 extract_this_catalog=[filterkey,
                                                       efilterkey, 
-                                                ref_cat.fieldnames['ident'],
-                                                ref_cat.fieldnames['ra.deg'],
-                                                ref_cat.fieldnames['dec.deg']],
+                                                      'ident',
+                                                      'ra.deg',
+                                                      'dec.deg'],
                                 extract_other_catalog=['MAG_APER', 
                                                        'MAGERR_APER'],
                                 tolerance=_pp_conf.pos_epsilon/3600.)
-
 
         # artificially blow up incredibly small ref_cat uncertainties
         for i in numpy.where(match[0][1] < 0.01):
@@ -382,7 +373,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
             print cat.read_ldac(ldac_filename, filename, maxflag=maxflag,
                                 object_keyword=obsparam['object'],
                                 exptime_keyword=obsparam['exptime'],
-                                time_keyword=obsparam['obsmidtime_jd']), \
+                                time_keyword='MIDTIMJD'), \
                 '(sources, columns) read from', filename
 
         catalogs.append(cat)
@@ -472,7 +463,7 @@ if __name__ == '__main__':
     parser.add_argument('-minstars', help='min number of calibration stars '+\
                         'or fraction', default=0.5)
     parser.add_argument("-cat",
-                        choices=_pp_conf.allcatalogs.keys(),
+                        choices=_pp_conf.allcatalogs,
                         help="use this catalog instead of default one")
     parser.add_argument("-filter", help="manual filter override")
     parser.add_argument("-maxflag", help="maximum flag for all sources", 
