@@ -107,7 +107,7 @@ best results, including cropping the data section. Bias subtraction
 and flat fielding improves photometry results but is not absolutely
 necessary. PP&#8217;s ability to provide astrometric and photometric
 calibration puts some constraints on the way data is stored: data from
-separated fields, as well as data using different instrument settings
+separate fields, as well as data using different instrument settings
 (e.g., different binning modes) should be stored in individual
 directories, which in turn should be separated by filters:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-+-</span> <span class="n">all_data</span> <span class="o">-+</span>
@@ -121,7 +121,7 @@ directories, which in turn should be separated by filters:</p>
              <span class="o">...</span>
 </pre></div>
 </div>
-<p>Separated fields are defined as having gaps between individual frames
+<p>Separate fields are defined as having gaps between individual frames
 that are comparable to, or larger than, the field of view. Series of
 frames that were tracked on a moving target can be put in the same
 directory if the total track is smaller than 3-5 times the size of a
@@ -154,8 +154,10 @@ directories in a consecutive way</strong>:</p>
 </pre></div>
 </div>
 <p>Passing <code class="docutils literal"><span class="pre">all</span></code> signalizes PP to walk through underlying directories,
-starting from the current one. In case you want PP to only run on a
-subset of fits files, you can use option <cite>-prefix</cite>, e.g.,</p>
+starting from the current one. What happens is that PP creates a PP
+subprocess for each data directory. In case you want PP to only run on
+a subset of fits files starting with a certain prefix, you can use
+option <cite>-prefix</cite>, e.g.,</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pp_run</span> <span class="o">-</span><span class="n">prefix</span> <span class="n">reduced</span> <span class="nb">all</span>
 </pre></div>
 </div>

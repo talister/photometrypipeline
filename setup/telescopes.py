@@ -53,8 +53,13 @@ vatt4k_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword
     'filter'               : 'FILTER',  # filter keyword
+<<<<<<< HEAD
     'filter_translations'  : {'TOP 2 BOT 1': 'V', 'TOP 3 BOT 1': 'R',
                               'TOP 4 BOT 1': None, 'TOP 5 BOT 1': 'B'},
+=======
+    'filter_translations'  : {'TOP 2 BOT 1': 'V', 'TOP 3 BOT 1': 'R', 
+                              'TOP 4 BOT 1': 'I', 'TOP 5 BOT 1': 'B'},
+>>>>>>> master
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -69,8 +74,15 @@ vatt4k_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/vatt4k.scamp',
 
+=======
+    'scamp-config-file'    : rootpath+'/setup/vatt4k.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+    
+>>>>>>> master
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
                               'DATE-OBS,TIME-OBS,RA,DEC,SECPIX,AIRMASS,' +
@@ -80,7 +92,11 @@ vatt4k_param = {
     'swarp-config-file'    : rootpath+'/setup/vatt4k.swarp',
 
     # default catalog settings
+<<<<<<< HEAD
     'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'],
+=======
+    'astrometry_catalogs'  : ['GAIA'], 
+>>>>>>> master
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', '2MASS']
 }
 
@@ -136,7 +152,13 @@ dctlmi_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/dctlmi.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/dctlmi.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
@@ -201,7 +223,13 @@ arc35arctic_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/arc35arctic.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/arc35arctic.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJNAME,' +
@@ -265,7 +293,13 @@ arc35agile_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/arc35agile.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/arc35agile.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJNAME,' +
@@ -341,7 +375,13 @@ magimacs_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/magimacs.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/magimacs.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -405,7 +445,13 @@ ca123dlrmkiii_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/ca123dlrmkiii.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/ca123dlrmkiii.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -467,7 +513,13 @@ lowell31_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/lowell31.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/lowell31.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER1,FILTER2,EXPTIME,OBJECT,' +
@@ -531,7 +583,13 @@ lowell42_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/lowell42.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/lowell42.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,CCDSUM,FILTNAME,EXPTIME,'+
@@ -596,7 +654,13 @@ lowell72_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/lowell72.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/lowell72.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,CRDELT1, CRDELT2,FILTNME3,' +
@@ -662,7 +726,13 @@ ctio09_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/ctio09.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/ctio09.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTERS,EXPTIME,OBJECT,' +
@@ -725,7 +795,13 @@ ctio10_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/ctio10.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/ctio10.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -787,7 +863,13 @@ ctio13ccd_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/andicam.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/andicam.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
@@ -860,7 +942,13 @@ uh88snifs_param = {
                               'TEL_KEYW'),
     #                        keywords to be copied in image
     #                        combination using swarp
+<<<<<<< HEAD
     'swarp-config-file'    : rootpath+'/setup/uh88snifs.swarp',
+=======
+    'swarp-config-file'    : rootpath+'/setup/uh88snifs.swarp',  
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'],
@@ -914,7 +1002,13 @@ wiyn09hdi_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/wiyn09hdi.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/wiyn09hdi.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER1,EXPTIME,OBJECT,' +
@@ -979,7 +1073,13 @@ generic_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/generic.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/generic.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
@@ -1041,7 +1141,13 @@ ratir_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/ratir.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/ratir.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT' +
@@ -1170,7 +1276,13 @@ soargoodman_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/soargoodman.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/soargoodman.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -1230,7 +1342,13 @@ ohp120_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/ohp120.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/ohp120.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'],
@@ -1281,7 +1399,13 @@ tngdolores_param = {
     #                        mask files as a function of x,y binning
 
     # scamp settings
+<<<<<<< HEAD
     'scamp-config-file'    : rootpath+'/setup/tngdolores.scamp',
+=======
+    'scamp-config-file'    : rootpath+'/setup/tngdolores.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+>>>>>>> master
 
     # default catalog settings
     'astrometry_catalogs'  : ['URAT-1', '2MASS', 'USNO-B1'],

@@ -42,10 +42,13 @@ def setup_diagnostics():
 warnings.simplefilter(action = "ignore", category = RuntimeWarning)
 from astropy import wcs
 from astropy.io import fits
+import numpy
 warnings.filterwarnings('ignore', category=wcs.FITSFixedWarning)
 warnings.filterwarnings('ignore', category=fits.column.VerifyWarning)
 warnings.filterwarnings('ignore', category=fits.card.VerifyWarning)
-
+# following warning gets cast by Gaia query: XXX.convert_unit_to(u.deg)
+warnings.filterwarnings('ignore', category=numpy.ma.core.MaskedArrayFutureWarning)
+warnings.filterwarnings('ignore', category=UserWarning)
 
 ### read photometry pipeline root path from environment variable
 rootpath = os.environ.get('PHOTPIPEDIR')
@@ -53,8 +56,14 @@ if rootpath == None:
     print 'ERROR: PHOTPIPEDIR variable has not been set'
     sys.exit(0)
 
+# ### TBD
+# # define and read telescope setup parameters (obsparam)
+# telescope_parameters = {}
+# instrument_identifiers = {}
+# implemented_telescopes= []
 
-# read telescope setup parameters (obsparam)
+# execfile(rootpath + '/setup/vatt4k.py')
+
 execfile(rootpath+'/setup/telescopes.py')
 
 
@@ -91,33 +100,15 @@ instrument_keys = ['INSTRUME', 'LCAMMOD', 'HEAD']
 
 ### available catalogs
 
-# translate PP catalog identifier to Vizier identifier
-# http://vizier.u-strasbg.fr/viz-bin/vizHelp?cats/U.htx
-allcatalogs = {'URAT-1'  : 'urat1',
-               '2MASS'   : '2mass-psc',
-               'SDSS-R9' : 'sdss9',
-               'APASS9'  : 'apass9',
-               'CMC15'   : 'cmc15',
-               'PPMXL'   : 'ppmxl',
-               'USNO-B1' : 'usno-b1'}
+# list of available catalogs
+allcatalogs = ['URAT-1', '2MASS', 'SDSS-R9', 'APASS9', 'GAIA']
 
 # catalog magnitude systems
 allcatalogs_magsys = {'URAT-1'  : 'Vega',
                       '2MASS'   : 'Vega',
                       'SDSS-R9' : 'AB',
                       'APASS9'  : 'Vega',
-                      'CMC15'   : 'Vega',
-                      'PPMXL'   : 'Vega',
-                      'USNO-B1' : 'Vega'}
-
-# catalog brightness fields for sorting
-allcatalogs_mag = {'URAT-1'  : 'Vmag',
-                   '2MASS'   : 'Jmag',
-                   'SDSS-R9' : 'gmag',
-                   'APASS9'  : 'Vmag',
-                   'CMC15'   : 'r_mag',
-                   'PPMXL'   : 'r1mag',
-                   'USNO-B1' : 'r1mag'}
+                      'GAIA'    : 'Vega'}
 
 
 
@@ -159,5 +150,5 @@ minstars = 0.5
 #### support 
 
 # path to local variable star database file
-# if you 
+# make sure set this variable accordingly if you want to use the catalog
 vsx_database_file = os.environ.get('PPVARSTARSDB')

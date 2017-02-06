@@ -12,7 +12,7 @@ best results, including cropping the data section. Bias subtraction
 and flat fielding improves photometry results but is not absolutely
 necessary. PP's ability to provide astrometric and photometric
 calibration puts some constraints on the way data is stored: data from
-separated fields, as well as data using different instrument settings
+separate fields, as well as data using different instrument settings
 (e.g., different binning modes) should be stored in individual
 directories, which in turn should be separated by filters::
 
@@ -26,7 +26,7 @@ directories, which in turn should be separated by filters::
                 |           +- filter_2
                ...
 
-Separated fields are defined as having gaps between individual frames
+Separate fields are defined as having gaps between individual frames
 that are comparable to, or larger than, the field of view. Series of
 frames that were tracked on a moving target can be put in the same
 directory if the total track is smaller than 3-5 times the size of a
@@ -65,8 +65,10 @@ directories in a consecutive way**::
   pp_run all
 
 Passing ``all`` signalizes PP to walk through underlying directories,
-starting from the current one. In case you want PP to only run on a
-subset of fits files, you can use option `-prefix`, e.g., ::
+starting from the current one. What happens is that PP creates a PP
+subprocess for each data directory. In case you want PP to only run on
+a subset of fits files starting with a certain prefix, you can use
+option `-prefix`, e.g., ::
 
   pp_run -prefix reduced all 
 
