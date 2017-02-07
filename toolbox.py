@@ -3,6 +3,7 @@ Toolbox for the Photometry Pipeline
 2016-03-09, michael.mommert@nau.edu
 """
 from __future__ import print_function
+from __future__ import division
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -22,9 +23,13 @@ from __future__ import print_function
 # <http://www.gnu.org/licenses/>.
 
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from past.utils import old_div
 import math
 import numpy
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 ##### TIME AND DATE
 
@@ -38,17 +43,17 @@ def jd_to_gregorian(jd, is_mjd=False):
   MJD0 = 2400000.5 # 1858 November 17, 00:00:00 hours 
 
   modf = math.modf
-  a = long(mjd+MJD0+0.5)
-  b = long((a-1867216.25)/36524.25)
-  c = a+ b - long(modf(b/4)[1]) + 1525 
+  a = int(mjd+MJD0+0.5)
+  b = int(old_div((a-1867216.25),36524.25))
+  c = a+ b - int(modf(old_div(b,4))[1]) + 1525 
 
-  d = long((c-122.1)/365.25)
-  e = 365*d + long(modf(d/4)[1])
-  f = long((c-e)/30.6001)
+  d = int(old_div((c-122.1),365.25))
+  e = 365*d + int(modf(old_div(d,4))[1])
+  f = int(old_div((c-e),30.6001))
 
   day = int(c - e - int(30.6001*f))
-  month = int(f - 1 - 12*int(modf(f/14)[1]))
-  year = int(d - 4715 - int(modf((7+month)/10)[1]))
+  month = int(f - 1 - 12*int(modf(old_div(f,14))[1]))
+  year = int(d - 4715 - int(modf(old_div((7+month),10))[1]))
   fracofday = mjd - math.floor(mjd)
   hour = int(math.floor(fracofday * 24.0 ))
   minute = int(math.floor(((fracofday*24.0)-hour)*60.))
@@ -71,8 +76,8 @@ def dateobs_to_jd(date):
     y = float(date[0]) + 4800 - a
     m = float(date[1]) + 12*a - 3
     return float(date[2]) + ((153*m + 2)//5) + 365*y + y//4 - y//100 \
-      + y//400 - 32045.5 + float(time[0])/24. + float(time[1])/1440. \
-      + float(time[2])/86400.
+      + y//400 - 32045.5 + old_div(float(time[0]),24.) + old_div(float(time[1]),1440.) \
+      + old_div(float(time[2]),86400.)
 
 
 def jd_to_fractionalyear(jd, is_mjd=False):
@@ -80,7 +85,7 @@ def jd_to_fractionalyear(jd, is_mjd=False):
   if is_mjd:
       jd += 2400000.5
   date = jd_to_gregorian(jd)
-  year = date[0]+date[1]/12.+date[2]/365.+date[3]/8760.+date[4]/525600.
+  year = date[0]+old_div(date[1],12.)+old_div(date[2],365.)+old_div(date[3],8760.)+old_div(date[4],525600.)
   return year
 
 

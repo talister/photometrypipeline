@@ -5,6 +5,7 @@
     v1.0: 2016-01-15, michael.mommert@nau.edu
 """
 from __future__ import print_function
+from __future__ import division
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -24,6 +25,8 @@ from __future__ import print_function
 # <http://www.gnu.org/licenses/>.
 
 
+from builtins import range
+from past.utils import old_div
 import numpy
 import subprocess
 import argparse
@@ -56,8 +59,8 @@ def skycenter(catalogs, ra_key='ra.deg', dec_key='dec.deg'):
     min_dec = min([numpy.min(cat[dec_key]) for cat in catalogs])
     max_dec = max([numpy.max(cat[dec_key]) for cat in catalogs])
 
-    ra, dec = (max_ra+min_ra)/2., (max_dec+min_dec)/2.
-    rad     = numpy.sqrt(((max_ra-min_ra)/2.)**2 + ((max_dec-min_dec)/2.)**2)
+    ra, dec = old_div((max_ra+min_ra),2.), old_div((max_dec+min_dec),2.)
+    rad     = numpy.sqrt((old_div((max_ra-min_ra),2.))**2 + (old_div((max_dec-min_dec),2.))**2)
 
     logging.info('FoV center (%.7f/%+.7f) and radius (%.2f deg) derived' % \
                  (ra, dec, rad))
@@ -191,7 +194,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                                       'dec.deg'],
                                 extract_other_catalog=['MAG_APER', 
                                                        'MAGERR_APER'],
-                                tolerance=_pp_conf.pos_epsilon/3600.)
+                                tolerance=old_div(_pp_conf.pos_epsilon,3600.))
 
         # artificially blow up incredibly small ref_cat uncertainties
         for i in numpy.where(match[0][1] < 0.01):
@@ -199,7 +202,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
 
         residuals     = match[0][0]-match[1][0] # ref - instr
         residuals_sig = match[0][1]**2+match[1][1]**2
-        m_idc         = range(len(match[0][0]))
+        m_idc         = list(range(len(match[0][0])))
 
         clipping_steps = []
         #  [zeropoint, sigma, chi2, source indices in match array, match]
@@ -241,17 +244,17 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         # perform clipping to reject one outlier at a time
         zeropoint = 25 # initialize zeropoint
         while len(residuals) >= 3:
-            fchi2 = lambda zp: numpy.sum([(zp-residuals)**2/residuals_sig])
+            fchi2 = lambda zp: numpy.sum([old_div((zp-residuals)**2,residuals_sig)])
             #fchi2 = lambda zp: numpy.sum((zp-residuals)**2) # unweighted
 
             minchi2   = minimize(fchi2, zeropoint, method='Nelder-Mead')
-            red_chi2  = minchi2.fun/(len(residuals)-2)
+            red_chi2  = old_div(minchi2.fun,(len(residuals)-2))
             # reduced chi2: chi2/(N-observations-N_fit_variables-1)
             zeropoint = minchi2.x[0]
 
             # derive weighted standard deviation
             var = numpy.average((residuals-zeropoint)**2,
-                                weights=1./residuals_sig)
+                                weights=old_div(1.,residuals_sig))
             #sigma = numpy.sqrt(var/(len(residuals)-1)) # weighted std of mean
             # weighted std + rms of individual sigmas
             # residuals_sig is already squared!
@@ -262,7 +265,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                    match])
 
             # identify most significant outliers (not weighted) and remove them
-            for repeat in range(max([1, int(len(residuals)/25.)])):
+            for repeat in range(max([1, int(old_div(len(residuals),25.))])):
                 popidx        = numpy.argmax(numpy.absolute(residuals \
                                                             - zeropoint))
                 residuals     = numpy.delete(residuals, popidx)
@@ -390,16 +393,16 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         filtername = manfilter
     else:
         if len(filternames) == 1:
-            filtername = filternames.keys()[0]
+            filtername = list(filternames.keys())[0]
         else:
             logging.error(('ERROR: ambiguous filters in this ' \
                            + 'image sample (%s)') % \
                           ", ".join(['%s: %s' % (key, val) 
-                                     for key,val in filternames.items()]))
+                                     for key,val in list(filternames.items())]))
             if display:
                 print('ERROR: ambiguous filters in this image sample (%s)' % \
                     ", ".join(['%s: %s' % (key, val) 
-                               for key,val in filternames.items()]))
+                               for key,val in list(filternames.items())]))
             return []
 
     if manualcatalog is not None:

@@ -5,6 +5,7 @@ configuration file for photometry pipeline
 """
 from __future__ import print_function
 
+from past.builtins import execfile
 import os
 import sys
 import logging

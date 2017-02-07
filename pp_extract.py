@@ -24,13 +24,17 @@ from __future__ import print_function
 # <http://www.gnu.org/licenses/>.
 
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
 import numpy
 import os, sys
 import subprocess
 import logging
 import argparse, shlex
 import time, datetime
-import Queue, threading
+import queue, threading
 import logging
 from astropy.io import fits
 
@@ -51,7 +55,7 @@ version = '1.0'
 
 # threading definitions
 nThreads = 10
-extractQueue = Queue.Queue(2000)
+extractQueue = queue.Queue(2000)
 threadLock = threading.Lock()   
 
 
@@ -350,7 +354,7 @@ def extract_multiframe(filenames, parameters):
     extractQueue.join()
 
     # check if extraction was successful
-    if any(['catalog_data' not in output[i].keys()
+    if any(['catalog_data' not in list(output[i].keys())
             for i in range(len(output))]):
         return None
     

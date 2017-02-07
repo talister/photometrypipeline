@@ -8,11 +8,17 @@
     http://spider.wadsworth.org/spider_doc/spider/docs/python/spipylib/examples/viewseries.py
 """
 from __future__ import print_function
+from __future__ import division
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import os, sys
 import numpy
 import warnings
-from Tkinter import *
+from tkinter import *
 from PIL import Image
 from PIL import ImageTk
 from PIL import ImageDraw
@@ -26,7 +32,7 @@ from catalog import *
 
 
 ### class structure for Tkinter control
-class Clicker:
+class Clicker(object):
 
     def __init__(self, master, zoom, filelist):
         self.top = master
@@ -91,7 +97,7 @@ class Clicker:
 
     def left_click(self, event):
         """ select source """
-        x, y = event.x/self.zoom, event.y/self.zoom
+        x, y = old_div(event.x,self.zoom), old_div(event.y,self.zoom)
 
         # find source closest to click position in ldac, identify
         # source index
@@ -153,8 +159,8 @@ class Clicker:
                                       int(imgdat.shape[0]*0.25):
                                       int(imgdat.shape[0]*0.75)]) 
 
-            imgdat = numpy.clip(imgdat, median-0.5*std, 
-                                median+0.5*std)/(std/256)
+            imgdat = old_div(numpy.clip(imgdat, median-0.5*std, 
+                                median+0.5*std),(old_div(std,256)))
             imgdat = imgdat - numpy.min(imgdat)
             imgdat = interp.zoom(imgdat, self.zoom)
 
@@ -230,7 +236,7 @@ class Clicker:
             self.canvas.delete(circ)
         x = self.ldac[self.index]['XWIN_IMAGE']
         y = self.ldac[self.index]['YWIN_IMAGE'] 
-        indices = range(len(x))
+        indices = list(range(len(x)))
         if self.target_index[self.index] is not None:
             indices.pop(self.target_index[self.index])
         if interp_idx is not None:            

@@ -5,6 +5,7 @@
     v1.0: 2016-01-24, michael.mommert@nau.edu
 """
 from __future__ import print_function
+from __future__ import division
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -24,6 +25,9 @@ from __future__ import print_function
 # <http://www.gnu.org/licenses/>.
 
 
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import numpy
 import os
 import sys
@@ -84,7 +88,7 @@ def manual_positions(posfile, catalogs, display=True):
                         'dec.deg'    :  positions[cat_idx]['dec']})
         
     if display:
-        print(len(objects)/len(catalogs), 'object(s) found')
+        print(old_div(len(objects),len(catalogs)), 'object(s) found')
 
     return objects
 
@@ -102,7 +106,7 @@ def pick_controlstar(catalogs, display=True):
             match_keys_other_catalog=['ra.deg', 'dec.deg'],
             extract_this_catalog=['ra.deg', 'dec.deg', 'FLAGS'],
             extract_other_catalog=['ra.deg', 'dec.deg', 'FLAGS', 'MAG_APER'],
-            tolerance=1./3600.)
+            tolerance=old_div(1.,3600.))
 
     objects = []
     if len(match[0][0]) > 0:
@@ -213,8 +217,8 @@ def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None,
             objects.append({'ident': cat.obj,
                             'obsdate.jd': cat.obstime[0],
                             'cat_idx'   : cat_idx,
-                            'ra.deg'    : eph[0]['RA']-offset[0]/3600.,
-                            'dec.deg'   : eph[0]['DEC']-offset[1]/3600.})
+                            'ra.deg'    : eph[0]['RA']-old_div(offset[0],3600.),
+                            'dec.deg'   : eph[0]['DEC']-old_div(offset[1],3600.)})
             logging.info('Successfully grabbed Horizons position for %s ' %
                          cat.obj.replace('_', ' '))
             logging.info('HORIZONS call: %s' % eph.url)
@@ -249,7 +253,7 @@ def fixed_targets(fixed_targets_file, catalogs, display=True):
                             'dec.deg'   : obj['dec']})
 
     if display:
-        print(len(objects)/len(catalogs), 'targets read')
+        print(old_div(len(objects),len(catalogs)), 'targets read')
 
     return objects
 
@@ -302,7 +306,7 @@ def serendipitous_variablestars(catalogs, display=True):
                             'dec.deg'   : star[2]})
 
     if display:
-        print(len(objects)/len(catalogs), 'variable stars found')
+        print(old_div(len(objects),len(catalogs)), 'variable stars found')
 
     return objects
 
@@ -321,7 +325,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
     # start logging
     logging.info('starting distill with parameters: %s' % \
                  (', '.join([('%s: %s' % (var, str(val))) for 
-                             var, val in locals().items()])))
+                             var, val in list(locals().items())])))
 
     output = {}
 
@@ -380,14 +384,14 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
         print('#-----------------------')
 
     if display:
-        print(len(objects)/len(catalogs), \
+        print(old_div(len(objects),len(catalogs)), \
             'potential target(s) per frame identified.')
         # print len(objects)/len(catalogs), \
         #     'potential target(s) per frame identified:', \
         #     ", ".join(set([obj['ident'] for obj in objects]))
 
     logging.info('%d potential targets per frame identified: %s' %
-                 (int(len(objects)/len(catalogs)), 
+                 (int(old_div(len(objects),len(catalogs))), 
                   ", ".join(set([obj['ident'] for obj in objects]))))
 
 
@@ -399,8 +403,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
     # sort objects by catalog idx
     for cat_idx, cat in enumerate(catalogs):
 
-        objects_thiscat = filter(lambda obj:obj['cat_idx']==cat_idx,
-                                 objects)
+        objects_thiscat = [obj for obj in objects if obj['cat_idx']==cat_idx]
 
         # create a new catalog
         target_cat = catalog('targetlist:_'+cat.catalogname)

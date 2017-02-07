@@ -23,6 +23,7 @@ from __future__ import print_function
 # <http://www.gnu.org/licenses/>.
 
 
+from builtins import str
 import numpy
 import os
 import sys
@@ -58,7 +59,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
     # start logging
     logging.info('starting registration with parameters: %s' % \
                  (', '.join([('%s: %s' % (var, str(val))) for 
-                             var, val in locals().items()])))
+                             var, val in list(locals().items())])))
     
     # check if images have been run through pp_prepare
     try:

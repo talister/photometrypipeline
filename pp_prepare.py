@@ -4,6 +4,7 @@
     v1.0: 2016-02-27, michael.mommert@nau.edu
 """
 from __future__ import print_function
+from __future__ import division
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -23,6 +24,10 @@ from __future__ import print_function
 # <http://www.gnu.org/licenses/>.
 
 
+from builtins import input
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import numpy
 import os
 import sys
@@ -61,7 +66,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
     # start logging
     logging.info('preparing data with parameters: %s' % \
                  (', '.join([('%s: %s' % (var, str(val))) for 
-                             var, val in locals().items()])))
+                             var, val in list(locals().items())])))
 
     ##### change FITS file extensions to .fits
     for idx, filename in enumerate(filenames):
@@ -91,7 +96,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                     'observation midtime'                    : 'date_keyword',
                     'exposure time (seconds)'                : 'exptime'}
 
-        for description, keyword in keywords.items():
+        for description, keyword in list(keywords.items()):
 
             try:
                 if obsparam[keyword] in header:
@@ -99,7 +104,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             except:
                 pass
 
-            inp = raw_input('%s? > ' % description)
+            inp = input('%s? > ' % description)
 
             if keyword is 'secpix':
                 obsparam[keyword] = (float(inp), float(inp))
@@ -203,7 +208,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         header['PHOT_K']  = (0.05, 'PP: assumed extinction coefficient')
 
         # remove keywords that might collide with fake wcs
-        for key in header.keys():
+        for key in list(header.keys()):
             if 'CD' in key and '_' in key:
                 header.remove(key)
             elif 'PV' in key and '_' in key:
@@ -221,7 +226,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
 
         # if GENERIC telescope, add implants to header
         if obsparam['telescope_keyword'] is 'GENERIC':
-            for key, val in implants.items():
+            for key, val in list(implants.items()):
                 header[key] = (val[0], val[1])
 
 
@@ -281,7 +286,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             header['AIRMASS'] = (1, 'PP: fake airmass')
             
         # perform header update
-        for key, value in header_update.items():
+        for key, value in list(header_update.items()):
             if key in header:
                 header['_'+key[:6]] = (header[key], 
                                        'PP: old value for %s' % key)
@@ -331,10 +336,10 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                 obsparam['radec_separator'])
             dec_string = header[obsparam['dec']].split(
                 obsparam['radec_separator'])
-            ra_deg = 15.*(float(ra_string[0])+float(ra_string[1])/60.+\
-                          float(ra_string[2])/3600.)
+            ra_deg = 15.*(float(ra_string[0])+old_div(float(ra_string[1]),60.)+\
+                          old_div(float(ra_string[2]),3600.))
             dec_deg = abs(float(dec_string[0]))+\
-                      float(dec_string[1])/60.+float(dec_string[2])/3600.
+                      old_div(float(dec_string[1]),60.)+old_div(float(dec_string[2]),3600.)
             if dec_string[0].find('-') > -1:
                 dec_deg = -1 * dec_deg
 
@@ -345,9 +350,9 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         ### special treatment for UKIRT/WFCAM
         if obsparam['telescope_keyword'] == 'UKIRTWFCAM':
             ra_deg = float(header['TELRA'])/24.*360. - \
-                     float(header['JITTER_X'])/3600.
+                     old_div(float(header['JITTER_X']),3600.)
             dec_deg = float(header['TELDEC']) - \
-                      float(header['JITTER_Y'])/3600.
+                      old_div(float(header['JITTER_Y']),3600.)
 
         # apply flips
         xnorm, ynorm = 1, 1
@@ -376,9 +381,9 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                             'PP: fake Coordinate reference value')
         header['CRVAL2'] = (dec_deg+dec_offset, 
                             'PP: fake Coordinate reference value')
-        header['CRPIX1'] = (int(float(header[obsparam['extent'][0]])/2), 
+        header['CRPIX1'] = (int(old_div(float(header[obsparam['extent'][0]]),2)), 
                             'PP: fake Coordinate reference pixel')
-        header['CRPIX2'] = (int(float(header[obsparam['extent'][1]])/2),
+        header['CRPIX2'] = (int(old_div(float(header[obsparam['extent'][1]]),2)),
                             'PP: fake Coordinate reference pixel')
 
         header['CD1_1']  = (xnorm * numpy.cos(this_rotate/180.*numpy.pi) * \

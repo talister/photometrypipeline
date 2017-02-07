@@ -24,6 +24,8 @@ from __future__ import print_function
 
 
 
+from builtins import str
+from builtins import range
 import numpy
 import re
 import os
@@ -299,7 +301,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
                                     None, None,
                                     display=True, diagnostics=True)
 
-    targets = numpy.array(distillate['targetnames'].keys())
+    targets = numpy.array(list(distillate['targetnames'].keys()))
     try:
         target = targets[targets != 'control_star'][0]
         mags = [frame[7] for frame in distillate[target]]

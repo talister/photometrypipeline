@@ -5,6 +5,7 @@ CATALOG - class structure for dealing with astronomical catalogs,
 version 0.9, 2016-01-27, michael.mommert@nau.edu
 """
 from __future__ import print_function
+from __future__ import division
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -24,11 +25,19 @@ from __future__ import print_function
 # <http://www.gnu.org/licenses/>.
 
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import zip
+from builtins import filter
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import os
 import sys 
 import numpy
 import logging
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import time
 import sqlite3 as sql
 from scipy import spatial
@@ -49,7 +58,7 @@ logging.basicConfig(filename = _pp_conf.log_filename,
                     datefmt  = _pp_conf.log_datefmt)
 
 
-class catalog:
+class catalog(object):
     def __init__(self, catalogname, display=False):
         self.data         = None # will be an astropy table 
         self.catalogname  = catalogname
@@ -499,7 +508,7 @@ class catalog:
 
         data_cols = []
         for col_name in self.data.columns:
-            if not col_name in colname_dic.keys():
+            if not col_name in list(colname_dic.keys()):
                 continue
             data_cols.append(fits.Column(name=colname_dic[col_name],
                                          format=format_dic[col_name],
@@ -755,8 +764,8 @@ class catalog:
                 return 0
 
             param = optimization.curve_fit(self.lin_func, ri, gr, [1,0])[0]
-            resid = numpy.sqrt(((ri+param[0]*gr-param[0]*param[1])/
-                                (param[0]**2+1))**2+
+            resid = numpy.sqrt((old_div((ri+param[0]*gr-param[0]*param[1]),
+                                (param[0]**2+1)))**2+
                                (param[0]*(ri+param[0]*gr-param[0]*param[1])/
                                 (param[0]**2+1)+param[1]-gr)**2)
             remove = numpy.where(numpy.array(resid) > 3.*numpy.std(resid))[0]
@@ -938,11 +947,11 @@ class catalog:
                     nmags[lbl['_e_Kmag']][idx]  = mags[5][idx]
 
                 else:
-                    for mag in lbl.keys():
+                    for mag in list(lbl.keys()):
                         nmags[lbl[mag]][idx] = 99
               
             # append nmags arrays to catalog
-            for key, idx in lbl.items():
+            for key, idx in list(lbl.items()):
                 self.add_field(key, nmags[idx])
                 
             # get rid of sources that have not been transformed
@@ -981,7 +990,7 @@ class catalog:
                 nmags[lbl['_e_Zmag']][idx] = mags[2][idx]
               
             # append nmags arrays to catalog
-            for key, idx in lbl.items():
+            for key, idx in list(lbl.items()):
                 self.add_field(key, nmags[idx])
                 
             # get rid of sources that have not been transformed
@@ -1012,7 +1021,7 @@ class catalog:
                    match_keys_other_catalog=['ra.deg', 'dec.deg'],
                    extract_this_catalog=['ra.deg', 'dec.deg'],
                    extract_other_catalog=['ra.deg', 'dec.deg'],
-                   tolerance=0.5/3600.):
+                   tolerance=old_div(0.5,3600.)):
         """ match sources from different catalogs based on two fields 
             (e.g., postions)
             return: requested fields for matched sources 
@@ -1022,26 +1031,24 @@ class catalog:
                  astropy.table functionality; how about astropy.coord matching?
         """
 
-        this_tree = spatial.KDTree(zip(self[match_keys_this_catalog[0]].data,
-                                       self[match_keys_this_catalog[1]].data))
+        this_tree = spatial.KDTree(list(zip(self[match_keys_this_catalog[0]].data,
+                                       self[match_keys_this_catalog[1]].data)))
 
         # kd-tree matching
         if tolerance is not None:
             other_tree = spatial.KDTree(\
-                            zip(catalog[match_keys_other_catalog[0]].data,
-                                catalog[match_keys_other_catalog[1]].data))
+                            list(zip(catalog[match_keys_other_catalog[0]].data,
+                                catalog[match_keys_other_catalog[1]].data)))
 
             match = this_tree.query_ball_tree(other_tree, tolerance)
 
-            indices_this_catalog  = filter(lambda x: len(match[x]) == 1, 
-                                           range(len(match)))
-            indices_other_catalog = map(lambda x: x[0], 
-                                        filter((lambda x: len(x)==1), match))
+            indices_this_catalog  = [x for x in range(len(match)) if len(match[x]) == 1]
+            indices_other_catalog = [x[0] for x in list(filter((lambda x: len(x)==1), match))]
             
         else:
             # will find the closest match for each target in this catalog
-            other_cat = zip(catalog[match_keys_other_catalog[0]].data,
-                            catalog[match_keys_other_catalog[1]].data)
+            other_cat = list(zip(catalog[match_keys_other_catalog[0]].data,
+                            catalog[match_keys_other_catalog[1]].data))
 
             match = this_tree.query(other_cat) 
 
@@ -1051,8 +1058,7 @@ class catalog:
                 other_cat_indices = numpy.where(match[1]==target_idx)[0]
                 if len(other_cat_indices) > 0:
                     # find closest match
-                    min_idx = other_cat_indices[numpy.argmin(map(lambda
-                                        i:match[0][i], other_cat_indices))]
+                    min_idx = other_cat_indices[numpy.argmin([match[0][i] for i in other_cat_indices])]
 
                     indices_this_catalog.append(target_idx)
                     indices_other_catalog.append(min_idx)
@@ -1061,16 +1067,15 @@ class catalog:
         ### match outputs based on indices provided and require
         ### extract_fields to be filled
         assert len(indices_this_catalog) == len(indices_other_catalog)
-        indices = zip(indices_this_catalog, indices_other_catalog)
+        indices = list(zip(indices_this_catalog, indices_other_catalog))
         # check if element is either not nan or not a float
         check_not_nan = lambda x: not numpy.isnan(x) if \
                                   (type(x) is numpy.float_) else True
 
-        indices = filter(lambda i: all([check_not_nan(self[i[0]][key]) 
+        indices = [i for i in indices if all([check_not_nan(self[i[0]][key]) 
                                         for key in extract_this_catalog] \
                                        + [check_not_nan(catalog[i[1]][key]) 
-                                          for key in extract_other_catalog]), 
-                         indices)
+                                          for key in extract_other_catalog])]
         output_this_catalog  = [self[key][[i[0] for i in indices]] 
                                 for key in extract_this_catalog]
         output_other_catalog = [catalog[key][[i[1] for i in indices]] 

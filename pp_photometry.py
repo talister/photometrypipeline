@@ -6,6 +6,7 @@
     v1.0: 2015-12-30, michael.mommert@nau.edu
 """
 from __future__ import print_function
+from __future__ import division
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -24,6 +25,9 @@ from __future__ import print_function
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import numpy
 import os
 import sys
@@ -59,7 +63,7 @@ def curve_of_growth_analysis(filenames, parameters,
     
     logging.info('starting photometry with parameters: %s' % \
                  (', '.join([('%s: %s' % (var, str(val))) for 
-                             var, val in locals().items()])))   
+                             var, val in list(locals().items())])))   
 
     ### re-extract sources for curve-of-growth analysis
 
@@ -80,7 +84,7 @@ def curve_of_growth_analysis(filenames, parameters,
                          'quiet':False}
 
     extraction = pp_extract.extract_multiframe(filenames, extractparameters)
-    extraction = filter(lambda e: len(e)>0, extraction)
+    extraction = [e for e in extraction if len(e)>0]
 
 
     ##### curve-of-growth analysis
@@ -155,20 +159,20 @@ def curve_of_growth_analysis(filenames, parameters,
             residuals = numpy.sqrt((data['ra.deg']-target_ra)**2 + \
                                    (data['dec.deg']-target_dec)**2)
             target_idx = numpy.argmin(residuals)
-            if residuals[target_idx] > _pp_conf.pos_epsilon/3600.:
+            if residuals[target_idx] > old_div(_pp_conf.pos_epsilon,3600.):
                 logging.warning(('WARNING: frame %s, large residual to '+ \
                                  'HORIZONS position of %s: %f arcsec; '+ \
                                  'ignore this frame') % 
                                 (filename, targetname,
                                  residuals[numpy.argmin(residuals)]*3600.))
             else:
-                target_flux.append(data[target_idx]['FLUX_APER']/
-                                   max(data[target_idx]['FLUX_APER']))
+                target_flux.append(old_div(data[target_idx]['FLUX_APER'],
+                                   max(data[target_idx]['FLUX_APER'])))
                 target_snr.append(
                     data[target_idx]['FLUX_APER']/\
                     data[target_idx]['FLUXERR_APER']/ \
-                    max(data[target_idx]['FLUX_APER']/ \
-                        data[target_idx]['FLUXERR_APER']))
+                    max(old_div(data[target_idx]['FLUX_APER'], \
+                        data[target_idx]['FLUXERR_APER'])))
                 n_target_identified += 1
 
         ### extract background source fluxes and snrs
@@ -182,12 +186,12 @@ def curve_of_growth_analysis(filenames, parameters,
                     continue
 
                 # create growth curve
-                background_flux.append(src['FLUX_APER']/\
-                                       max(src['FLUX_APER']))
+                background_flux.append(old_div(src['FLUX_APER'],\
+                                       max(src['FLUX_APER'])))
                 background_snr.append(src['FLUX_APER']/\
                                       src['FLUXERR_APER']/\
-                                      max(src['FLUX_APER']/\
-                                          src['FLUXERR_APER']))
+                                      max(old_div(src['FLUX_APER'],\
+                                          src['FLUXERR_APER'])))
 
 
                 
@@ -202,7 +206,7 @@ def curve_of_growth_analysis(filenames, parameters,
     n_target = len(target_flux)
     if n_target > 0:
         target_flux = (numpy.median(target_flux, axis=0), 
-                       numpy.std(target_flux, axis=0)/numpy.sqrt(n_target))
+                       old_div(numpy.std(target_flux, axis=0),numpy.sqrt(n_target)))
         target_snr = numpy.median(target_snr, axis=0)
     else:
         target_flux = (numpy.zeros(len(aprads)), numpy.zeros(len(aprads)))
@@ -211,8 +215,8 @@ def curve_of_growth_analysis(filenames, parameters,
     n_background = len(background_flux)
     if n_background > 0:
         background_flux = (numpy.median(background_flux, axis=0), 
-                           numpy.std(background_flux, axis=0)/\
-                           numpy.sqrt(n_background))
+                           old_div(numpy.std(background_flux, axis=0),\
+                           numpy.sqrt(n_background)))
         background_snr = numpy.median(background_snr, axis=0)
     else:
         background_flux = (numpy.zeros(len(aprads)), numpy.zeros(len(aprads)))
@@ -387,7 +391,7 @@ def photometry(filenames, sex_snr, source_minarea, aprad,
         
     logging.info('Done! -----------------------------------------------------')
 
-    if 'cog' in locals().keys():
+    if 'cog' in list(locals().keys()):
         return cog
     else:
         return None
