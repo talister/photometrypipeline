@@ -5,7 +5,7 @@
 """
 from __future__ import print_function
 
-# Photometry Pipeline 
+# Photometry Pipeline
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
 
 # This program is free software: you can redistribute it and/or modify
@@ -50,9 +50,9 @@ import pp_distill
 import diagnostics as diag
 
 # setup logging
-logging.basicConfig(filename = _pp_conf.log_filename, 
+logging.basicConfig(filename = _pp_conf.log_filename,
                     level    = _pp_conf.log_level,
-                    format   = _pp_conf.log_formatline, 
+                    format   = _pp_conf.log_formatline,
                     datefmt  = _pp_conf.log_datefmt)
 
 
@@ -71,9 +71,9 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     _pp_conf.res_filename = _pp_conf.setup_diagnostics()
 
     # setup logging again (might be a different directory)
-    logging.basicConfig(filename = _pp_conf.log_filename, 
+    logging.basicConfig(filename = _pp_conf.log_filename,
                         level    = _pp_conf.log_level,
-                        format   = _pp_conf.log_formatline, 
+                        format   = _pp_conf.log_formatline,
                         datefmt  = _pp_conf.log_datefmt)
 
     ### read telescope information from fits headers
@@ -104,12 +104,12 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
         raise KeyError('cannot identify telescope/instrument; please update' + \
                        '_pp_conf.instrument_keys accordingly')
 
-        
+
     # check if there is only one unique instrument
     if len(set(instruments)) > 1:
         print('ERROR: multiple instruments used in dataset: %s' % \
             str(set(instruemnts)))
-        logging.error('multiple instruments used in dataset: %s' % 
+        logging.error('multiple instruments used in dataset: %s' %
                       str(set(instruments)))
         for i in range(len(filenames)):
             logging.error('%s %s' % (filenames[i], instruments[i]))
@@ -143,11 +143,11 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
 
     if len(set(filters)) > 1:
         print('ERROR: multiple filters used in dataset: %s' % str(set(filters)))
-        logging.error('multiple filters used in dataset: %s' % 
+        logging.error('multiple filters used in dataset: %s' %
                       str(set(filters)))
         for i in range(len(filenames)):
             logging.error('%s %s' % (filenames[i], filters[i]))
-        sys.exit()    
+        sys.exit()
 
     if man_filtername is None:
         try:
@@ -163,7 +163,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     else:
         filtername = man_filtername
     logging.info('%d %s frames identified' % (len(filenames), filtername))
-    
+
     print('run photometry pipeline on %d %s %s frames' % \
           (len(filenames), telescope, filtername))
 
@@ -190,16 +190,16 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
                                         source_tolerance,
                                         display=True,
                                         diagnostics=True)
-    
+
 
     if len(registration['badfits']) == len(filenames):
-        summary_message = "<FONT COLOR=\"red\">registration failed</FONT>" 
+        summary_message = "<FONT COLOR=\"red\">registration failed</FONT>"
     elif len(registration['goodfits']) == len(filenames):
         summary_message = "<FONT COLOR=\"green\">all images registered" + \
                            "</FONT>; "
     else:
         summary_message = "<FONT COLOR=\"orange\">registration failed for " + \
-                           ("%d/%d images</FONT>; " % 
+                           ("%d/%d images</FONT>; " %
                                 (len(registration['badfits']),
                                  len(filenames)))
 
@@ -207,7 +207,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     if _pp_conf.use_diagnostics_summary:
         diag.insert_into_summary(summary_message)
 
-        
+
 
     # in case not all image were registered successfully
     filenames = registration['goodfits']
@@ -239,7 +239,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
 
     print('\n----- derive optimium photometry aperture\n')
     phot = pp_photometry.photometry(filenames, sex_snr, source_minarea, aprad,
-                                    man_targetname, background_only, 
+                                    man_targetname, background_only,
                                     target_only,
                                     telescope, obsparam, display=True,
                                     diagnostics=True)
@@ -250,10 +250,10 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
                            "</FONT>") % phot['optimum_aprad']
         if phot['n_target'] > 0:
             summary_message += "<FONT COLOR=\"green\">based on target and " + \
-                               "background</FONT>; " 
+                               "background</FONT>; "
         else:
             summary_message += "<FONT COLOR=\"orange\">based on background " + \
-                               "only </FONT>; " 
+                               "only </FONT>; "
     # a fixed aperture radius has been used
     else:
         summary_message += "using a fixed aperture radius of %.1f px;" % aprad
@@ -263,7 +263,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     if _pp_conf.use_diagnostics_summary:
         diag.insert_into_summary(summary_message)
 
-   
+
 
     ### run photometric calibration
     minstars = _pp_conf.minstars
@@ -285,17 +285,17 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
         summary_message = "<FONT COLOR=\"red\">no phot. calibration</FONT>; "
     else:
         summary_message = "<FONT COLOR=\"green\">average zeropoint = " + \
-                           ("%5.2f+-%5.2f using %s</FONT>; " % 
-                            (numpy.average(zps), 
-                             numpy.average(zp_errs), 
+                           ("%5.2f+-%5.2f using %s</FONT>; " %
+                            (numpy.average(zps),
+                             numpy.average(zp_errs),
                              calibration['ref_cat'].catalogname))
     # add information to summary website, if requested
     if _pp_conf.use_diagnostics_summary:
         diag.insert_into_summary(summary_message)
-        
+
 
     ### distill photometry results
-    print('\n----- distill photometry results\n')    
+    print('\n----- distill photometry results\n')
     distillate = pp_distill.distill(calibration['catalogs'],
                                     man_targetname, [0,0],
                                     None, None,
@@ -305,8 +305,8 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     try:
         target = targets[targets != 'control_star'][0]
         mags = [frame[7] for frame in distillate[target]]
-        summary_message = ("average target brightness and std: " + 
-                           "%5.2f+-%5.2f\n" % (numpy.average(mags), 
+        summary_message = ("average target brightness and std: " +
+                           "%5.2f+-%5.2f\n" % (numpy.average(mags),
                                                numpy.std(mags)))
     except IndexError:
         summary_message = "no primary target extracted"
@@ -323,25 +323,25 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
 
 
 if __name__ == '__main__':
-    
-    # command line arguments                                                
+
+    # command line arguments
     parser = argparse.ArgumentParser(description='automated WCS registration')
-    parser.add_argument('-prefix', help='data prefix', 
+    parser.add_argument('-prefix', help='data prefix',
                         default=None)
-    parser.add_argument('-target', help='primary targetname override', 
+    parser.add_argument('-target', help='primary targetname override',
                         default=None)
-    parser.add_argument('-filter', help='filter name override', 
+    parser.add_argument('-filter', help='filter name override',
                         default=None)
-    parser.add_argument('-fixed_aprad', help='fixed aperture radius (px)', 
+    parser.add_argument('-fixed_aprad', help='fixed aperture radius (px)',
                         default=0)
-    parser.add_argument('-source_tolerance', 
+    parser.add_argument('-source_tolerance',
                         help='tolerance on source properties for registration',
-                        choices=['none', 'low', 'medium', 'high'], 
+                        choices=['none', 'low', 'medium', 'high'],
                         default='high')
-    parser.add_argument('images', help='images to process or \'all\'', 
+    parser.add_argument('images', help='images to process or \'all\'',
                         nargs='+')
 
-    args = parser.parse_args()         
+    args = parser.parse_args()
     prefix = args.prefix
     man_targetname = args.target
     man_filtername = args.filter
@@ -386,13 +386,12 @@ if __name__ == '__main__':
 
     else:
         # call run_the_pipeline only on filenames
-        run_the_pipeline(filenames, man_targetname, man_filtername, 
+        run_the_pipeline(filenames, man_targetname, man_filtername,
                          fixed_aprad, source_tolerance)
         pass
 
 
-    
 
 
-    
+
 

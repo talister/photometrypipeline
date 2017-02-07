@@ -7,7 +7,7 @@
 from __future__ import print_function
 from __future__ import division
 
-# Photometry Pipeline 
+# Photometry Pipeline
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
 
 # This program is free software: you can redistribute it and/or modify
@@ -45,9 +45,9 @@ from catalog import *
 from toolbox import *
 
 # setup logging
-logging.basicConfig(filename = _pp_conf.log_filename, 
+logging.basicConfig(filename = _pp_conf.log_filename,
                     level    = _pp_conf.log_level,
-                    format   = _pp_conf.log_formatline, 
+                    format   = _pp_conf.log_formatline,
                     datefmt  = _pp_conf.log_datefmt)
 
 
@@ -81,14 +81,14 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
 
         # load catalog
         n_sources = cat.download_catalog(ra_deg, dec_deg, rad_deg, max_sources)
-        
+
         if display:
             print(n_sources, 'sources downloaded from', catalogname)
         if n_sources < min_sources:
             continue
 
         # transform catalog to requested filtername, if necessesary
-        if ( n_sources > 0 and 
+        if ( n_sources > 0 and
              ('SDSS' in catalogname and
               filtername not in {'u', 'g', 'r', 'i', 'z'}) or
              ('URAT' in catalogname and
@@ -105,14 +105,14 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                 print('%s transformed to %s-band: %d sources' % \
                     (catalogname, filtername, n_transformed))
             if n_transformed > min_sources:
-                logging.info('more than %d sources (%d), use this catalog' % 
+                logging.info('more than %d sources (%d), use this catalog' %
                              (min_sources, n_transformed))
                 return cat
         # no transformation necessary
         else:
             # reject sources that do not have measured magnitudes
             logging.info('rejecting sources with no magnitude information')
-            
+
             n_sources = n_sources - cat.reject_sources_with(\
                                         numpy.isnan(cat[filtername+'mag'])) \
                                   - cat.reject_sources_with(\
@@ -125,16 +125,16 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                     (n_sources, filtername))
 
             if n_sources > min_sources:
-                logging.info('more than %d sources (%d), use this catalog' % 
+                logging.info('more than %d sources (%d), use this catalog' %
                              (min_sources, n_sources))
                 return cat
             else:
-                logging.info('less than %d sources (%d), try other catalog' % 
+                logging.info('less than %d sources (%d), try other catalog' %
                              (min_sources, n_sources))
                 continue
 
 
-            
+
 
     # end up here if none of the catalogs has n_sources > min_sources
     if display:
@@ -146,12 +146,12 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
 
 
 
-    
-def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external, 
+
+def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                       display=False, diagnostics=False):
     """derive zeropoint for a number of catalogs based on a reference catalog"""
 
-    output = {'filtername':filtername, 'minstars': minstars_external, 
+    output = {'filtername':filtername, 'minstars': minstars_external,
               'zeropoints': [], 'clipping_steps': []}
 
     # match catalogs based on coordinates
@@ -159,7 +159,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
 
         logging.info('derive zeropoint for catalog: %s based on %s' %
                      (" | ".join([cat.catalogname, cat.origin, cat.history]),
-                      " | ".join([ref_cat.catalogname, ref_cat.origin, 
+                      " | ".join([ref_cat.catalogname, ref_cat.origin,
                                   ref_cat.history])))
 
         if display:
@@ -169,13 +169,13 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                     in ref_cat.fields else '_'+filtername+'mag'
         efilterkey = 'e_'+filtername+'mag' if 'e_'+filtername+'mag' \
                      in ref_cat.fields else '_e_'+filtername+'mag'
-        
+
         # reject sources with MAG_APER/MAGERR_APER = 99 or nan
 
         ### read this: if there is a
         # ValueError: boolean index array should have 1 dimension
-        # pointing here, the problem is that pp_extract has not been 
-        # properly run using a single aperture 
+        # pointing here, the problem is that pp_extract has not been
+        # properly run using a single aperture
         ### currently it seems like pp_photometry (maybe callhorizons)
         # has not finished properly
 
@@ -188,11 +188,11 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                 match_keys_this_catalog=['ra.deg', 'dec.deg'],
                                 match_keys_other_catalog=['ra.deg', 'dec.deg'],
                                 extract_this_catalog=[filterkey,
-                                                      efilterkey, 
+                                                      efilterkey,
                                                       'ident',
                                                       'ra.deg',
                                                       'dec.deg'],
-                                extract_other_catalog=['MAG_APER', 
+                                extract_other_catalog=['MAG_APER',
                                                        'MAGERR_APER'],
                                 tolerance=old_div(_pp_conf.pos_epsilon,3600.))
 
@@ -206,7 +206,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
 
         clipping_steps = []
         #  [zeropoint, sigma, chi2, source indices in match array, match]
-        
+
         # fewer than 3 reference stars -> skip this catalog
         if len(residuals) < 3:
             if display:
@@ -221,7 +221,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                 'zp': numpy.nan,
                                 'zp_sig': numpy.nan,
                                 'zp_nstars': 0,
-                                'zp_usedstars': 0, 
+                                'zp_usedstars': 0,
                                 'obstime':cat.obstime,
                                 'match':[[],[]],
                                 'clipping_steps':clipping_steps,
@@ -229,7 +229,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                 'success': False })
                 continue
 
-                
+
         # if minstars is a fraction, use minstars*len(match[0][0])
         if minstars_external < 1:
             minstars = int(minstars_external*len(match[0][0]))
@@ -239,8 +239,8 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         # max 100 minstars
         if minstars > 100:
             minstars = 100
-            
-            
+
+
         # perform clipping to reject one outlier at a time
         zeropoint = 25 # initialize zeropoint
         while len(residuals) >= 3:
@@ -258,7 +258,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
             #sigma = numpy.sqrt(var/(len(residuals)-1)) # weighted std of mean
             # weighted std + rms of individual sigmas
             # residuals_sig is already squared!
-            sigma = numpy.sqrt(var + numpy.average(residuals_sig)) 
+            sigma = numpy.sqrt(var + numpy.average(residuals_sig))
             #sigma = numpy.std(residuals-zeropoint)
 
             clipping_steps.append([zeropoint, sigma, red_chi2, m_idc,
@@ -271,7 +271,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                 residuals     = numpy.delete(residuals, popidx)
                 residuals_sig = numpy.delete(residuals_sig, popidx)
                 m_idc         = numpy.delete(m_idc, popidx)
-            
+
 
         # select best-fit zeropoint based on minimum chi2
         idx = numpy.nanargmin([step[2] for step in clipping_steps])
@@ -279,7 +279,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         # idx = numpy.nanargmin([step[1] for step in clipping_steps])
 
 
-        
+
         # reduce idx to increase the number of source until minstars is met
         while len(clipping_steps[idx][3]) < minstars and idx > 0:
             idx -= 1
@@ -288,7 +288,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                      'zp': clipping_steps[idx][0],
                                      'zp_sig': clipping_steps[idx][1],
                                      'zp_nstars': len(clipping_steps[idx][3]),
-                                     'zp_usedstars': clipping_steps[idx][3], 
+                                     'zp_usedstars': clipping_steps[idx][3],
                                      'obstime':cat.obstime,
                                      'match':match,
                                      'clipping_steps':clipping_steps,
@@ -299,11 +299,11 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         print('%6.3f+-%.3f (%d/%d reference stars)' % \
             (clipping_steps[idx][0],clipping_steps[idx][1],
              len(clipping_steps[idx][3]), len(clipping_steps[0][3])))
-        
+
         ### append calibrated magnitudes to catalog
         if filterkey[0] != '_':
             filterkey  = '_' + filterkey
-            efilterkey = '_' + efilterkey 
+            efilterkey = '_' + efilterkey
 
 
         cat.add_fields([filterkey, efilterkey],
@@ -334,12 +334,12 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
     #                        'obstime'  : observation midtime (JD),
     #                        'match'    : match array (see above),
     #                        'clipping_steps'  : clipping_steps (see above),
-    #                        'zp_idx'   : zeropoint index 
+    #                        'zp_idx'   : zeropoint index
     #                       },
     #   'catalogs'        : ldac catalogs,
     #   'ref_cat'         : reference catalog
     # }
-    ###    
+    ###
 
     return output
 
@@ -360,7 +360,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
             print('Cannot read filter name from file %s' % filename)
             logging.error('Cannot read filter name from file %s' % filename)
             return None
-            
+
         # translate filtername, if available
         try:
             filtername = obsparam['filter_translations'][filtername]
@@ -382,11 +382,11 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
 
         catalogs.append(cat)
 
-        
+
     ### derive center and radius of field of view of all images
     ra_deg, dec_deg, rad_deg = skycenter(catalogs)
 
-    
+
     ### obtain photometric catalog(s) of the field based on settings in
     # setup/telescope.py and the image filter
     if manfilter is not False:
@@ -397,11 +397,11 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         else:
             logging.error(('ERROR: ambiguous filters in this ' \
                            + 'image sample (%s)') % \
-                          ", ".join(['%s: %s' % (key, val) 
+                          ", ".join(['%s: %s' % (key, val)
                                      for key,val in list(filternames.items())]))
             if display:
                 print('ERROR: ambiguous filters in this image sample (%s)' % \
-                    ", ".join(['%s: %s' % (key, val) 
+                    ", ".join(['%s: %s' % (key, val)
                                for key,val in list(filternames.items())]))
             return []
 
@@ -410,7 +410,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     else:
         preferred_catalogs = obsparam['photometry_catalogs']
 
-    if filtername is not None:    
+    if filtername is not None:
         ref_cat = create_photometrycatalog(ra_deg, dec_deg, rad_deg,
                                            filtername, preferred_catalogs,
                                            max_sources=2e4, display=display)
@@ -431,7 +431,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         logging.info('Done! ------------------------------------------------')
 
         return None
-    
+
     ### match catalogs and derive magnitude zeropoint
     zp_data = derive_zeropoints(ref_cat, catalogs, filtername,
                                 minstars, display=display,
@@ -439,14 +439,14 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
 
     ### zp_data content
     #
-    # derive_zeropoints.output 
+    # derive_zeropoints.output
     #
-    ###    
-    
+    ###
+
     ### update diagnostics website
     diag.add_calibration(zp_data)
 
-    
+
     ### write calibrated database files
     logging.info('write calibrated data into database files')
     if display:
@@ -462,7 +462,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
 
 if __name__ == '__main__':
 
-    # define command line arguments                                                
+    # define command line arguments
     parser = argparse.ArgumentParser(description='photometric calibration')
     parser.add_argument('-minstars', help='min number of calibration stars '+\
                         'or fraction', default=0.5)
@@ -470,9 +470,9 @@ if __name__ == '__main__':
                         choices=_pp_conf.allcatalogs,
                         help="use this catalog instead of default one")
     parser.add_argument("-filter", help="manual filter override")
-    parser.add_argument("-maxflag", help="maximum flag for all sources", 
+    parser.add_argument("-maxflag", help="maximum flag for all sources",
                         default=3)
-    parser.add_argument('-instrumental', 
+    parser.add_argument('-instrumental',
                         help='skip calibration, ' + \
                              'only report instrumental magnitudes',
                         action="store_true")
@@ -485,7 +485,7 @@ if __name__ == '__main__':
     instrumental = args.instrumental
     filenames = args.images
 
-    # manfilter: None: instrumental magnitudes, False: no manfilter provided 
+    # manfilter: None: instrumental magnitudes, False: no manfilter provided
     if instrumental:
         manfilter = None
     else:
@@ -516,6 +516,6 @@ if __name__ == '__main__':
 
 
 
-    
+
 
 
