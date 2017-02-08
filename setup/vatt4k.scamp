@@ -20,8 +20,8 @@ ASTREF_CATALOG         2MASS          # NONE, FILE, USNO-A1,USNO-A2,USNO-B1,
 ASTREF_BAND            DEFAULT         # Photom. band for astr.ref.magnitudes
                                        # or DEFAULT, BLUEST, or REDDEST
 ASTREFCAT_NAME         astrefcat.cat   # Local astrometric reference catalogs
-ASTREFCENT_KEYS        X_WORLD,Y_WORLD # Local ref.cat. centroid parameters
-ASTREFERR_KEYS         ERRA_WORLD, ERRB_WORLD, ERRTHETA_WORLD
+ASTREFCENT_KEYS        XWIN_WORLD,YWIN_WORLD # Local ref.cat. centroid parameters
+ASTREFERR_KEYS         ERRAWIN_WORLD, ERRBWIN_WORLD, ERRTHETAWIN_WORLD
                                        # Local ref.cat. err. ellipse params
 ASTREFMAG_KEY          MAG             # Local ref.cat. magnitude parameter
 ASTREFMAGERR_KEY       MAGERR          # Local ref.cat. mag. error parameter

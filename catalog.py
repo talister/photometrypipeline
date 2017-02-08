@@ -494,9 +494,9 @@ class catalog(object):
         #hdrhdu.header['TDIM1'] = ('(80, 36)') # remove?
             
         ### create data table
-        colname_dic = {'ra.deg': 'X_WORLD', 'dec.deg': 'Y_WORLD',
-                       'e_ra.deg': 'ERRA_WORLD',
-                       'e_dec.deg': 'ERRB_WORLD',
+        colname_dic = {'ra.deg': 'XWIN_WORLD', 'dec.deg': 'YWIN_WORLD',
+                       'e_ra.deg': 'ERRAWIN_WORLD',
+                       'e_dec.deg': 'ERRBWIN_WORLD',
                        'mag': 'MAG'}
         format_dic = {'ra.deg': '1D', 'dec.deg': '1D',
                       'e_ra.deg': '1E',
