@@ -25,8 +25,7 @@ from __future__ import division
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-from builtins import str
-from builtins import range
+
 from past.utils import old_div
 import numpy
 import os
@@ -40,6 +39,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pylab as plt
 import callhorizons
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+    from builtins import str
+    from builtins import range
 
 # pipeline-specific modules
 import _pp_conf
@@ -131,7 +135,7 @@ def curve_of_growth_analysis(filenames, parameters,
             eph = callhorizons.query(targetname)
             eph.set_discreteepochs(date)
             try:
-                n = eph.get_ephemerides(obsparam['observatory_code'])
+                n = eph.get_ephemerides(str(obsparam['observatory_code']))
             except ValueError:
                 print('Target (%s) not an asteroid' % targetname)
                 logging.warning('Target (%s) not an asteroid' % targetname)

@@ -24,9 +24,6 @@ from __future__ import division
 # <http://www.gnu.org/licenses/>.
 
 
-from builtins import input
-from builtins import str
-from builtins import range
 from past.utils import old_div
 import numpy
 import os
@@ -38,6 +35,13 @@ import argparse, shlex
 import time
 import callhorizons
 from astropy.io import fits
+
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+    from builtins import str
+    from builtins import input
+    from builtins import range
 
 
 ### pipeline-specific modules

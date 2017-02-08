@@ -23,7 +23,6 @@ from __future__ import print_function
 # <http://www.gnu.org/licenses/>.
 
 
-from builtins import str
 import numpy
 import os
 import sys
@@ -39,6 +38,11 @@ import _pp_conf
 from catalog import *
 import pp_extract
 import diagnostics as diag
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+    from builtins import str
+
 
 # setup logging
 logging.basicConfig(filename = _pp_conf.log_filename,

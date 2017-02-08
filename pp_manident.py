@@ -10,10 +10,6 @@
 from __future__ import print_function
 from __future__ import division
 
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
-from builtins import object
 from past.utils import old_div
 import os, sys
 import numpy
@@ -26,6 +22,14 @@ import argparse
 from astropy.io import fits
 from scipy.ndimage import interpolation as interp
 from scipy.interpolate import InterpolatedUnivariateSpline
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+    from future import standard_library
+    standard_library.install_aliases()
+    from builtins import range
+    from builtins import object
+
 
 # pipeline-specific modules
 from catalog import *
