@@ -3,9 +3,10 @@
 *~
 */#*
 dump/
+#*#
 
 # stuff we don't want to track
-setup/mytelescopes.pyc
+setup/mytelescopes.py
 
 ### Python ###
 ## Byte-compiled / optimized / DLL files
