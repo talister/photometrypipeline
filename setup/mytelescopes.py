@@ -23,9 +23,9 @@ Personal Photometry Pipeline Configuation File
 ##### telescope/instrument configurations
 
 # MYTELESCOPE setup parameters
-kpno4m_mosaic_param = {
-    'telescope_instrument': 'KPNO4m/MOSAIC',  # telescope/instrument name
-    'telescope_keyword': 'TELESCOP',  # telescope/instrument keyword
+kpno4mos1_param = {
+    'telescope_instrument': 'KPNO4m/MOSAIC1',  # telescope/instrument name
+    'telescope_keyword': 'KPNO4MOS1',  # telescope/instrument keyword
     'observatory_code': '695',  # MPC observatory code
     'secpix': (0.1, 0.1),  # pixel size (arcsec) before binning
 
@@ -41,7 +41,7 @@ kpno4m_mosaic_param = {
     'dec': 'DEC',  # telescope pointin, Dec
     'radec_separator': ':',  # RA/Dec hms separator, use 'XXX'
     # if already in degrees
-    'date_keyword': 'DATE-OBS|TIME-OBS',  # obs date/time
+    'date_keyword': 'DATE-OBS',  # obs date/time
     # keyword; use
     # 'date|time' if
     # separate
@@ -50,10 +50,7 @@ kpno4m_mosaic_param = {
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
     'filter': 'FILTER',  # filter keyword
-    'filter_translations': {'Johnson_V': 'V',
-                            'Johnson_R': 'R',
-                            'none': None,
-                            'Johnson_B': 'B'},
+    'filter_translations': {'g SDSS k10107': 'g'},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
@@ -62,26 +59,26 @@ kpno4m_mosaic_param = {
     'source_minarea': 12,  # default sextractor source minimum N_pixels
     'aprad_default': 5,  # default aperture radius in px
     'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
-    'sex-config-file': rootpath + '/setup/mytelescope.sex',
+    'sex-config-file': rootpath + '/setup/kpno4mos1.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
 
     # scamp settings
-    'scamp-config-file': rootpath + '/setup/mytelescope.scamp',
+    'scamp-config-file': rootpath + '/setup/kpnomos1.scamp',
 
     # default catalog settings
-    'astrometry_catalogs': ['URAT-1', '2MASS', 'USNO-B1'],
+    'astrometry_catalogs': ['GAIA'],
     'photometry_catalogs': ['SDSS-R9', 'APASS9', '2MASS']
 }
 
 ##### add telescope configurations to 'official' telescopes.py
 
-implemented_telescopes.append('MYTELESCOPE')
+implemented_telescopes.append('KPNO4MOS1')
 
 ### translate INSTRUME (or others, see _pp_conf.py) header keyword into
 #   PP telescope keyword
 # example: INSTRUME keyword in header is 'mytel'
-instrument_identifiers['mytel'] = 'MYTELESCOPE'
+instrument_identifiers['mosaic_1_1'] = 'KPNO4MOS1'
 
 ### translate telescope keyword into parameter set defined here
-telescope_parameters['MYTELESCOPE'] = kpno4m_mosaic_param
+telescope_parameters['KPNO4MOS1'] = kpno4mos1_param
