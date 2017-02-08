@@ -3,8 +3,10 @@
 """ PP_PREPARE - prepare fits images for photometry pipeline
     v1.0: 2016-02-27, michael.mommert@nau.edu
 """
+from __future__ import print_function
+from __future__ import division
 
-# Photometry Pipeline 
+# Photometry Pipeline
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
 
 # This program is free software: you can redistribute it and/or modify
@@ -22,6 +24,10 @@
 # <http://www.gnu.org/licenses/>.
 
 
+from builtins import input
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import numpy
 import os
 import sys
@@ -42,9 +48,9 @@ import diagnostics as diag
 import toolbox
 
 # setup logging
-logging.basicConfig(filename = _pp_conf.log_filename, 
+logging.basicConfig(filename = _pp_conf.log_filename,
                     level    = _pp_conf.log_level,
-                    format   = _pp_conf.log_formatline, 
+                    format   = _pp_conf.log_formatline,
                     datefmt  = _pp_conf.log_datefmt)
 
 
@@ -59,8 +65,8 @@ def prepare(filenames, obsparam, header_update, flipx=False,
 
     # start logging
     logging.info('preparing data with parameters: %s' % \
-                 (', '.join([('%s: %s' % (var, str(val))) for 
-                             var, val in locals().items()])))
+                 (', '.join([('%s: %s' % (var, str(val))) for
+                             var, val in list(locals().items())])))
 
     ##### change FITS file extensions to .fits
     for idx, filename in enumerate(filenames):
@@ -69,16 +75,16 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             filenames[idx] = '.'.join(filename.split('.')[:-1])+'.fits'
             logging.info('change filename from "%s" to "%s"' %
                          (filename, filenames[idx]))
-            
+
     ##### identify keywords for GENERIC telescopes
 
     # open one sample image file
-    hdulist = fits.open(filenames[0], verify='ignore', 
+    hdulist = fits.open(filenames[0], verify='ignore',
                         ignore_missing_end='True')
     header = hdulist[0].header
-    
+
     # keywords that have to be implanted into each image
-    implants = {}    
+    implants = {}
 
     # if GENERIC telescope, ask user for header keywords
     if obsparam['telescope_keyword'] is 'GENERIC':
@@ -90,7 +96,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                     'observation midtime'                    : 'date_keyword',
                     'exposure time (seconds)'                : 'exptime'}
 
-        for description, keyword in keywords.items():
+        for description, keyword in list(keywords.items()):
 
             try:
                 if obsparam[keyword] in header:
@@ -98,7 +104,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             except:
                 pass
 
-            inp = raw_input('%s? > ' % description)
+            inp = input('%s? > ' % description)
 
             if keyword is 'secpix':
                 obsparam[keyword] = (float(inp), float(inp))
@@ -134,16 +140,16 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                 implants['EXPTIME'] = (float(inp), 'PP: user-defined')
 
         implants['INSTRUME'] = ('GENERIC', 'PP: manually set')
-                
+
     ##### prepare image headers for photometry pipeline
 
     for filename in filenames:
 
         if display:
-            print 'preparing', filename
+            print('preparing', filename)
 
         # open image file
-        hdulist = fits.open(filename, mode='update', verify='silentfix', 
+        hdulist = fits.open(filename, mode='update', verify='silentfix',
                             ignore_missing_end=True)
         header = hdulist[0].header
 
@@ -202,14 +208,14 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         header['PHOT_K']  = (0.05, 'PP: assumed extinction coefficient')
 
         # remove keywords that might collide with fake wcs
-        for key in header.keys():
+        for key in list(header.keys()):
             if 'CD' in key and '_' in key:
                 header.remove(key)
             elif 'PV' in key and '_' in key:
                 header.remove(key)
-            elif key in ['CTYPE1', 'CRPIX1', 'CRVAL1', 'CROTA1', 'CROTA2', 
-                       'CFINT1', 'CTYPE2', 'CRPIX2', 'CRVAL2', 
-                       'CFINT2', 'LTM1_1', 'LTM2_2', 'WAT0_001', 'LTV1', 
+            elif key in ['CTYPE1', 'CRPIX1', 'CRVAL1', 'CROTA1', 'CROTA2',
+                       'CFINT1', 'CTYPE2', 'CRPIX2', 'CRVAL2',
+                       'CFINT2', 'LTM1_1', 'LTM2_2', 'WAT0_001', 'LTV1',
                          'LTV2', 'PIXXMIT', 'PIXOFFST', 'PC1_1', 'PC1_2',
                          'PC2_1', 'PC2_2', 'CUNIT1', 'CUNIT2']:
                 # removed 'CDELT1', 'CDELT2', 'CRDELT1', 'CRDELT2' from list
@@ -220,7 +226,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
 
         # if GENERIC telescope, add implants to header
         if obsparam['telescope_keyword'] is 'GENERIC':
-            for key, val in implants.items():
+            for key, val in list(implants.items()):
                 header[key] = (val[0], val[1])
 
 
@@ -248,12 +254,12 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             binning_y = header[obsparam['binning'][1]]
 
         # add pixel resolution keyword
-        header['SECPIXX'] = (obsparam['secpix'][0]*binning_x, 
+        header['SECPIXX'] = (obsparam['secpix'][0]*binning_x,
                              'PP: x pixscale after binning')
-        header['SECPIXY'] = (obsparam['secpix'][1]*binning_y, 
+        header['SECPIXY'] = (obsparam['secpix'][1]*binning_y,
                              'PP: y pixscale after binning')
 
-        # create observation midtime jd 
+        # create observation midtime jd
         if obsparam['date_keyword'].find('|') == -1:
             header['MIDTIMJD'] = \
                 (toolbox.dateobs_to_jd(header[obsparam['date_keyword']]) + \
@@ -271,29 +277,29 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         header['TELINSTR'] = (obsparam['telescope_instrument'],
                               'PP: tel/instr name')
         header['TEL_KEYW'] = (obsparam['telescope_keyword'],
-                              'PP: tel/instr keyword') 
+                              'PP: tel/instr keyword')
         header['FILTER'] = (header[obsparam['filter']], 'PP:copied')
         header['EXPTIME'] = (header[obsparam['exptime']], 'PP: copied')
         if obsparam['airmass'] in header:
             header['AIRMASS'] = (header[obsparam['airmass']], 'PP: copied')
         else:
             header['AIRMASS'] = (1, 'PP: fake airmass')
-            
+
         # perform header update
-        for key, value in header_update.items():
+        for key, value in list(header_update.items()):
             if key in header:
-                header['_'+key[:6]] = (header[key], 
+                header['_'+key[:6]] = (header[key],
                                        'PP: old value for %s' % key)
             header[key] = (value, 'PP: manually updated')
 
         # # check if RA, Dec, airmass headers are available; else: query horizons
         # # to get approximate information
-        # if (obsparam['ra'] not in header or 
-        #     obsparam['dec'] not in header or 
+        # if (obsparam['ra'] not in header or
+        #     obsparam['dec'] not in header or
         #     obsparam['airmass'] not in header):
 
         #     logging.info('Either RA, Dec, or airmass missing from image ' +
-        #                  'header; pull approximate information for Horizons') 
+        #                  'header; pull approximate information for Horizons')
 
         #     # obtain approximate ra and dec (and airmass) from JPL Horizons
         #     eph = callhorizons.query(header[obsparam['object']].
@@ -302,7 +308,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         #     try:
         #         n = eph.get_ephemerides(obsparam['observatory_code'])
         #     except ValueError:
-        #         logging.warning('Target (%s) is not an asteroid' % 
+        #         logging.warning('Target (%s) is not an asteroid' %
         #                         header[obsparam['object']])
         #         n = None
 
@@ -311,9 +317,9 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         #                         header[obsparam['object']]))
 
         #     header[obsparam['ra']] = (eph['RA'][0], 'PP: queried from Horizons')
-        #     header[obsparam['dec']] = (eph['DEC'][0], 
+        #     header[obsparam['dec']] = (eph['DEC'][0],
         #                                'PP: queried from Horizons')
-        #     header[obsparam['airmass']] = (eph['airmass'][0], 
+        #     header[obsparam['airmass']] = (eph['airmass'][0],
         #                                    'PP: queried from Horizons')
 
         ##### add fake wcs information that is necessary to run SCAMP
@@ -321,7 +327,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         # read out ra and dec from header
         if obsparam['radec_separator'] == 'XXX':
 
-            print header[11:15]
+            print(header[11:15])
 
             ra_deg  = float(header[obsparam['ra']])
             dec_deg = float(header[obsparam['dec']])
@@ -330,10 +336,10 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                 obsparam['radec_separator'])
             dec_string = header[obsparam['dec']].split(
                 obsparam['radec_separator'])
-            ra_deg = 15.*(float(ra_string[0])+float(ra_string[1])/60.+\
-                          float(ra_string[2])/3600.)
+            ra_deg = 15.*(float(ra_string[0])+old_div(float(ra_string[1]),60.)+\
+                          old_div(float(ra_string[2]),3600.))
             dec_deg = abs(float(dec_string[0]))+\
-                      float(dec_string[1])/60.+float(dec_string[2])/3600.
+                      old_div(float(dec_string[1]),60.)+old_div(float(dec_string[2]),3600.)
             if dec_string[0].find('-') > -1:
                 dec_deg = -1 * dec_deg
 
@@ -344,9 +350,9 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         ### special treatment for UKIRT/WFCAM
         if obsparam['telescope_keyword'] == 'UKIRTWFCAM':
             ra_deg = float(header['TELRA'])/24.*360. - \
-                     float(header['JITTER_X'])/3600.
+                     old_div(float(header['JITTER_X']),3600.)
             dec_deg = float(header['TELDEC']) - \
-                      float(header['JITTER_Y'])/3600.
+                      old_div(float(header['JITTER_Y']),3600.)
 
         # apply flips
         xnorm, ynorm = 1, 1
@@ -371,13 +377,13 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         header['RADESYS'] = ('FK5', 'PP: fake wcs coordinates')
         header['CTYPE1'] = ('RA---TAN', 'PP: fake Coordinate type')
         header['CTYPE2'] = ('DEC--TAN', 'PP: fake Coordinate type')
-        header['CRVAL1'] = (ra_deg+ra_offset, 
+        header['CRVAL1'] = (ra_deg+ra_offset,
                             'PP: fake Coordinate reference value')
-        header['CRVAL2'] = (dec_deg+dec_offset, 
+        header['CRVAL2'] = (dec_deg+dec_offset,
                             'PP: fake Coordinate reference value')
-        header['CRPIX1'] = (int(float(header[obsparam['extent'][0]])/2), 
+        header['CRPIX1'] = (int(old_div(float(header[obsparam['extent'][0]]),2)),
                             'PP: fake Coordinate reference pixel')
-        header['CRPIX2'] = (int(float(header[obsparam['extent'][1]])/2),
+        header['CRPIX2'] = (int(old_div(float(header[obsparam['extent'][1]]),2)),
                             'PP: fake Coordinate reference pixel')
 
         header['CD1_1']  = (xnorm * numpy.cos(this_rotate/180.*numpy.pi) * \
@@ -392,9 +398,9 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         header['CD2_2']  = (ynorm * numpy.cos(this_rotate/180.*numpy.pi) * \
                 obsparam['secpix'][1]*binning_y/3600., \
                                              'PP: fake Coordinate matrix')
-        
+
         #### crop center from LOWELL42 frames
-        if obsparam['telescope_keyword'] == 'LOWELL42': 
+        if obsparam['telescope_keyword'] == 'LOWELL42':
             imdata = imdata[100:-100,100:-100]
             logging.info('cropping LOWELL42 data')
 
@@ -406,10 +412,10 @@ def prepare(filenames, obsparam, header_update, flipx=False,
 
 
         logging.info('created fake wcs information for image %s' % filename)
-    
-    ##### create diagnostics 
+
+    ##### create diagnostics
     if diagnostics:
-        diag.create_index(filenames, os.getcwd(), obsparam, display)    
+        diag.create_index(filenames, os.getcwd(), obsparam, display)
 
     logging.info('Done! -----------------------------------------------------')
 
@@ -419,28 +425,28 @@ def prepare(filenames, obsparam, header_update, flipx=False,
 
 
 if __name__ == '__main__':
-    
-    # command line arguments                                                
+
+    # command line arguments
     parser = argparse.ArgumentParser(description=('prepare data for '+\
                                                   'photometry pipeline'))
     parser.add_argument('images', help='images to process', nargs='+')
-    parser.add_argument("-ra", 
+    parser.add_argument("-ra",
                         help='image center position (RA J2000.0, deg)')
-    parser.add_argument("-dec", 
+    parser.add_argument("-dec",
                         help='image center position (Dec J2000.0, deg)')
-    parser.add_argument('-flipx', help='flip fake wcs x-axis', 
+    parser.add_argument('-flipx', help='flip fake wcs x-axis',
                         action="store_true")
-    parser.add_argument('-flipy', help='flip fake wcs y-axis', 
+    parser.add_argument('-flipy', help='flip fake wcs y-axis',
                         action="store_true")
-    parser.add_argument('-rotate', help='rotate fake wcs by angle (deg)', 
+    parser.add_argument('-rotate', help='rotate fake wcs by angle (deg)',
                         default=0)
-    parser.add_argument("-target", 
+    parser.add_argument("-target",
                         help='target name (will overwrite OBJECT keyword)')
     parser.add_argument("-telescope", help='manual telescope override',
                         default=None)
 
 
-    args = parser.parse_args()         
+    args = parser.parse_args()
     man_ra = args.ra
     if man_ra is not None:
         man_ra = float(man_ra)
@@ -458,7 +464,7 @@ if __name__ == '__main__':
     instruments = []
     for filename in filenames:
         try:
-            hdulist = fits.open(filename, verify='ignore', 
+            hdulist = fits.open(filename, verify='ignore',
                                 ignore_missing_end=True)
         except IOError:
             raise IOError('File %s does not exist! Abort.' % filename)
@@ -474,13 +480,13 @@ if __name__ == '__main__':
     # if len(instruments) == 0 and telescope is None:
     #     raise KeyError('cannot identify telescope/instrument; please update' + \
     #                    '_pp_conf.instrument_keys accordingly')
-        
+
     if telescope is None:
         try:
             telescope = _pp_conf.instrument_identifiers[instruments[0]]
         except:
-            print 'cannot identify telescope/instrument; use GENERIC telescope'
-            logging.warning('cannot identify telescope/instrument; ' + 
+            print('cannot identify telescope/instrument; use GENERIC telescope')
+            logging.warning('cannot identify telescope/instrument; ' +
                             'use GENERIC telescope')
             telescope = 'GENERIC'
 
@@ -491,7 +497,7 @@ if __name__ == '__main__':
         header_update[obsparam['object']] = man_target
 
     # run prepare wrapper
-    preparation = prepare(filenames, obsparam, header_update, 
+    preparation = prepare(filenames, obsparam, header_update,
                           flipx=man_flipx, flipy=man_flipy,
                           man_ra=man_ra, man_dec=man_dec, rotate=man_rotate,
                           diagnostics=True, display=True)

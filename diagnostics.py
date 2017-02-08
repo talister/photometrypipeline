@@ -1,6 +1,8 @@
 """ DIAGNOSTICS - diagnostic routines for photometry pipeline
     v1.0: 2016-02-25, michael.mommert@nau.edu
 """
+from __future__ import print_function
+from __future__ import division
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -20,6 +22,10 @@
 # <http://www.gnu.org/licenses/>.
 
 
+from builtins import str
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 import os
 import numpy
 import logging
@@ -151,7 +157,7 @@ def create_index(filenames, directory, obsparam, display=False):
     """
 
     if display:
-        print 'create frame index table and frame images'
+        print('create frame index table and frame images')
     logging.info('create frame index table and frame images')
 
     # obtain filtername from first image file
@@ -241,8 +247,8 @@ def create_index(filenames, directory, obsparam, display=False):
                                   int(imgdat.shape[0]*0.75)]) 
 
         downscale = 2. # scale down image by this factor
-        fig = plt.figure(figsize=(header[obsparam['extent'][0]]/(downscale*100),
-                                header[obsparam['extent'][1]]/(downscale*100)),
+        fig = plt.figure(figsize=(old_div(header[obsparam['extent'][0]],(downscale*100)),
+                                old_div(header[obsparam['extent'][1]],(downscale*100))),
                                   dpi=downscale*100)
 
         img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
@@ -327,15 +333,15 @@ def add_registration(data, extraction_data):
 
         # turn relevant header keys into floats
         # astropy.io.fits bug
-        for key, val in header.items():
+        for key, val in list(header.items()):
             if 'CD1_' in key or 'CD2_' in key or \
                'CRVAL' in key or 'CRPIX' in key or \
                'EQUINOX' in key:
                 header[key] = float(val)
                 
         downscale = 2. # scale down image by this factor
-        fig = plt.figure(figsize=(header[obsparam['extent'][0]]/(downscale*100),
-                                header[obsparam['extent'][1]]/(downscale*100)), 
+        fig = plt.figure(figsize=(old_div(header[obsparam['extent'][0]],(downscale*100)),
+                                old_div(header[obsparam['extent'][1]],(downscale*100))), 
                          dpi=downscale*100)
         img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
                          vmax=median+0.5*std, origin='lower')
@@ -347,13 +353,12 @@ def add_registration(data, extraction_data):
         # plot reference sources
         if refcat.shape[0] > 0:
             w = wcs.WCS(header)
-            world_coo = numpy.array(zip(refcat['X_WORLD'], refcat['Y_WORLD']))
+            world_coo = numpy.array(list(zip(refcat['X_WORLD'], refcat['Y_WORLD'])))
             img_coo = w.wcs_world2pix(world_coo, True )
-            img_coo = filter(lambda c: (c[0] > 0 and c[1] > 0 and 
+            img_coo = [c for c in img_coo if (c[0] > 0 and c[1] > 0 and 
                                         c[0] < header[obsparam['extent'][0]] 
                                         and 
-                                        c[1] < header[obsparam['extent'][1]]),
-                             img_coo)
+                                        c[1] < header[obsparam['extent'][1]])]
             plt.scatter([c[0] for c in img_coo], [c[1] for c in img_coo], 
                         s=20, marker='o', edgecolors='red', facecolor='none')
 
@@ -578,7 +583,7 @@ def add_calibration(data):
     html += "<TH>Filename</TH><TH>Zeropoint (mag)</TH><TH>ZP_sigma (mag)</TH>" \
             + "<TH>N_stars</TH><TH>N_matched</TH>\n</TR>\n"
     for dat in data['zeropoints']:
-        if 'plotfilename' in dat.keys():
+        if 'plotfilename' in list(dat.keys()):
             html += ("<TR><TD><A HREF=\"#%s\">%s</A></TD>" \
                      + "<TD>%7.4f</TD><TD>%7.4f</TD><TD>%d</TD>" \
                      + "<TD>%d</TD>\n</TR>" ) % \
@@ -645,14 +650,14 @@ def add_calibration(data):
 
         # turn relevant header keys into floats
         # astropy.io.fits bug
-        for key, val in header.items():
+        for key, val in list(header.items()):
             if 'CD1' in key or 'CD2' in key or \
                'CRVAL' in key or 'CRPIX' in key or \
                'EQUINOX' in key:
                 header[key] = float(val)
 
-        fig = plt.figure(figsize=(imgdat.shape[0]/300.,
-                                  imgdat.shape[1]/300.), 
+        fig = plt.figure(figsize=(old_div(imgdat.shape[0],300.),
+                                  old_div(imgdat.shape[1],300.)), 
                          dpi=300)
         img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
                          vmax=median+0.5*std, origin='lower')
@@ -744,7 +749,7 @@ def add_results(data):
 
             # turn relevant header keywords into floats
             # should be fixed in astropy.wcs
-            for key, val in hdulist[0].header.items():
+            for key, val in list(hdulist[0].header.items()):
                 if 'CD1' in key or 'CD2' in key or \
                    'CRVAL' in key or 'CRPIX' in key or \
                    'EQUINOX' in key:
@@ -767,19 +772,19 @@ def add_results(data):
                                                             hdulist[0].data
 
             # extract thumbnail data accordingly
-            thumbdata = composite[int(boxsize+obj_y-boxsize/2):
-                                  int(boxsize+obj_y+boxsize/2), 
-                                  int(boxsize+obj_x-boxsize/2):
-                                  int(boxsize+obj_x+boxsize/2)]
+            thumbdata = composite[int(boxsize+obj_y-old_div(boxsize,2)):
+                                  int(boxsize+obj_y+old_div(boxsize,2)), 
+                                  int(boxsize+obj_x-old_div(boxsize,2)):
+                                  int(boxsize+obj_x+old_div(boxsize,2))]
 
             ## run statistics over center of the frame around the target
             if thumbdata.shape[0] > 0 and thumbdata.shape[1] > 0:
-                median = numpy.median(thumbdata[boxsize/2-20:boxsize/2+20, 
-                                                boxsize/2-20:boxsize/2+20])
-                std = numpy.std(thumbdata[boxsize/2-20:boxsize/2+20, 
-                                          boxsize/2-20:boxsize/2+20])
-                maxval = numpy.max(thumbdata[boxsize/2-20:boxsize/2+20, 
-                                             boxsize/2-20:boxsize/2+20])
+                median = numpy.median(thumbdata[old_div(boxsize,2)-20:old_div(boxsize,2)+20, 
+                                                old_div(boxsize,2)-20:old_div(boxsize,2)+20])
+                std = numpy.std(thumbdata[old_div(boxsize,2)-20:old_div(boxsize,2)+20, 
+                                          old_div(boxsize,2)-20:old_div(boxsize,2)+20])
+                maxval = numpy.max(thumbdata[old_div(boxsize,2)-20:old_div(boxsize,2)+20, 
+                                             old_div(boxsize,2)-20:old_div(boxsize,2)+20])
             else:
                 logging.warning('cannot produce thumbnail image ' + \
                                 'for %s in frame %s' % (target, dat[10]))
@@ -808,7 +813,7 @@ def add_results(data):
             # create plot
             plotsize = 7. # inches
             fig = plt.figure(figsize=(plotsize,plotsize), 
-                             dpi=boxsize/plotsize)
+                             dpi=old_div(boxsize,plotsize))
             img = plt.imshow(thumbdata, cmap='gray',
                              vmin=median-2*std, 
                              #vmax=maxval,
@@ -824,15 +829,15 @@ def add_results(data):
                          color='white')
 
             # place aperture
-            circle = plt.Circle((boxsize/2., boxsize/2.), 
+            circle = plt.Circle((old_div(boxsize,2.), old_div(boxsize,2.)), 
                                 aprad, ec='red', fc='none', linewidth=1)
             plt.gca().add_patch(circle)
 
             # place expected position (if within thumbnail)
-            if (abs(exp_x-obj_x) <= boxsize/2. and 
-                abs(exp_y-obj_y) <= boxsize/2.): 
-                plt.scatter(exp_x-obj_x+boxsize/2., 
-                            exp_y-obj_y+boxsize/2., 
+            if (abs(exp_x-obj_x) <= old_div(boxsize,2.) and 
+                abs(exp_y-obj_y) <= old_div(boxsize,2.)): 
+                plt.scatter(exp_x-obj_x+old_div(boxsize,2.), 
+                            exp_y-obj_y+old_div(boxsize,2.), 
                             marker='+', s=100, color='green')
 
             thumbfilename = '.diagnostics/' + target.replace(' ', '_')+'_'+ \
