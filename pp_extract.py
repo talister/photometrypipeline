@@ -24,10 +24,6 @@ from __future__ import print_function
 # <http://www.gnu.org/licenses/>.
 
 
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
 import numpy
 import os, sys
 import subprocess
@@ -37,6 +33,14 @@ import time, datetime
 import queue, threading
 import logging
 from astropy.io import fits
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+    from builtins import str
+    from future import standard_library
+    standard_library.install_aliases()
+    from builtins import range
+
 
 # pipeline-specific modules
 import _pp_conf

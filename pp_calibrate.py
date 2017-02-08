@@ -25,8 +25,8 @@ from __future__ import division
 # <http://www.gnu.org/licenses/>.
 
 
-from builtins import range
 from past.utils import old_div
+import sys
 import numpy
 import subprocess
 import argparse
@@ -37,6 +37,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pylab as plt
 from scipy.optimize import minimize
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+    from builtins import range
+
 
 # pipeline-specific modules
 import _pp_conf

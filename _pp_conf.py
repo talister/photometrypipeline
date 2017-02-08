@@ -5,11 +5,14 @@ configuration file for photometry pipeline
 """
 from __future__ import print_function
 
-from past.builtins import execfile
 import os
 import sys
 import logging
 import warnings
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+    from past.builtins import execfile
 
 # import pipeline-specific modules
 from toolbox import *

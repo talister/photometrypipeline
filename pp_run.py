@@ -23,9 +23,6 @@ from __future__ import print_function
 # <http://www.gnu.org/licenses/>.
 
 
-
-from builtins import str
-from builtins import range
 import numpy
 import re
 import os
@@ -37,6 +34,11 @@ import subprocess
 import argparse, shlex
 import time
 from astropy.io import fits
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+    from builtins import str
+    from builtins import range
 
 ### pipeline-specific modules
 import _pp_conf

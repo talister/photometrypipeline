@@ -25,19 +25,12 @@ from __future__ import division
 # <http://www.gnu.org/licenses/>.
 
 
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import zip
-from builtins import filter
-from builtins import range
-from builtins import object
 from past.utils import old_div
 import os
 import sys 
 import numpy
 import logging
-import urllib.request, urllib.error, urllib.parse
+#import urllib.request, urllib.error, urllib.parse
 import time
 import sqlite3 as sql
 from scipy import spatial
@@ -47,6 +40,18 @@ from astroquery.vizier import Vizier
 import astropy.units as u
 import astropy.coordinates as coord
 from astropy.table import Table, Column
+
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+    from builtins import str
+    from future import standard_library
+    standard_library.install_aliases()
+    from builtins import zip
+    from builtins import filter
+    from builtins import range
+    from builtins import object
+
 
 # pipeline-related modules (only needed for testing)
 import _pp_conf 

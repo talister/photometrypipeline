@@ -23,13 +23,19 @@ from __future__ import division
 # <http://www.gnu.org/licenses/>.
 
 
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
 from past.utils import old_div
 import math
+import sys
 import numpy
-import urllib.request, urllib.error, urllib.parse
+#import urllib.request, urllib.error, urllib.parse
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+  from future import standard_library
+  standard_library.install_aliases()
+  from builtins import range
+
+
 
 ##### TIME AND DATE
 
