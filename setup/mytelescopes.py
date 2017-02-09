@@ -23,9 +23,9 @@ Personal Photometry Pipeline Configuation File
 ##### telescope/instrument configurations
 
 # MYTELESCOPE setup parameters
-kpno4mos1_param = {
-    'telescope_instrument': 'KPNO4m/MOSAIC1',  # telescope/instrument name
-    'telescope_keyword': 'KPNO4MOS1',  # telescope/instrument keyword
+mytelescope_param = {
+    'telescope_instrument': 'Telescope/Instrument',  # telescope/instrument name
+    'telescope_keyword': 'mytelescope',  # telescope/instrument keyword
     'observatory_code': '695',  # MPC observatory code
     'secpix': (0.1, 0.1),  # pixel size (arcsec) before binning
 
@@ -50,7 +50,7 @@ kpno4mos1_param = {
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
     'filter': 'FILTER',  # filter keyword
-    'filter_translations': {'g SDSS k10107': 'g'},
+    'filter_translations': {'g stuff': 'g'},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
@@ -59,12 +59,14 @@ kpno4mos1_param = {
     'source_minarea': 12,  # default sextractor source minimum N_pixels
     'aprad_default': 5,  # default aperture radius in px
     'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
-    'sex-config-file': rootpath + '/setup/kpno4mos1.sex',
+    'sex-config-file': rootpath + '/setup/mytelescope.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
 
     # scamp settings
-    'scamp-config-file': rootpath + '/setup/kpnomos1.scamp',
+    'scamp-config-file': rootpath + '/setup/mytelescope.scamp',
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg   
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
@@ -73,12 +75,12 @@ kpno4mos1_param = {
 
 ##### add telescope configurations to 'official' telescopes.py
 
-implemented_telescopes.append('KPNO4MOS1')
+implemented_telescopes.append('MYTELESCOPE')
 
 ### translate INSTRUME (or others, see _pp_conf.py) header keyword into
 #   PP telescope keyword
 # example: INSTRUME keyword in header is 'mytel'
-instrument_identifiers['mosaic_1_1'] = 'KPNO4MOS1'
+instrument_identifiers['instrume_identifier'] = 'MYTELESCOPE'
 
 ### translate telescope keyword into parameter set defined here
-telescope_parameters['KPNO4MOS1'] = kpno4mos1_param
+telescope_parameters['MYTELESCOPE'] = mytelescope_param
