@@ -1359,6 +1359,7 @@ kpno4mos1_param = {
                             'r SDSS k1018': 'r',
                             'i SDSS k1019': 'i',
                             'z SDSS c6020': 'z',
+                            'B Harris k1002': 'B',
                             'none': None},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
@@ -1384,6 +1385,59 @@ kpno4mos1_param = {
 }
 
 
+# KMTNET-S
+kmtnets_param = {
+    'telescope_instrument': 'KMTNET-S',  # telescope/instrument name
+    'telescope_keyword': 'KMTNETS',  # telescope/instrument keyword
+    'observatory_code': 'K94',  # MPC observatory code
+    'secpix': (0.4, 0.4),  # pixel size (arcsec) before binning
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('CCDXBIN', 'CCDYBIN'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),  # N_pixels in x/y
+    'ra': 'CRVAL1',  # telescope pointing, RA
+    'dec': 'CRVAL2',  # telescope pointin, Dec
+    'radec_separator': 'XXX',  # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MJD-OBS',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'V': 'V',
+                            'R': 'R',
+                            'I': 'I'},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'SECZ',  # airmass keyword
+
+    # source extractor settings
+    'source_minarea': 12,  # default sextractor source minimum N_pixels
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath + '/setup/kmtnets.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file': rootpath + '/setup/kmtnets.scamp',
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['SDSS-R9', 'APASS9', '2MASS']
+}
 
 
 
@@ -1426,7 +1480,9 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'Goodman Spectrograph': 'SOARGOODMAN',
                           'Andor Tech':        'OHP120',
                           'LRS':               'TNGDOLORES',
-                          'mosaic_1_1':        'KPNO4MOS1'}
+                          'mosaic_1_1':        'KPNO4MOS1',
+                          'mosaic_1':          'KPNO4MOS1',
+                          'KMTS':              'KMTNETS'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K' :       vatt4k_param, 
@@ -1449,7 +1505,8 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'SOARGOODMAN':   soargoodman_param,
                         'OHP120':        ohp120_param,
                         'TNGDOLORES':    tngdolores_param,
-                        'KPNO4MOS1':     kpno4mos1_param}
+                        'KPNO4MOS1':     kpno4mos1_param,
+                        'KMTNETS':       kmtnets_param}
 
 
 #### append mytelescopes.py, if available
