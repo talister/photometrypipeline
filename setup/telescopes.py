@@ -1400,9 +1400,19 @@ kmtnets_param = {
     # instrument-specific FITS header keywords
     'binning': ('CCDXBIN', 'CCDYBIN'),  # binning in x/y
     'extent': ('NAXIS1', 'NAXIS2'),  # N_pixels in x/y
-    'ra': 'CRVAL1',  # telescope pointing, RA
-    'dec': 'CRVAL2',  # telescope pointin, Dec
-    'radec_separator': 'XXX',  # RA/Dec hms separator, use 'XXX'
+    # use for crop fields
+    # 'ra': 'CRVAL1',  # telescope pointing, RA
+    # 'dec': 'CRVAL2',  # telescope pointin, Dec
+    # use for whole ccds
+    # 'ra': 'CCD_RA',  # telescope pointing, RA
+    # 'dec': 'CCD_DEC',  # telescope pointin, Dec
+    # 'radec_separator': 'XXX',  # RA/Dec hms separator, use 'XXX'
+
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': ':',  # RA/Dec hms separator, use 'XXX'
+
+
     # if already in degrees
     'date_keyword': 'DATE-OBS',  # obs date/time
     # keyword; use
