@@ -374,7 +374,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     ### derive center and radius of field of view of all images
     ra_deg, dec_deg, rad_deg = skycenter(catalogs)
     logging.info('FoV center (%.7f/%+.7f) and radius (%.2f deg) derived' %  
-                 (ra, dec, rad))
+                 (ra_deg, dec_deg, rad_deg))
 
     ### obtain photometric catalog(s) of the field based on settings in
     # setup/telescope.py and the image filter

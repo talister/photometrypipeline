@@ -40,7 +40,7 @@ from astroquery.vizier import Vizier
 import astropy.units as u
 import astropy.coordinates as coord
 from astropy.table import Table, Column
-
+from astropy import __version__ as astropyversion
 
 # only import if Python3 is used
 if sys.version_info > (3,0):
@@ -545,7 +545,10 @@ class catalog(object):
             
         # # combine HDUs and write file
         hdulist = fits.HDUList([primaryhdu, hdrhdu, datahdu])
-        hdulist.writeto(ldac_filename, overwrite=True)
+        if float(astropyversion.split('.')[1]) >= 3:
+            hdulist.writeto(ldac_filename, overwrite=True)
+        else:
+            hdulist.writeto(ldac_filename, clobber=True)
             
         logging.info('wrote %d sources from %s to LDAC file' % 
                      (nsrc, ldac_filename))
