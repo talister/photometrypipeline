@@ -182,14 +182,14 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     ### run wcs registration
 
     # default sextractor/scamp parameters
-    sex_snr, source_minarea = 3, obsparam['source_minarea']
+    snr, source_minarea = obsparam['source_snr'], obsparam['source_minarea']
     aprad = obsparam['aprad_default']
 
     print('\n----- run image registration\n')
-    registration = pp_register.register(filenames, telescope, sex_snr,
+    registration = pp_register.register(filenames, telescope, snr,
                                         source_minarea, aprad,
                                         None, obsparam,
-                                        source_tolerance,
+                                        obsparam['source_tolerance'],
                                         display=True,
                                         diagnostics=True)
 
@@ -231,7 +231,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
 
 
     ### run photometry (curve-of-growth analysis)
-    sex_snr, source_minarea = 1.5, obsparam['source_minarea']
+    snr, source_minarea = 1.5, obsparam['source_minarea']
     background_only = False
     target_only = False
     if fixed_aprad == 0:
@@ -240,7 +240,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
         aprad = fixed_aprad # skip curve_of_growth analysis
 
     print('\n----- derive optimium photometry aperture\n')
-    phot = pp_photometry.photometry(filenames, sex_snr, source_minarea, aprad,
+    phot = pp_photometry.photometry(filenames, snr, source_minarea, aprad,
                                     man_targetname, background_only,
                                     target_only,
                                     telescope, obsparam, display=True,

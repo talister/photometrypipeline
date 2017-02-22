@@ -371,13 +371,10 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                             'PP: fake Coordinate reference value')
         header['CRVAL2'] = (dec_deg+dec_offset,
                             'PP: fake Coordinate reference value')
-        # header['CRPIX1'] = (int(old_div(float(header[obsparam['extent'][0]]),2)),
-        #                     'PP: fake Coordinate reference pixel')
-        # header['CRPIX2'] = (int(old_div(float(header[obsparam['extent'][1]]),2)),
-        #                     'PP: fake Coordinate reference pixel')
-        header['CRPIX1'] = (int(float(header[obsparam['extent'][0]])),
+        header['CRPIX1'] = (int(old_div(float(header[obsparam['extent'][0]]),2)),
                             'PP: fake Coordinate reference pixel')
-        header['CRPIX2'] = (0, 'PP: fake Coordinate reference pixel')
+        header['CRPIX2'] = (int(old_div(float(header[obsparam['extent'][1]]),2)),
+                            'PP: fake Coordinate reference pixel')
 
         header['CD1_1']  = (xnorm * numpy.cos(this_rotate/180.*numpy.pi) * \
                 obsparam['secpix'][0]*binning[0]/3600., \

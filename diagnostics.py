@@ -34,6 +34,10 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pylab as plt
 import subprocess
+#from PIL import Image
+from scipy.misc import toimage # requires Pillow
+from scipy.misc import imresize # requires Pillow
+from scipy.misc import bytescale
 
 # only import if Python3 is used
 if sys.version_info > (3,0):
@@ -170,6 +174,8 @@ def create_index(filenames, directory, obsparam, display=False):
     refheader = fits.open(filenames[0], ignore_missing_end=True)[0].header
     filtername = obsparam['filter_translations'][refheader[obsparam['filter']]]
 
+    del(refheader)
+
     html = "<H2>data directory: %s</H2>\n" % directory
 
     html += ("<H1>%s/%s-band - Diagnostic Output</H1>\n" + \
@@ -190,7 +196,6 @@ def create_index(filenames, directory, obsparam, display=False):
     # fill table and create frames
     filename = filenames
     for idx, filename in enumerate(filenames):
-
 
         ### fill table
         hdulist = fits.open(filename, ignore_missing_end=True)
@@ -222,6 +227,10 @@ def create_index(filenames, directory, obsparam, display=False):
    
         ### create frame image
         imgdat = hdulist[0].data
+        imgdat = imresize(imgdat, 
+                          min(1., 1000./numpy.max(imgdat.shape)), 
+                          interp='nearest')
+        # resize image larger than 1000px on one side
 
         median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
                                      int(imgdat.shape[1]*0.75),
@@ -232,10 +241,7 @@ def create_index(filenames, directory, obsparam, display=False):
                                   int(imgdat.shape[0]*0.25):
                                   int(imgdat.shape[0]*0.75)]) 
 
-        downscale = 2. # scale down image by this factor
-        fig = plt.figure(figsize=(old_div(header[obsparam['extent'][0]],(downscale*100)),
-                                old_div(header[obsparam['extent'][1]],(downscale*100))),
-                                  dpi=downscale*100)
+        plt.figure(figsize=(5, 5))
 
         img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
                          vmax=median+0.5*std, origin='lower')
@@ -245,9 +251,11 @@ def create_index(filenames, directory, obsparam, display=False):
         img.axes.get_yaxis().set_visible(False)
 
         plt.savefig(framefilename, format='png', bbox_inches='tight', 
-                    pad_inches=0)
+                    pad_inches=0, dpi=200)
+
         plt.close()
         hdulist.close()
+        del(imgdat)
 
     html += '</TABLE>\n'
    
@@ -256,7 +264,7 @@ def create_index(filenames, directory, obsparam, display=False):
 
     ### add to summary website, if requested
     if _pp_conf.use_diagnostics_summary:
-        add_to_summary(refheader[obsparam['object']], filtername, 
+        add_to_summary(header[obsparam['object']], filtername, 
                        len(filenames))
 
     return None
@@ -306,6 +314,9 @@ def add_registration(data, extraction_data):
                         '_astrometry.png'        
         imgdat = fits.open(dat['fits_filename'], 
                            ignore_missing_end=True)[0].data
+        imgdat = imresize(imgdat, 
+                          min(1., 1000./numpy.max(imgdat.shape)), 
+                          interp='nearest')
         header = fits.open(dat['fits_filename'], 
                            ignore_missing_end=True)[0].header
         median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
@@ -325,10 +336,7 @@ def add_registration(data, extraction_data):
                'EQUINOX' in key:
                 header[key] = float(val)
                 
-        downscale = 2. # scale down image by this factor
-        fig = plt.figure(figsize=(old_div(header[obsparam['extent'][0]],(downscale*100)),
-                                old_div(header[obsparam['extent'][1]],(downscale*100))), 
-                         dpi=downscale*100)
+        plt.figure(figsize=(5, 5))
         img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
                          vmax=median+0.5*std, origin='lower')
         # remove axes
@@ -350,7 +358,7 @@ def add_registration(data, extraction_data):
                         s=20, marker='o', edgecolors='red', facecolor='none')
 
         plt.savefig(framefilename, format='png', bbox_inches='tight', 
-                    pad_inches=0)
+                    pad_inches=0, dpi=200)
         plt.close()
 
 
@@ -561,7 +569,7 @@ def add_calibration(data):
     data['zpplot'] = 'zeropoints.png'
 
 
-    ### create registration website
+    ### create calibration website
     html  = "<H2>Calibration Results</H2>\n"
     html += ("<P>Calibration input: minimum number/fraction of reference " \
              + "stars %.2f, reference catalog: %s, filter name: %s\n") % \
@@ -625,6 +633,9 @@ def add_calibration(data):
         fits_filename = dat['filename'][:dat['filename'].find('.ldac')] + \
                         '.fits'
         imgdat = fits.open(fits_filename, ignore_missing_end=True)[0].data
+        imgdat = imresize(imgdat, 
+                          min(1., 1000./numpy.max(imgdat.shape)), 
+                          interp='nearest')
         header = fits.open(fits_filename, ignore_missing_end=True)[0].header
         median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
                                      int(imgdat.shape[1]*0.75),
@@ -643,9 +654,7 @@ def add_calibration(data):
                'EQUINOX' in key:
                 header[key] = float(val)
 
-        fig = plt.figure(figsize=(old_div(imgdat.shape[0],300.),
-                                  old_div(imgdat.shape[1],300.)), 
-                         dpi=300)
+        plt.figure(figsize=(5,5))
         img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
                          vmax=median+0.5*std, origin='lower')
         # remove axes
@@ -667,11 +676,8 @@ def add_calibration(data):
                              verticalalignment='center')
         
         plt.savefig(catframe, format='png', bbox_inches='tight', 
-                    pad_inches=0)
+                    pad_inches=0, dpi=200)
         plt.close()
-
-
-
 
     create_website(_pp_conf.cal_filename, content=html)
 

@@ -545,7 +545,7 @@ class catalog(object):
             
         # # combine HDUs and write file
         hdulist = fits.HDUList([primaryhdu, hdrhdu, datahdu])
-        hdulist.writeto(ldac_filename, clobber=True)
+        hdulist.writeto(ldac_filename, overwrite=True)
             
         logging.info('wrote %d sources from %s to LDAC file' % 
                      (nsrc, ldac_filename))
