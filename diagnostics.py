@@ -314,9 +314,8 @@ def add_registration(data, extraction_data):
                         '_astrometry.png'        
         imgdat = fits.open(dat['fits_filename'], 
                            ignore_missing_end=True)[0].data
-        imgdat = imresize(imgdat, 
-                          min(1., 1000./numpy.max(imgdat.shape)), 
-                          interp='nearest')
+        resize_factor = min(1., 1000./numpy.max(imgdat.shape))
+        imgdat = imresize(imgdat, resize_factor, interp='nearest')
         header = fits.open(dat['fits_filename'], 
                            ignore_missing_end=True)[0].header
         median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
@@ -354,8 +353,10 @@ def add_registration(data, extraction_data):
                                         c[0] < header[obsparam['extent'][0]] 
                                         and 
                                         c[1] < header[obsparam['extent'][1]])]
-            plt.scatter([c[0] for c in img_coo], [c[1] for c in img_coo], 
-                        s=20, marker='o', edgecolors='red', facecolor='none')
+            plt.scatter([c[0]*resize_factor for c in img_coo],
+                        [c[1]*resize_factor for c in img_coo], 
+                        s=5, marker='o', edgecolors='red', linewidth=0.1,
+                        facecolor='none')
 
         plt.savefig(framefilename, format='png', bbox_inches='tight', 
                     pad_inches=0, dpi=200)
@@ -633,9 +634,8 @@ def add_calibration(data):
         fits_filename = dat['filename'][:dat['filename'].find('.ldac')] + \
                         '.fits'
         imgdat = fits.open(fits_filename, ignore_missing_end=True)[0].data
-        imgdat = imresize(imgdat, 
-                          min(1., 1000./numpy.max(imgdat.shape)), 
-                          interp='nearest')
+        resize_factor = min(1., 1000./numpy.max(imgdat.shape))
+        imgdat = imresize(imgdat, resize_factor, interp='nearest')
         header = fits.open(fits_filename, ignore_missing_end=True)[0].header
         median = numpy.median(imgdat[int(imgdat.shape[1]*0.25):
                                      int(imgdat.shape[1]*0.75),
@@ -668,10 +668,14 @@ def add_calibration(data):
             world_coo = [[dat['match'][0][3][idx], dat['match'][0][4][idx]] \
                          for idx in dat['zp_usedstars']]
             img_coo = w.wcs_world2pix(world_coo, True )
-            plt.scatter([c[0] for c in img_coo], [c[1] for c in img_coo], 
-                        s=40, marker='o', edgecolors='red', facecolor='none')
+            print(img_coo)
+            plt.scatter([c[0]*resize_factor for c in img_coo],
+                        [c[1]*resize_factor for c in img_coo], 
+                        s=10, marker='o', edgecolors='red', linewidth=0.1,
+                        facecolor='none')
             for i in range(len(dat['zp_usedstars'])):
-                plt.annotate(str(i+1), xy=(img_coo[i][0]+30, img_coo[i][1]), 
+                plt.annotate(str(i+1), xy=((img_coo[i][0]*resize_factor)+15,
+                                           img_coo[i][1]*resize_factor), 
                              color='red', horizontalalignment='left',
                              verticalalignment='center')
         

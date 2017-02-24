@@ -78,11 +78,11 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
     if mancat is not None:
         obsparam['astrometry_catalogs'] = [mancat]
 
-    # use each catalog twice
-    obsparam['astrometry_catalogs'] = [catcat for cat in
-                                       obsparam['astrometry_catalogs']
-                                       for catcat in [cat]*
-                                       _pp_conf.n_registration_repetitions ]
+    # # use each catalog twice
+    # obsparam['astrometry_catalogs'] = [catcat for cat in
+    #                                    obsparam['astrometry_catalogs']
+    #                                    for catcat in [cat]*
+    #                                    _pp_conf.n_registration_repetitions ]
 
     n_success_last_iteration = None
 
@@ -141,15 +141,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         ra, dec, rad = toolbox.skycenter(ldac_catalogs)
         logging.info('FoV center (%.7f/%+.7f) and radius (%.2f deg) derived' %
                      (ra, dec, rad))
-
         del(ldac_catalogs)
-
-        ra = float(hdulist[0].header['CRVAL1'])
-        dec = float(hdulist[0].header['CRVAL2'])
-        rad = max([float(hdulist[0].header[obsparam['extent'][0]])*
-                   float(hdulist[0].header['SECPIXX'])/3600.,
-                   float(hdulist[0].header[obsparam['extent'][1]])*
-                   float(hdulist[0].header['SECPIXY'])/3600.])
 
         checkrefcat = catalog(refcat, display=False)
         n_sources = checkrefcat.download_catalog(ra, dec, rad, 100,
@@ -261,26 +253,26 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         print('###\n###############################' + \
             '#######################\n')
 
-        # registration succeeded for all images
-        if len(badfits) == 0:
-            break
-        # same number of good fits as for the last iteration
-        # break out!
-        elif len(goodfits) == n_success_last_iteration:
-            break
-        # registration failed for most (or all) images
-        else:
-            logging.info(' > match failed for %d/%d images' % \
-                         (len(badfits), len(filenames)))
+        # # registration succeeded for all images
+        # if len(badfits) == 0:
+        #     break
+        # # same number of good fits as for the last iteration
+        # # break out!
+        # elif len(goodfits) == n_success_last_iteration:
+        #     break
+        # # registration failed for most (or all) images
+        # else:
+        #     logging.info(' > match failed for %d/%d images' % \
+        #                  (len(badfits), len(filenames)))
 
-            ### if registration failed, try again with the same catalog
-            # and no extraction!
-            # this will make use of the .head files and improves results
-            logging.critical('Not all images matched ' \
-                             + '- try again or different catalog, if available')
-            if display:
-                print('Not all images matched ' \
-                    + '- try again for different catalog, if available')
+        #     ### if registration failed, try again with the same catalog
+        #     # and no extraction!
+        #     # this will make use of the .head files and improves results
+        #     logging.critical('Not all images matched ' \
+        #                      + '- try again or different catalog, if available')
+        #     if display:
+        #         print('Not all images matched ' \
+        #             + '- try again for different catalog, if available')
 
         n_success_last_iteration = len(goodfits)
 
