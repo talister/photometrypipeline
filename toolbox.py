@@ -4,7 +4,7 @@ Toolbox for the Photometry Pipeline
 """
 from __future__ import print_function
 from __future__ import division
-
+  
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
 
@@ -22,12 +22,15 @@ from __future__ import division
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-
-from past.utils import old_div
-import math
 import sys
+try:
+  from past.utils import old_div
+except ImportError:
+  print('Module future not found. Please install with: pip install future')
+  sys.exit()
+  
+import math
 import numpy
-#import urllib.request, urllib.error, urllib.parse
 
 # only import if Python3 is used
 if sys.version_info > (3,0):

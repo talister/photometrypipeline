@@ -22,19 +22,26 @@ from __future__ import print_function
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-
-import numpy
 import re
 import os
 import gc
 import sys
+try:
+    import numpy as np
+except ImportError:
+    print('Module numpy not found. Please install with: pip install numpy')
+    sys.exit()
 import shutil
 import logging
 import subprocess
 import argparse, shlex
 import time
-from astropy.io import fits
-
+try:
+    from astropy.io import fits
+except ImportError:
+    print('Module astropy not found. Please install with: pip install astropy')
+    sys.exit()
+    
 # only import if Python3 is used
 if sys.version_info > (3,0):
     from builtins import str

@@ -34,7 +34,12 @@ import subprocess
 import argparse
 import shlex
 import time
-import callhorizons
+try:
+    import callhorizons
+except ImportError:
+    print('Module callhorizons not found. Please install with: pip install '
+          'callhorizons')
+    sys.exit()
 from astropy.io import fits
 
 # pipeline-specific modules

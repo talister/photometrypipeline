@@ -30,15 +30,25 @@ import logging
 from astropy.io import fits
 from astropy import wcs
 import datetime
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pylab as plt
+try:
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pylab as plt
+except ImportError:
+    print('Module matplotlib not found. Please install with: pip install '
+          'matplotlib')
+    sys.exit()
 import subprocess
-#from PIL import Image
-from scipy.misc import toimage # requires Pillow
-from scipy.misc import imresize # requires Pillow
-from scipy.misc import bytescale
 
+try:
+    from scipy.misc import toimage # requires Pillow
+    from scipy.misc import imresize # requires Pillow
+    from scipy.misc import bytescale
+except ImportError:
+    print('Modules scipy or pillow not found. Please install with: pip '
+          'install scipy pillow')
+    sys.exit()
+    
 # only import if Python3 is used
 if sys.version_info > (3,0):
     from builtins import str

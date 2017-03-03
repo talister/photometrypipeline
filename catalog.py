@@ -33,10 +33,19 @@ import logging
 #import urllib.request, urllib.error, urllib.parse
 import time
 import sqlite3 as sql
-from scipy import spatial
+try:
+    from scipy import spatial
+except ImportError:
+    print('Module scipy not found. Please install with: pip install scipy')
+    sys.exit()
 from astropy.io import fits
 import scipy.optimize as optimization
-from astroquery.vizier import Vizier
+try:
+    from astroquery.vizier import Vizier
+except ImportError:
+    print('Module astroquery not found. Please install with: pip install '
+          'astroquery')
+    sys.exit()
 import astropy.units as u
 import astropy.coordinates as coord
 from astropy.table import Table, Column
