@@ -90,6 +90,13 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                         ignore_missing_end='True')
     header = hdulist[0].header
 
+    # check if this is a single-extension FITS file
+    if float(header['NAXIS']) > 2.:
+        logging.error('This is not a single-extension FITS file. Please '
+                      'extract individual extensions and run them '
+                      'individually.')
+        sys.exit()
+    
     # keywords that have to be implanted into each image
     implants = {}
 

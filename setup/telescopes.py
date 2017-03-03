@@ -1218,7 +1218,7 @@ soargoodman_param = {
     'filter'               : 'FILTER',  # filter keyword
     'filter_translations'  : {'Rc': 'R', 'V':'V', 'B':'B', 'u':'u', 
                               'g-SDSS': 'g', 'r-SDSS': 'r', 'i-SDSS': 'i', 
-                              'z-SDSS': 'z'},
+                              'z-SDSS': 'z', 'VR': None},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword

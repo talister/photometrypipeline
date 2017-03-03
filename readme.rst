@@ -71,22 +71,22 @@ The Photometry Pipeline is distributed under the GNU GPLv3 license.
 
 Copyright (C) 2016  Michael Mommert 
 
-Feel free to contact me in case of questions or suggestions: michael
- . mommert (at) nau . edu
+Feel free to contact me in case of questions or suggestions: michael . mommert (at) nau . edu
 
 
-.. _github: https://github.com/mommermi/photometrypipeline
+.. _github: http://github.com/mommermi/photometrypipeline
 .. _git: http://www.git-scm.com/
 .. _numpy: http://www.numpy.org/
-.. _scipy: https://www.scipy.org/
+.. _scipy: http://www.scipy.org/
 .. _astropy: http://www.astropy.org/
-.. _astroquery: https://github.com/astropy/astroquery
+.. _astroquery: http://github.com/astropy/astroquery
 .. _matplotlib: http://matplotlib.org/
-.. _callhorizons: https://pypi.python.org/pypi/CALLHORIZONS
+.. _callhorizons: http://pypi.python.org/pypi/CALLHORIZONS
 .. _future: http://python-future.org/
 .. _pillow: http://python-pillow.org/
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp
-.. _documentation: http://readthedocs.org/projects/photometrypipeline/
+.. _documentation: http://photometrypipeline.readthedocs.io/en/latest/
 .. _this document: http://photometrypipeline.readthedocs.io/en/latest/supported.html
 .. _Astronomy & Computing: http://www.sciencedirect.com/science/article/pii/S2213133716300816
+.. _MANOS: http://manosobs.wordpress.com/
