@@ -31,9 +31,7 @@ import os
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'sphinx.ext.autosummary',
-    'numpydoc'
-]
+    'sphinx.ext.autosummary']
 
 numpydoc_show_class_members = False
 

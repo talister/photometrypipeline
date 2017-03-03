@@ -345,19 +345,26 @@ def add_registration(data, extraction_data):
 
         # plot reference sources
         if refcat.shape[0] > 0:
-            w = wcs.WCS(header)
-            world_coo = numpy.array(list(zip(refcat['ra.deg'], 
-                                             refcat['dec.deg'])))
-            img_coo = w.wcs_world2pix(world_coo, True )
-            img_coo = [c for c in img_coo if (c[0] > 0 and c[1] > 0 and 
-                                        c[0] < header[obsparam['extent'][0]] 
-                                        and 
-                                        c[1] < header[obsparam['extent'][1]])]
-            plt.scatter([c[0]*resize_factor for c in img_coo],
-                        [c[1]*resize_factor for c in img_coo], 
-                        s=5, marker='o', edgecolors='red', linewidth=0.1,
-                        facecolor='none')
+            try:
+                w = wcs.WCS(header)
+                world_coo = numpy.array(list(zip(refcat['ra.deg'], 
+                                                 refcat['dec.deg'])))
+                img_coo = w.wcs_world2pix(world_coo, True )
+                img_coo = [c for c
+                           in img_coo if (c[0] > 0 and c[1] > 0 and 
+                                          c[0] < header[obsparam['extent'][0]] 
+                                          and 
+                                          c[1] < header[obsparam['extent'][1]])]
+                plt.scatter([c[0]*resize_factor for c in img_coo],
+                            [c[1]*resize_factor for c in img_coo], 
+                            s=5, marker='o', edgecolors='red', linewidth=0.1,
+                            facecolor='none')
+            except astropy.wcs._wcs.InvalidTransformError:
+                logging.error('could not plot reference sources due to '
+                              'astropy.wcs._wcs.InvalidTransformError; '
+                              'most likely unknown distortion parameters.')
 
+                
         plt.savefig(framefilename, format='png', bbox_inches='tight', 
                     pad_inches=0, dpi=200)
         plt.close()
@@ -664,21 +671,28 @@ def add_calibration(data):
 
         # plot reference sources
         if len(dat['match'][0][3]) > 0 and len(dat['match'][0][4]) > 0:
-            w = wcs.WCS(header)
-            world_coo = [[dat['match'][0][3][idx], dat['match'][0][4][idx]] \
-                         for idx in dat['zp_usedstars']]
-            img_coo = w.wcs_world2pix(world_coo, True )
-            print(img_coo)
-            plt.scatter([c[0]*resize_factor for c in img_coo],
-                        [c[1]*resize_factor for c in img_coo], 
-                        s=10, marker='o', edgecolors='red', linewidth=0.1,
-                        facecolor='none')
-            for i in range(len(dat['zp_usedstars'])):
-                plt.annotate(str(i+1), xy=((img_coo[i][0]*resize_factor)+15,
-                                           img_coo[i][1]*resize_factor), 
-                             color='red', horizontalalignment='left',
-                             verticalalignment='center')
-        
+            try:
+                w = wcs.WCS(header)
+                world_coo = [[dat['match'][0][3][idx],
+                              dat['match'][0][4][idx]] \
+                             for idx in dat['zp_usedstars']]
+                img_coo = w.wcs_world2pix(world_coo, True )
+
+                plt.scatter([c[0]*resize_factor for c in img_coo],
+                            [c[1]*resize_factor for c in img_coo], 
+                            s=10, marker='o', edgecolors='red', linewidth=0.1,
+                            facecolor='none')
+                for i in range(len(dat['zp_usedstars'])):
+                    plt.annotate(str(i+1), xy=((img_coo[i][0]*resize_factor)+15,
+                                               img_coo[i][1]*resize_factor), 
+                                 color='red', horizontalalignment='left',
+                                 verticalalignment='center')
+            except astropy.wcs._wcs.InvalidTransformError:
+                logging.error('could not plot reference sources due to '
+                              'astropy.wcs._wcs.InvalidTransformError; '
+                              'most likely unknown distortion parameters.')
+
+                
         plt.savefig(catframe, format='png', bbox_inches='tight', 
                     pad_inches=0, dpi=200)
         plt.close()
