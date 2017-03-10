@@ -4,6 +4,8 @@ CATALOG - class structure for dealing with astronomical catalogs,
 
 version 0.9, 2016-01-27, michael.mommert@nau.edu
 """
+from __future__ import print_function
+from __future__ import division
 
 # Photometry Pipeline 
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -23,20 +25,42 @@ version 0.9, 2016-01-27, michael.mommert@nau.edu
 # <http://www.gnu.org/licenses/>.
 
 
+from past.utils import old_div
 import os
 import sys 
 import numpy
 import logging
-import urllib2
+#import urllib.request, urllib.error, urllib.parse
 import time
 import sqlite3 as sql
-from scipy import spatial
+try:
+    from scipy import spatial
+except ImportError:
+    print('Module scipy not found. Please install with: pip install scipy')
+    sys.exit()
 from astropy.io import fits
 import scipy.optimize as optimization
-from astroquery.vizier import Vizier
+try:
+    from astroquery.vizier import Vizier
+except ImportError:
+    print('Module astroquery not found. Please install with: pip install '
+          'astroquery')
+    sys.exit()
 import astropy.units as u
 import astropy.coordinates as coord
 from astropy.table import Table, Column
+from astropy import __version__ as astropyversion
+
+# only import if Python3 is used
+if sys.version_info > (3,0):
+    from builtins import str
+    from future import standard_library
+    standard_library.install_aliases()
+    from builtins import zip
+    from builtins import filter
+    from builtins import range
+    from builtins import object
+
 
 # pipeline-related modules (only needed for testing)
 import _pp_conf 
@@ -48,7 +72,7 @@ logging.basicConfig(filename = _pp_conf.log_filename,
                     datefmt  = _pp_conf.log_datefmt)
 
 
-class catalog:
+class catalog(object):
     def __init__(self, catalogname, display=False):
         self.data         = None # will be an astropy table 
         self.catalogname  = catalogname
@@ -180,9 +204,9 @@ class catalog:
         # -> green column names in Vizier
 
         if self.display:
-            print ('query Vizier for %s at %7.3f/%+8.3f in ' \
+            print(('query Vizier for %s at %7.3f/%+8.3f in ' \
                    + 'a %.2f deg radius') % \
-                   (self.catalogname, ra_deg, dec_deg, rad_deg),
+                   (self.catalogname, ra_deg, dec_deg, rad_deg), end=' ')
             sys.stdout.flush()
         logging.info(('query Vizier for %s at %7.3f/%+8.3f in ' \
                    + 'a %.2f deg radius') % \
@@ -206,7 +230,7 @@ class catalog:
                                                 catalog="I/337/gaia")[0]
             except IndexError:
                 if self.display:
-                    print 'no data available from %s' % self.catalogname
+                    print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
 
@@ -243,7 +267,7 @@ class catalog:
                                                 catalog="II/246/out")[0]
             except IndexError:
                 if self.display:
-                    print 'no data available from %s' % self.catalogname
+                    print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
 
@@ -296,7 +320,7 @@ class catalog:
                                                 catalog="I/329/urat1")[0]
             except IndexError:
                 if self.display:
-                    print 'no data available from %s' % self.catalogname
+                    print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
 
@@ -336,7 +360,7 @@ class catalog:
                                                 catalog="II/336/apass9")[0]
             except IndexError:
                 if self.display:
-                    print 'no data available from %s' % self.catalogname
+                    print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
 
@@ -346,6 +370,12 @@ class catalog:
             self.data.rename_column('DEJ2000', 'dec.deg')
             self.data.rename_column('e_RAJ2000', 'e_ra.deg')
             self.data.rename_column('e_DEJ2000', 'e_dec.deg')
+            self.data.rename_column('g_mag', 'gmag')
+            self.data.rename_column('e_g_mag', 'e_gmag')
+            self.data.rename_column('r_mag', 'rmag')
+            self.data.rename_column('e_r_mag', 'e_rmag')
+            self.data.rename_column('i_mag', 'imag')
+            self.data.rename_column('e_i_mag', 'e_imag')
 
         elif self.catalogname == 'SDSS-R9':
             vquery = Vizier(columns=['SDSS9', 'RAJ2000', 'DEJ2000',
@@ -362,7 +392,7 @@ class catalog:
                                                 catalog="V/139/sdss9")[0]
             except IndexError:
                 if self.display:
-                    print 'no data available from %s' % self.catalogname
+                    print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
                 
@@ -415,8 +445,8 @@ class catalog:
         hdulist  = fits.open(filename, ignore_missing_end=True)
 
         if len(hdulist) < 3:
-            print ('ERROR: %s seems to be empty; check LOG file if ' + 
-                   'Source Extractor ran properly') % filename
+            print(('ERROR: %s seems to be empty; check LOG file if ' + 
+                   'Source Extractor ran properly') % filename)
             logging.error(('ERROR: %s seems to be empty; check LOG file if ' + 
                    'Source Extractor ran properly') % filename)
             return None
@@ -479,9 +509,9 @@ class catalog:
         #hdrhdu.header['TDIM1'] = ('(80, 36)') # remove?
             
         ### create data table
-        colname_dic = {'ra.deg': 'X_WORLD', 'dec.deg': 'Y_WORLD',
-                       'e_ra.deg': 'ERRA_WORLD',
-                       'e_dec.deg': 'ERRB_WORLD',
+        colname_dic = {'ra.deg': 'XWIN_WORLD', 'dec.deg': 'YWIN_WORLD',
+                       'e_ra.deg': 'ERRAWIN_WORLD',
+                       'e_dec.deg': 'ERRBWIN_WORLD',
                        'mag': 'MAG'}
         format_dic = {'ra.deg': '1D', 'dec.deg': '1D',
                       'e_ra.deg': '1E',
@@ -498,7 +528,7 @@ class catalog:
 
         data_cols = []
         for col_name in self.data.columns:
-            if not col_name in colname_dic.keys():
+            if not col_name in list(colname_dic.keys()):
                 continue
             data_cols.append(fits.Column(name=colname_dic[col_name],
                                          format=format_dic[col_name],
@@ -524,7 +554,10 @@ class catalog:
             
         # # combine HDUs and write file
         hdulist = fits.HDUList([primaryhdu, hdrhdu, datahdu])
-        hdulist.writeto(ldac_filename, clobber=True)
+        if float(astropyversion.split('.')[1]) >= 3:
+            hdulist.writeto(ldac_filename, overwrite=True)
+        else:
+            hdulist.writeto(ldac_filename, clobber=True)
             
         logging.info('wrote %d sources from %s to LDAC file' % 
                      (nsrc, ldac_filename))
@@ -640,7 +673,7 @@ class catalog:
             db = db_conn.cursor()
         except:
             if self.display:
-                print 'ERROR: could not find database', filename
+                print('ERROR: could not find database', filename)
                 logging.error('ERROR: could not find database', filename)
             return []
 
@@ -754,8 +787,8 @@ class catalog:
                 return 0
 
             param = optimization.curve_fit(self.lin_func, ri, gr, [1,0])[0]
-            resid = numpy.sqrt(((ri+param[0]*gr-param[0]*param[1])/
-                                (param[0]**2+1))**2+
+            resid = numpy.sqrt((old_div((ri+param[0]*gr-param[0]*param[1]),
+                                (param[0]**2+1)))**2+
                                (param[0]*(ri+param[0]*gr-param[0]*param[1])/
                                 (param[0]**2+1)+param[1]-gr)**2)
             remove = numpy.where(numpy.array(resid) > 3.*numpy.std(resid))[0]
@@ -821,7 +854,7 @@ class catalog:
             return self.shape[0]
 
 
-        ### URAT/APASS to R/I
+        ### APASS to R/I
         # todo: include g magnitudes and account for color
         elif ('URAT' in self.catalogname or
               'APASS' in self.catalogname and 
@@ -937,11 +970,11 @@ class catalog:
                     nmags[lbl['_e_Kmag']][idx]  = mags[5][idx]
 
                 else:
-                    for mag in lbl.keys():
+                    for mag in list(lbl.keys()):
                         nmags[lbl[mag]][idx] = 99
-              
+                        
             # append nmags arrays to catalog
-            for key, idx in lbl.items():
+            for key, idx in list(lbl.items()):
                 self.add_field(key, nmags[idx])
                 
             # get rid of sources that have not been transformed
@@ -958,6 +991,78 @@ class catalog:
             return self.shape[0]
         
 
+        ### 2MASS to Warner BVRI (not accounting for galactic extinction)
+        elif (self.catalogname == '2MASS') and \
+           (targetfilter in {'B', 'V', 'R', 'I'}) and \
+           (self.magsystem == 'Vega'):
+
+            logging.info(('trying to transform %d 2MASS sources to ' \
+                          + 'Warner %s') % (self.shape[0], targetfilter))
+
+            # transformations using the recipe by Warner 2007, MPBu
+            mags  = [self['Jmag'], self['Kmag'], self['e_Jmag']]
+            lbl   = {'_Bmag':0 , '_e_Bmag': 1, '_Vmag': 2, '_e_Vmag': 3, 
+                     '_Rmag': 4, '_e_Rmag': 5, '_Imag': 6, '_e_Imag': 7}
+            nmags = [numpy.zeros(self.shape[0]) for i in range(len(lbl))]
+
+            for idx in range(self.shape[0]):
+                keep = True
+                # remove objects with extreme J-Ks color index
+                cidx = mags[0][idx]-mags[1][idx]
+                if cidx < -0.1 or cidx > 1.0:
+                    keep = False
+                # reject faint stars based on Figure 6 by Hodgkin et
+                # al. 2009, MNRAS
+                if mags[0][idx] > 18 or mags[1][idx] > 17:
+                    keep = False
+
+                if keep:
+                    nmags[lbl['_Bmag']][idx]   = mags[0][idx] + 1.7495*cidx**3 \
+                                                - 2.7785*cidx**2 \
+                                                + 5.215*cidx + 0.1980
+                    nmags[lbl['_e_Bmag']][idx] = numpy.sqrt(0.08*0.08 +
+                                                           mags[2][idx]**2)
+
+                    nmags[lbl['_Vmag']][idx]   = mags[0][idx] + 1.4688*cidx**3 \
+                                                - 2.3250*cidx**2 \
+                                                + 3.5143*cidx + 0.1496
+                    nmags[lbl['_e_Vmag']][idx] = numpy.sqrt(0.05*0.05 + 
+                                                           mags[2][idx]**2)
+
+                    nmags[lbl['_Rmag']][idx]   = mags[0][idx] + 1.1230*cidx**3 \
+                                                - 1.7849*cidx**2 \
+                                                + 2.5105*cidx + 0.1045
+                    nmags[lbl['_e_Rmag']][idx] = numpy.sqrt(0.08*0.08 + 
+                                                           mags[2][idx]**2)
+                
+                    nmags[lbl['_Imag']][idx]   = mags[0][idx] + 0.2963*cidx**3 \
+                                                - 0.4866*cidx**2 \
+                                                + 1.2816*cidx + 0.0724
+                    nmags[lbl['_e_Imag']][idx] = numpy.sqrt(0.03*0.03 + 
+                                                           mags[2][idx]**2)
+                else:
+                    for mag in lbl.keys():
+                        nmags[lbl[mag]][idx] = 99
+
+            # append nmags arrays to catalog
+            for key, idx in lbl.items():
+                self.add_field(key, nmags[idx])
+                
+            # get rid of sources that have not been transformed
+            self.data = self.data[self['_Vmag'] < 99]
+
+            self.catalogname  += '_transformed'
+            self.history += ', %d transformed to Warner %s (Vega)' % \
+                            (self.shape[0], targetfilter)
+            self.magsystem = 'Vega'
+
+            logging.info('%d sources sucessfully transformed to Warner %s' % \
+                         (self.shape[0], targetfilter))
+            
+            return self.shape[0]
+
+
+                        
         ### SDSS to UKIRT Z
         elif (self.catalogname.find('SDSS') > -1) and \
              targetfilter == 'Z_UKIRT' and \
@@ -980,7 +1085,7 @@ class catalog:
                 nmags[lbl['_e_Zmag']][idx] = mags[2][idx]
               
             # append nmags arrays to catalog
-            for key, idx in lbl.items():
+            for key, idx in list(lbl.items()):
                 self.add_field(key, nmags[idx])
                 
             # get rid of sources that have not been transformed
@@ -998,8 +1103,8 @@ class catalog:
 
         else:
             if self.display:
-                print 'ERROR: no transformation from %s to %s available' % \
-                    (self.catalogname, targetfilter)
+                print('ERROR: no transformation from %s to %s available' % \
+                    (self.catalogname, targetfilter))
             return 0
         
 
@@ -1011,7 +1116,7 @@ class catalog:
                    match_keys_other_catalog=['ra.deg', 'dec.deg'],
                    extract_this_catalog=['ra.deg', 'dec.deg'],
                    extract_other_catalog=['ra.deg', 'dec.deg'],
-                   tolerance=0.5/3600.):
+                   tolerance=old_div(0.5,3600.)):
         """ match sources from different catalogs based on two fields 
             (e.g., postions)
             return: requested fields for matched sources 
@@ -1021,26 +1126,24 @@ class catalog:
                  astropy.table functionality; how about astropy.coord matching?
         """
 
-        this_tree = spatial.KDTree(zip(self[match_keys_this_catalog[0]].data,
-                                       self[match_keys_this_catalog[1]].data))
+        this_tree = spatial.KDTree(list(zip(self[match_keys_this_catalog[0]].data,
+                                       self[match_keys_this_catalog[1]].data)))
 
         # kd-tree matching
         if tolerance is not None:
             other_tree = spatial.KDTree(\
-                            zip(catalog[match_keys_other_catalog[0]].data,
-                                catalog[match_keys_other_catalog[1]].data))
+                            list(zip(catalog[match_keys_other_catalog[0]].data,
+                                catalog[match_keys_other_catalog[1]].data)))
 
             match = this_tree.query_ball_tree(other_tree, tolerance)
 
-            indices_this_catalog  = filter(lambda x: len(match[x]) == 1, 
-                                           range(len(match)))
-            indices_other_catalog = map(lambda x: x[0], 
-                                        filter((lambda x: len(x)==1), match))
+            indices_this_catalog  = [x for x in range(len(match)) if len(match[x]) == 1]
+            indices_other_catalog = [x[0] for x in list(filter((lambda x: len(x)==1), match))]
             
         else:
             # will find the closest match for each target in this catalog
-            other_cat = zip(catalog[match_keys_other_catalog[0]].data,
-                            catalog[match_keys_other_catalog[1]].data)
+            other_cat = list(zip(catalog[match_keys_other_catalog[0]].data,
+                            catalog[match_keys_other_catalog[1]].data))
 
             match = this_tree.query(other_cat) 
 
@@ -1050,8 +1153,7 @@ class catalog:
                 other_cat_indices = numpy.where(match[1]==target_idx)[0]
                 if len(other_cat_indices) > 0:
                     # find closest match
-                    min_idx = other_cat_indices[numpy.argmin(map(lambda
-                                        i:match[0][i], other_cat_indices))]
+                    min_idx = other_cat_indices[numpy.argmin([match[0][i] for i in other_cat_indices])]
 
                     indices_this_catalog.append(target_idx)
                     indices_other_catalog.append(min_idx)
@@ -1060,16 +1162,15 @@ class catalog:
         ### match outputs based on indices provided and require
         ### extract_fields to be filled
         assert len(indices_this_catalog) == len(indices_other_catalog)
-        indices = zip(indices_this_catalog, indices_other_catalog)
+        indices = list(zip(indices_this_catalog, indices_other_catalog))
         # check if element is either not nan or not a float
         check_not_nan = lambda x: not numpy.isnan(x) if \
                                   (type(x) is numpy.float_) else True
 
-        indices = filter(lambda i: all([check_not_nan(self[i[0]][key]) 
+        indices = [i for i in indices if all([check_not_nan(self[i[0]][key]) 
                                         for key in extract_this_catalog] \
                                        + [check_not_nan(catalog[i[1]][key]) 
-                                          for key in extract_other_catalog]), 
-                         indices)
+                                          for key in extract_other_catalog])]
         output_this_catalog  = [self[key][[i[0] for i in indices]] 
                                 for key in extract_this_catalog]
         output_other_catalog = [catalog[key][[i[1] for i in indices]] 
@@ -1101,10 +1202,10 @@ class catalog:
 
 ### catalog download and manipulation
 
-# cat1 = catalog('URAT-1')
-# print cat1.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat1.catalogname
-# print cat1.fields
-# print cat1[0]
+# cat1 = catalog('APASS9')
+# print(cat1.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat1.catalogname)
+# print(cat1.fields)
+# print(cat1[0])
 
 # cat2 = catalog('2MASS')
 # print cat2.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat2.catalogname

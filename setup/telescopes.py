@@ -62,16 +62,18 @@ vatt4k_param = {
 
     # source extractor settings
     'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 5, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/vatt4k.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/vatt4k.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
     
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -131,16 +133,18 @@ dctlmi_param = {
 
     # source extractor settings
     'source_minarea'       : 9, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/dctlmi.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/dctlmi.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
@@ -198,16 +202,18 @@ arc35arctic_param = {
 
     # source extractor settings
     'source_minarea'       : 10, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/arc35arctic.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/arc35arctic.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJNAME,' +
@@ -264,16 +270,18 @@ arc35agile_param = {
 
     # source extractor settings
     'source_minarea'       : 7, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/arc35agile.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/arc35agile.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJNAME,' +
@@ -342,16 +350,18 @@ magimacs_param = {
 
     # source extractor settings
     'source_minarea'       : 20, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 8, # default aperture radius in px 
     'aprad_range'          : [5, 25], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/magimacs.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/magimacs.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -408,16 +418,18 @@ ca123dlrmkiii_param = {
 
     # source extractor settings
     'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 15], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/ca123dlrmkiii.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/ca123dlrmkiii.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -472,16 +484,18 @@ lowell31_param = {
 
     # source extractor settings
     'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 5, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/lowell31.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/lowell31.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER1,FILTER2,EXPTIME,OBJECT,' +
@@ -538,16 +552,18 @@ lowell42_param = {
 
     # source extractor settings
     'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 5, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/lowell42.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/lowell42.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,CCDSUM,FILTNAME,EXPTIME,'+
@@ -605,16 +621,18 @@ lowell72_param = {
 
     # source extractor settings
     'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 5, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/lowell72.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/lowell72.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,CRDELT1, CRDELT2,FILTNME3,' +
@@ -673,16 +691,18 @@ ctio09_param = {
 
     # source extractor settings
     'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 5, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/ctio09.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/ctio09.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTERS,EXPTIME,OBJECT,' +
@@ -738,16 +758,18 @@ ctio10_param = {
 
     # source extractor settings
     'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 5, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/ctio10.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/ctio10.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -802,16 +824,18 @@ ctio13ccd_param = {
 
     # source extractor settings
     'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/andicam.sex',
     'mask_file'            : {'2,2' : rootpath+'/setup/mask_andicam_2x2.fits'},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/andicam.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
@@ -869,14 +893,16 @@ uh88snifs_param = {
 
     # source extractor settings
     'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 3, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/uh88snifs.sex',
     'mask_file'            : {'2,2' : rootpath+'/setup/mask_snifs_2x2.fits'},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/uh88snifs.scamp', 
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -933,16 +959,18 @@ wiyn09hdi_param = {
 
     # source extractor settings
     'source_minarea'       : 9, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 3, # default aperture radius in px 
     'aprad_range'          : [2, 8], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/wiyn09hdi.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/wiyn09hdi.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,FILTER1,EXPTIME,OBJECT,' +
@@ -1000,16 +1028,18 @@ generic_param = {
 
     # source extractor settings
     'source_minarea'       : 8, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 3, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/generic.sex',
     'mask_file'            : {}, #'2,2' : rootpath+'/setup/mask_snifs_2x2.fits'},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/generic.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
@@ -1064,16 +1094,18 @@ ratir_param = {
 
     # source extractor settings
     'source_minarea'       : 18, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/ratir.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/ratir.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT' +
@@ -1135,7 +1167,7 @@ ratir_param = {
 #     'mask_file'            : {},
 #     #                        mask files as a function of x,y binning
 
-#     # scamp settings
+#     # registration settings (Scamp)
 #     'scamp-config-file'    : rootpath+'/setup/sl74sha.scamp', 
 
 #     # swarp settings
@@ -1186,7 +1218,7 @@ soargoodman_param = {
     'filter'               : 'FILTER',  # filter keyword
     'filter_translations'  : {'Rc': 'R', 'V':'V', 'B':'B', 'u':'u', 
                               'g-SDSS': 'g', 'r-SDSS': 'r', 'i-SDSS': 'i', 
-                              'z-SDSS': 'z'},
+                              'z-SDSS': 'z', 'VR': None},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -1194,6 +1226,7 @@ soargoodman_param = {
 
     # source extractor settings
     'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 4, # default aperture radius in px 
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/soargoodman.sex',
@@ -1201,10 +1234,11 @@ soargoodman_param = {
                               '2,2' : rootpath+'/setup/mask_soargoodman_2x2.fits'},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/soargoodman.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
@@ -1257,16 +1291,18 @@ ohp120_param = {
 
     # source extractor settings
     'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 8, # default aperture radius in px 
     'aprad_range'          : [2, 15], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/ohp120.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/ohp120.scamp', 
     'reg_max_mag'          : 19,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # default catalog settings
     'astrometry_catalogs'  : ['GAIA'], 
@@ -1310,16 +1346,18 @@ tngdolores_param = {
 
     # source extractor settings
     'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 8, # default aperture radius in px 
     'aprad_range'          : [2, 15], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/tngdolores.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
 
-    # scamp settings
+    # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/tngdolores.scamp', 
-    'reg_max_mag'          : 19,  
+    'reg_max_mag'          : 17,  
     'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
 
     # default catalog settings
     'astrometry_catalogs'  : ['GAIA'], 
@@ -1327,7 +1365,220 @@ tngdolores_param = {
 }
 
 
+# KPNO 4m Mayall, MOSAIC-1
+kpno4mos1_param = {
+    'telescope_instrument': 'KPNO4m/MOSAIC',  # telescope/instrument name
+    'telescope_keyword': 'KPNO4MOS1',  # telescope/instrument keyword
+    'observatory_code': '695',  # MPC observatory code
+    'secpix': (0.27, 0.27),  # pixel size (arcsec) before binning
 
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': (1, 1),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),  # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': ':',  # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MJD-OBS',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'g SDSS k1017': 'g',
+                            'r SDSS k1018': 'r',
+                            'i SDSS k1019': 'i',
+                            'z SDSS c6020': 'z',
+                            'B Harris k1002': 'B',
+                            'none': None},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+    # source extractor settings
+    'source_minarea': 12,  # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath + '/setup/kpno4mos1.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath + '/setup/kpno4mos1.scamp',
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['SDSS-R9', 'APASS9', '2MASS']
+}
+
+
+# KMTNET-S
+kmtnets_param = {
+    'telescope_instrument': 'KMTNET-S',  # telescope/instrument name
+    'telescope_keyword': 'KMTNETS',  # telescope/instrument keyword
+    'observatory_code': 'K94',  # MPC observatory code
+    'secpix': (0.398, 0.398),  # pixel size (arcsec) before binning
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('CCDXBIN', 'CCDYBIN'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),  # N_pixels in x/y
+    # use for crop fields
+    # 'ra': 'CRVAL1',  # telescope pointing, RA
+    # 'dec': 'CRVAL2',  # telescope pointin, Dec
+    # use for single CCDs
+    'ra': 'CCD_RA',  # telescope pointing, RA
+    'dec': 'CCD_DEC',  # telescope pointin, Dec
+    'radec_separator': 'XXX',  # RA/Dec hms separator, use 'XXX'
+    # use full CCD mosaic
+    # 'ra': 'RA',  # telescope pointing, RA
+    # 'dec': 'DEC',  # telescope pointin, Dec
+    # 'radec_separator': ':',  # RA/Dec hms separator, use 'XXX'
+
+    # default distortion parameters per CCD
+    # using individual CCD centers for CRPIX1/2, CRVAL1/2
+    # using 1x1 binning
+    'distort': {'functionof': 'CCD_NAME',
+                'K': {'PV1_0': -0.000711762135419,
+                      'PV1_1': 1.00171981124,
+                      'PV1_2': -0.000228317298275,
+                      'PV1_4': 0.0160316513101,
+                      'PV1_5': -0.0113636730644,
+                      'PV1_6': 0.00549290221274,
+                      'PV1_7': -0.010384662223,
+                      'PV1_8': 0.00081137447258,
+                      'PV1_9': -0.0104005033165,
+                      'PV1_10': 0.000396116525231,
+                      'PV2_0': 0.00319659825814,
+                      'PV2_1': 1.00057217492,
+                      'PV2_2': 0.0116970617468,
+                      'PV2_4': -0.0165165992945,
+                      'PV2_5': 0.0108419617955,
+                      'PV2_6': -0.00548712635243,
+                      'PV2_7': -0.0103126090939,
+                      'PV2_8': 0.000686169735533,
+                      'PV2_9': -0.0103739930263,
+                      'PV2_10': 0.000240139308823},
+                'M': {'PV1_0': 0.000460033317474,
+                      'PV1_1': 1.00141889978,
+                      'PV1_2': -0.000430380594516,
+                      'PV1_4': -0.015400655054,
+                      'PV1_5': -0.0115995667827,
+                      'PV1_6': -0.00518535937805,
+                      'PV1_7': -0.0101118044677,
+                      'PV1_8': -3.19250493138e-05,
+                      'PV1_9': -0.0106737708283,
+                      'PV1_10': -0.000431356736006,
+                      'PV2_0': 0.00198339122013,
+                      'PV2_1': 0.999670425747,
+                      'PV2_2': -0.011005193782,
+                      'PV2_4': -0.0167779694087,
+                      'PV2_5': -0.0106335253045,
+                      'PV2_6': -0.00526313446543,
+                      'PV2_7': -0.0101955642118,
+                      'PV2_8': -0.000255088245494,
+                      'PV2_9': -0.0094035107269,
+                      'PV2_10': -0.000292075883415},
+                'T': {'PV1_0': -0.00127421419519,
+                      'PV1_1': 1.00104160823,
+                      'PV1_2': -0.000660886473555,
+                      'PV1_4': 0.0158990914667,
+                      'PV1_5': 0.01169760742,
+                      'PV1_6': 0.00543678807381,
+                      'PV1_7': -0.0103261215423,
+                      'PV1_8': -0.000794914727406,
+                      'PV1_9': -0.0103649052751,
+                      'PV1_10': -0.000279241301327,
+                      'PV2_0': -0.00392674586144,
+                      'PV2_1': 0.999343102486,
+                      'PV2_2': -0.0111411751205,
+                      'PV2_4': 0.017084775899,
+                      'PV2_5': 0.010790771213,
+                      'PV2_6': 0.00566154555136,
+                      'PV2_7': -0.0102149292801,
+                      'PV2_8': -0.000623538149787,
+                      'PV2_9': -0.0102808588946,
+                      'PV2_10': -0.000162027267646},
+                'N': {'PV1_0':  0.000594262478073,
+                      'PV1_1': 0.998957324393,
+                      'PV1_2': 0.00141244617639,
+                      'PV1_4': -0.015924297871,
+                      'PV1_5': 0.0114088931271,
+                      'PV1_6': -0.00544474906971,
+                      'PV1_7': -0.010256940745,
+                      'PV1_8': 0.000789499342505,
+                      'PV1_9': -0.0101626175866,
+                      'PV1_10': 0.000179932486564,
+                      'PV2_0': -0.00166315601111,
+                      'PV2_1': 0.997680853652,
+                      'PV2_2': 0.0102233336556,
+                      'PV2_4': 0.0166335481995,
+                      'PV2_5': -0.0107970324189,
+                      'PV2_6': 0.00556273542573,
+                      'PV2_7': -0.0103304464752,
+                      'PV2_8': 0.00070600868855,
+                      'PV2_9': -0.0102590932248,
+                      'PV2_10': 0.000205537467251}},
+
+    
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MJD-OBS',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'V': 'V',
+                            'R': 'R',
+                            'I': 'I'},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'SECZ',  # airmass keyword
+
+    # source extractor settings
+    'source_minarea': 10,  # default sextractor source minimum N_pixels
+    'source_snr': 20, # default sextractor source snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath + '/setup/kmtnets.sex',
+    #'mask_file': {'1,1' : rootpath+'/setup/mask_kmtnets_1x1.fits'},
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath + '/setup/kmtnets.scamp',
+    'reg_max_mag'          : 18, 
+    'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'none', 
+    'scamp': {'ASTRINSTRU_KEY': 'FILTER,CCD_NAME'},
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA', 'GAIA'], # run registration twice
+    # due to large field distortions
+    'photometry_catalogs': ['SDSS-R9', 'APASS9', '2MASS'],
+
+    # list of header keywords that should not be removed
+    'dont_remove': 'CCD_NAME'
+}
 
 
 
@@ -1340,7 +1591,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS',
                           'WIYN09HDI', 'RATIR', 'SOARGOODMAN', 'OHP120',
                           #'SL74SAH',
-                          'TNGDOLORES', 'GENERIC']
+                          'TNGDOLORES', 'GENERIC', 'KPNO4MOS1']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword 
@@ -1369,7 +1620,10 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           #'SHA':               'SL74SHA',
                           'Goodman Spectrograph': 'SOARGOODMAN',
                           'Andor Tech':        'OHP120',
-                          'LRS':               'TNGDOLORES'}
+                          'LRS':               'TNGDOLORES',
+                          'mosaic_1_1':        'KPNO4MOS1',
+                          'mosaic_1':          'KPNO4MOS1',
+                          'KMTS':              'KMTNETS'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K' :       vatt4k_param, 
@@ -1391,7 +1645,9 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         #'SL74SHA':       sl74sha_param,
                         'SOARGOODMAN':   soargoodman_param,
                         'OHP120':        ohp120_param,
-                        'TNGDOLORES':    tngdolores_param}
+                        'TNGDOLORES':    tngdolores_param,
+                        'KPNO4MOS1':     kpno4mos1_param,
+                        'KMTNETS':       kmtnets_param}
 
 
 #### append mytelescopes.py, if available
