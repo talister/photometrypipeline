@@ -496,7 +496,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
         output[target] = []
 
         if display:
-            print 'write photometry results for %s' % target
+            print('write photometry results for %s' % target)
         outf = open('photometry_%s.dat' %
                     target.translate(_pp_conf.target2filename), 'w')
         outf.write('#                          filename    julian_date '

@@ -745,7 +745,7 @@ def add_results(data):
         plt.ylim([plt.ylim()[1], plt.ylim()[0]])
         plt.grid()
         plt.savefig('.diagnostics/'
-                    + ('%s.png' % target.translate(_pp_conf.target2filename)), 
+                    + ('%s.png' % target.translate(_pp_conf.target2filename)),
                     format='png')
         plt.close()
         data['lightcurveplots'][target] = ('.diagnostics/' + '%s.png' % 

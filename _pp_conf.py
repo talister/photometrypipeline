@@ -110,6 +110,7 @@ pp_process_idx = 0
 if sys.version_info > (3, 0):
     target2filename = str.maketrans(' /', '__')
 else:
+    import string
     target2filename = string.maketrans(' /', '__')
 
 # available catalogs
