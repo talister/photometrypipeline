@@ -9,6 +9,7 @@ import os
 import sys
 import logging
 import warnings
+
 try:
     from astropy import wcs
     from astropy.io import fits
@@ -103,6 +104,14 @@ log_filename = diagroot+'LOG'
 
 # start pp_process_idx counter (if using 'pp_run all')
 pp_process_idx = 0
+
+# Translation table to transform target names to file names
+# space and / --> _
+if sys.version_info > (3, 0):
+    target2filename = str.maketrans(' /', '__')
+else:
+    import string
+    target2filename = string.maketrans(' /', '__')
 
 # available catalogs
 

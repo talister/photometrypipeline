@@ -744,11 +744,12 @@ def add_results(data):
                      linestyle='', color='black')
         plt.ylim([plt.ylim()[1], plt.ylim()[0]])
         plt.grid()
-        plt.savefig('.diagnostics/' + ('%s.png' % target.replace(' ', '_')), 
+        plt.savefig('.diagnostics/'
+                    + ('%s.png' % target.translate(_pp_conf.target2filename)),
                     format='png')
         plt.close()
         data['lightcurveplots'][target] = ('.diagnostics/' + '%s.png' % 
-                                           target.replace(' ', '_'))
+                                           target.translate(_pp_conf.target2filename))
 
     ##### create thumbnail images
     
@@ -861,7 +862,8 @@ def add_results(data):
                             exp_y-obj_y+old_div(boxsize,2.), 
                             marker='+', s=100, color='green')
 
-            thumbfilename = '.diagnostics/' + target.replace(' ', '_')+'_'+ \
+            thumbfilename = '.diagnostics/' + \
+                            target.translate(_pp_conf.target2filename) + '_' + \
                             fitsfilename[:fitsfilename.find('.fit')] + \
                             '_thumb.png'
             plt.savefig(thumbfilename, format='png', bbox_inches='tight', 
@@ -872,15 +874,14 @@ def add_results(data):
                                                      thumbfilename))
 
         ## create gif animation
-        gif_filename = ('%s.gif' % 
-                        (target.replace(' ', '_')))
+        gif_filename = ('%s.gif' % target.translate(_pp_conf.target2filename))
         logging.info('converting images to gif: %s' % gif_filename)
         root = os.getcwd()
         os.chdir(_pp_conf.diagroot)
         try:
             convert = subprocess.Popen(['convert', '-delay', '50', 
                                         ('%s*thumb.png' % 
-                                (target.replace(' ', '_'))), 
+                                (target.translate(_pp_conf.target2filename))), 
                                         '-loop', '0', 
                                         ('%s' % gif_filename)])
 
@@ -923,7 +924,9 @@ def add_results(data):
             html += "<P>%s<IMG ID=\"%s\" SRC=\"%s\">\n" % (plts[0],
                                     data[target][idx][10],
                                     plts[1].split('.diagnostics/')[1])
-        filename = '.diagnostics/'+target.replace(' ', '_')+'_'+'results.html'
+        filename = '.diagnostics/' + \
+                   target.translate(_pp_conf.target2filename) + \
+                   '_' + 'results.html'
         create_website(filename, html)
         data['resultswebsites'][target] = filename 
 
