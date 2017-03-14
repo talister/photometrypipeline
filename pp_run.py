@@ -378,6 +378,10 @@ if __name__ == '__main__':
         # walk through directories underneath
         for root, dirs, files in os.walk(_masterroot_directory):
 
+            # ignore .diagnostics directories
+            if '.diagnostics' in root:
+                continue
+            
             # identify data frames
             filenames = sorted([s for s in files if re.match(regex, s)])
 
