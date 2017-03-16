@@ -62,6 +62,7 @@ warnings.filterwarnings('ignore', category=fits.card.VerifyWarning)
 # following warning gets cast by Gaia query: XXX.convert_unit_to(u.deg)
 warnings.filterwarnings('ignore', category=np.ma.core.MaskedArrayFutureWarning)
 warnings.filterwarnings('ignore', category=UserWarning)
+warnings.filterwarnings('ignore', category=FutureWarning)
 
 # read photometry pipeline root path from environment variable
 rootpath = os.environ.get('PHOTPIPEDIR')
@@ -116,14 +117,15 @@ else:
 # available catalogs
 
 # list of available catalogs
-allcatalogs = ['URAT-1', '2MASS', 'SDSS-R9', 'APASS9', 'GAIA']
+allcatalogs = ['URAT-1', '2MASS', 'SDSS-R9', 'APASS9', 'GAIA', 'PANSTARRS']
 
 # catalog magnitude systems
 allcatalogs_magsys = {'URAT-1': 'Vega',
                       '2MASS': 'Vega',
                       'SDSS-R9': 'AB',
                       'APASS9': 'Vega',
-                      'GAIA': 'Vega'}
+                      'GAIA': 'Vega',
+                      'PANSTARRS': 'AB'}
 
 # ---- pipeline preferences
 # (if you don't know what you're doing, better don't mess around here)

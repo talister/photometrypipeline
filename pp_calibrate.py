@@ -75,6 +75,14 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
         if n_sources < min_sources:
             continue
 
+        if 'URAT' in catalogname:
+            print(catalogname + ' should only be used as an astrometric ' 
+                  'catalog; please use APASS9 instead')
+            logging.error(catalogname + ' should only be used as an '
+                          'astrometric catalog; please use APASS9 instead')
+            return None
+
+        
         # transform catalog to requested filtername, if necessesary
         if ( n_sources > 0 and
              ('SDSS' in catalogname and
@@ -84,7 +92,10 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
              ('APASS' in catalogname and
               filtername not in {'B', 'V', 'g', 'r', 'i'}) or
              ('2MASS' in catalogname and
-              filtername not in {'J', 'H', 'K'}) ):
+              filtername not in {'J', 'H', 'K'}) or 
+             ('PANSTARRS' in catalogname and
+              filtername not in {'g', 'r', 'i', 'z', 'y'}) ):
+
             n_transformed = cat.transform_filters(filtername) - \
                             cat.reject_sources_with(\
                                     cat['_e_'+filtername+'mag'] > mag_accuracy)
