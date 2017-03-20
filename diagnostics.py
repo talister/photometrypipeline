@@ -710,7 +710,7 @@ def add_calibration(data):
     create_website(_pp_conf.cal_filename, content=html)
 
     ### update index.html 
-    html  = "<H2>Photometric Calibration - Catalog Match </H2>\n"
+    html  = "<H2>Photometric Calibration - Zeropoints</H2>\n"
     html += "match image data with %s (%s);\n" % \
             (data['ref_cat'].catalogname, data['ref_cat'].history)
     html += "see <A HREF=\"%s\">calibration</A> website for details\n" % \
@@ -718,8 +718,26 @@ def add_calibration(data):
     html += "<P><IMG SRC=\"%s\">\n" % ('.diagnostics/' + data['zpplot'])
 
     append_website(_pp_conf.index_filename, html,
-                   replace_below=("<H2>Photometric Calibration " +
-                                  "- Catalog Match </H2>\n"))
+                   replace_below=("<H2>Photometric Calibration "
+                                  "- Zeropoints</H2>\n"))
+
+    return None
+
+
+def add_calibration_instrumental(data):
+    """
+    add instrumental calibration results to website
+    """
+
+    ### update index.html 
+    html  = "<H2>Photometric Calibration - Zeropoints </H2>\n"
+    html += "Instrumental magnitudes have been derived for the image data "
+    html += "(recognized photometric filter: %s); " % data['filtername']
+    html += "all zeropoints have been set to zero.\n"
+
+    append_website(_pp_conf.index_filename, html,
+                   replace_below=("<H2>Photometric Calibration - "
+                                  "Zeropoints</H2>\n"))
 
     return None
 
@@ -833,9 +851,9 @@ def add_results(data):
             aprad = float(hdulist[0].header['APRAD'])
 
             # create plot
-            plotsize = 7. # inches
-            fig = plt.figure(figsize=(plotsize,plotsize), 
-                             dpi=old_div(boxsize,plotsize))
+            #plotsize = 7. # inches
+            fig = plt.figure()#figsize=(plotsize,plotsize), 
+                             #dpi=old_div(boxsize,plotsize))
             img = plt.imshow(thumbdata, cmap='gray',
                              vmin=median-2*std, 
                              #vmax=maxval,
@@ -866,7 +884,8 @@ def add_results(data):
                             target.translate(_pp_conf.target2filename) + '_' + \
                             fitsfilename[:fitsfilename.find('.fit')] + \
                             '_thumb.png'
-            plt.savefig(thumbfilename, format='png', bbox_inches='tight', 
+            plt.savefig(thumbfilename, format='png',
+                        bbox_inches='tight', 
                         pad_inches=0)
             plt.close()
             hdulist.close()
