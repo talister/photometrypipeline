@@ -253,8 +253,8 @@ def create_index(filenames, directory, obsparam, display=False):
 
         plt.figure(figsize=(5, 5))
 
-        img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
-                         vmax=median+0.5*std, origin='lower')
+        img = plt.imshow(imgdat, cmap='gray', vmin=median-1.5*std,
+                         vmax=median+1.5*std, origin='lower')
         # remove axes
         plt.axis('off')
         img.axes.get_xaxis().set_visible(False)
@@ -346,8 +346,8 @@ def add_registration(data, extraction_data):
                 header[key] = float(val)
                 
         plt.figure(figsize=(5, 5))
-        img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
-                         vmax=median+0.5*std, origin='lower')
+        img = plt.imshow(imgdat, cmap='gray', vmin=median-1.5*std,
+                         vmax=median+1.5*std, origin='lower')
         # remove axes
         plt.axis('off')
         img.axes.get_xaxis().set_visible(False)
@@ -672,8 +672,8 @@ def add_calibration(data):
                 header[key] = float(val)
 
         plt.figure(figsize=(5,5))
-        img = plt.imshow(imgdat, cmap='gray', vmin=median-0.5*std,
-                         vmax=median+0.5*std, origin='lower')
+        img = plt.imshow(imgdat, cmap='gray', vmin=median-1.5*std,
+                         vmax=median+1.5*std, origin='lower')
         # remove axes
         plt.axis('off')
         img.axes.get_xaxis().set_visible(False)

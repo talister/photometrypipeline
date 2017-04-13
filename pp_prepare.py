@@ -286,6 +286,18 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         else:
             header['AIRMASS'] = (1, 'PP: fake airmass')
 
+        # check if filter can be translated by PP
+        try:
+            obsparam['filter_translations'][header[obsparam['filter']]]
+        except KeyError:
+            logging.warning('cannot translate filter keyword \"' +
+                          header[obsparam['filter']] +
+                          '\"; assume clear filter')
+            header[obsparam['filter']] = 'clear'
+        header['FILTER'] = (header[obsparam['filter']], 'PP:copied')
+
+
+            
         # perform header update
         for key, value in list(header_update.items()):
             if key in header:

@@ -994,7 +994,7 @@ wiyn09hdi_param = {
 generic_param = {
     'telescope_instrument' : 'Generic', # telescope/instrument name
     'telescope_keyword'    : 'GENERIC',     # telescope/instrument keyword
-    'observatory_code'     : None,         # MPC observatory code
+    'observatory_code'     : '500',         # MPC observatory code
     'secpix'               : (None, None), # pixel size (arcsec)
                                                # before binning
     'ext_coeff'            : 0.05,          # typical extinction coefficient
