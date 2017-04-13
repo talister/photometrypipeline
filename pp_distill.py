@@ -255,7 +255,7 @@ def fixed_targets(fixed_targets_file, catalogs, display=True):
     objects = []
     for obj in fixed_targets:
         for cat_idx, cat in enumerate(catalogs):
-            objects.append({'ident': obj['name'],
+            objects.append({'ident': obj['name'].decode('utf-8'),
                             'obsdate.jd': cat.obstime[0],
                             'cat_idx'   : cat_idx,
                             'ra.deg'    : obj['ra'],
@@ -339,7 +339,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
     output = {}
 
     ### read in database files (if necessary)
-    if type(catalogs[0]) == str:
+    if isinstance(catalogs[0], str):
         filenames = catalogs[:]
         catalogs = []
         for filename in filenames:
@@ -493,10 +493,14 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
 
     for target in targetnames:
 
+        if sys.version_info < (3, 0):
+            target = str(target)
+        
         output[target] = []
 
         if display:
             print('write photometry results for %s' % target)
+
         outf = open('photometry_%s.dat' %
                     target.translate(_pp_conf.target2filename), 'w')
         outf.write('#                          filename    julian_date '

@@ -751,6 +751,10 @@ def add_results(data):
 
     data['lightcurveplots'] = {}
     for target in data['targetnames']:
+
+        if sys.version_info < (3, 0):
+            target = str(target)
+            
         logging.info('create lightcurve plot for %s' % target)
         plt.plot()
         plt.title(target)
@@ -775,6 +779,10 @@ def add_results(data):
     data['gifs'] = {}
     boxsize = 300 # thumbnail boxsize
     for target in data['targetnames']:
+
+        if sys.version_info < (3, 0):
+            target = str(target)
+            
         data['thumbnailplots'][target] = []
         for dat in data[target]:
             for fitsfilename in ['.fits', '.fit']:
@@ -915,6 +923,10 @@ def add_results(data):
     ### create results website for each target
     data['resultswebsites'] = {}
     for target in data['targetnames']:
+
+        if sys.version_info < (3, 0):
+            target = str(target)
+
         html  = "<H2>%s - Photometric Results</H2>\n" % target
         html += "<P><IMG SRC=\"%s\">\n" % \
                 data['lightcurveplots'][target].split('.diagnostics/')[1]
