@@ -27,6 +27,7 @@ from __future__ import division
 from past.utils import old_div
 import numpy
 import os
+import re
 import sys
 import shutil
 import logging
@@ -223,7 +224,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         
         # remove keywords that might collide with fake wcs
         for key in list(header.keys()):
-            if 'CD' in key and '_' in key:
+            if re.match('^CD[1,2]_[1,2]', key) is not None:
                 # if key not in obsparam.values():
                 #     header.remove(key)
                 if not toolbox.if_val_in_dict(key, obsparam):
