@@ -236,7 +236,8 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                          'CRVAL2', 'CFINT2', 'LTM1_1', 'LTM2_2',
                          'WAT0_001', 'LTV1', 'LTV2', 'PIXXMIT',
                          'PIXOFFST', 'PC1_1', 'PC1_2', 'PC2_1', 'PC2_2',
-                         'CUNIT1', 'CUNIT2', 'A_ORDER', 'A_0_0',
+                         #'CUNIT1', 'CUNIT2',
+                         'A_ORDER', 'A_0_0',
                          'A_0_1', 'A_0_2', 'A_1_0', 'A_1_1', 'A_2_0',
                          'B_ORDER', 'B_0_0', 'B_0_1', 'B_0_2', 'B_1_0',
                          'B_1_1', 'B_2_0', 'AP_ORDER', 'AP_0_0',
@@ -247,6 +248,15 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                 if toolbox.if_val_in_dict(key, obsparam):
                     header.remove(key)
 
+        # normalize CUNIT keywords
+        try:
+            if 'degree' in header['CUNIT1'].lower():
+                header['CUNIT1'] = ('deg')
+            if 'degree' in header['CUNIT2'].lower():
+                header['CUNIT2'] = ('deg')
+        except KeyError:
+            pass
+                    
         # if GENERIC telescope, add implants to header
         if obsparam['telescope_keyword'] is 'GENERIC':
             for key, val in list(implants.items()):

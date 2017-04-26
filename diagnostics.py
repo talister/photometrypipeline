@@ -27,6 +27,7 @@ import os
 import sys
 import numpy
 import logging
+import astropy
 from astropy.io import fits
 from astropy import wcs
 import datetime
