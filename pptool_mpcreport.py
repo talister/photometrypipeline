@@ -34,7 +34,7 @@ def encode_number_desig(filename):
     number = '     '
     desig = None
 
-    filename = filename.replace('.dat', '')
+    filename = filename.replace('photometry_', '').replace('.dat', '')
     
     print('processing', filename)
     
@@ -43,14 +43,17 @@ def encode_number_desig(filename):
             desig = " ".join(filename.split('_')[i:i+2])[1:-1]
         elif line.isdigit():
             number = ("%05d" % int(float(line)))
-            
+
     # encode number
-    if float(number[:-4]) > 25:
-        number = (chr(65+(int(float(number[:-4]))-10+6)) +
-                  number[-4:])
-    elif float(number[:-4]) > 10:
-        number = (chr(65+(int(float(number[:-4]))-10)) +
-                  number[-4:])
+    try:
+        if float(number[:-4]) > 25:
+            number = (chr(65+(int(float(number[:-4]))-10+6)) +
+                      number[-4:])
+        elif float(number[:-4]) > 10:
+            number = (chr(65+(int(float(number[:-4]))-10)) +
+                      number[-4:])
+    except ValueError:
+        pass
         
     # encode designation
     yr = desig.split()[0]
@@ -89,7 +92,8 @@ if __name__ == '__main__':
     # derive telescope keyword
     for filename in filenames:
 
-        fitsfilename = open(filename, 'r').readlines()[1].split()[15]
+        fitsfilename = open(filename, 'r').readlines()[1].split()[0]
+        fitsfilename = fitsfilename.replace('.ldac', '.fits')
 
         # read telescope and filter information from fits headers
         instrument = None
@@ -143,12 +147,12 @@ if __name__ == '__main__':
                        (' ') + # no note1
                        ('C') + # note2: CCD observation
                        ('{0:17s}'.format(date)) +
-                       ('{0:02d} {1:02d} {2:06.3f}'.format(int(ra[0]),
-                                                           int(ra[1]),
-                                                           ra[2])) +
-                       ('{0:+03d} {1:02d} {2:05.2f}'.format(int(dec[0]),
-                                                            int(dec[1]),
-                                                            dec[2])) +
+                       ('{0:02d} {1:02d} {2:06.3f}'.format(int(ra.h),
+                                                           int(ra.m),
+                                                           ra.s)) +
+                       ('{0:+03d} {1:02d} {2:05.2f}'.format(int(dec.sign*dec.d),
+                                                            int(dec.m),
+                                                            dec.s)) +
                        ('         ') + # blank
                        ('{0:5.2f}{1:1s}'.format(mag, filtername)) +
                        ('      ') + # blank
