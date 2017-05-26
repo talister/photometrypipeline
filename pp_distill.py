@@ -248,7 +248,7 @@ def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None,
                 message_shown = True
 
         else:
-            objects.append({'ident': cat.obj,
+            objects.append({'ident': eph[0]['targetname'].replace(" ", "_"),
                             'obsdate.jd': cat.obstime[0],
                             'cat_idx'   : cat_idx,
                             'ra.deg'    : eph[0]['RA']-old_div(offset[0],3600.),
