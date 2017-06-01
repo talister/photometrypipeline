@@ -66,8 +66,9 @@ def encode_number_desig(filename):
         elif float(des[2:-2]) > 10: 
             des = des[0] + chr(65+(int(float(des[2:-2]))-10)) + des[1]
     else:
-        des = des[0] + des[2:] + des[1]
-    
+        if len(des) > 2:
+            des = des[0] + ('{:02d}'.format(int(float(des[2:])))) + des[1]
+            
     desig = yr + des
     
     return number, desig
