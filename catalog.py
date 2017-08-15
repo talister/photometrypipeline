@@ -257,7 +257,7 @@ class catalog(object):
                              timeout=180)
 
             # write query data into local file
-            outf = open('panstarrs.xml', 'wr')
+            outf = open('panstarrs.xml', 'w')
             outf.write(r.text)
             outf.close()
 
