@@ -37,6 +37,8 @@ observatories/instruments:
 +--------------------------+--------------------+----------------+
 | SOAR 4.1m                | Goodman (**)       | SOARGOODMAN    |
 +--------------------------+--------------------+----------------+
+| San Pedro Martir 84cm    | Mexman (E2V CCD)   | MEXMAN         |
++--------------------------+--------------------+----------------+
 | Telescopio Nazionale     | DOLORES            | TNGDOLORES     |
 | Galileo                  |                    |                |
 +--------------------------+--------------------+----------------+
@@ -47,6 +49,8 @@ observatories/instruments:
 +--------------------------+--------------------+----------------+
 | Generic Telescope        | any                | GENERIC        |
 +--------------------------+--------------------+----------------+
+
+
 
 (*): This camera is a multi-detector instrument; it is recommended to
 split multi-extension FITS frames from this instrument into individual

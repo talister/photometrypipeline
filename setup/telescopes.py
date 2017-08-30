@@ -1649,6 +1649,74 @@ frost_param = {
 }
 
 
+# SPM 84cm, Mexman
+mexman_param = {
+    'telescope_instrument': '0.84cm/MEXMAN',  # telescope/instrument name
+    'telescope_keyword': 'MEXMAN',  # telescope/instrument keyword
+    'observatory_code': '679',  # MPC observatory code
+    'secpix': (0.22, 0.22),  # pixel size (arcsec) before binning
+
+    
+    # image orientation preferences
+    'flipx': False,
+    'flipy': True,
+    'rotate': 90,
+
+    
+    # instrument-specific FITS header keywords
+    'binning': ('CCDXBIN', 'CCDYBIN'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),  # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': ':',  # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS|UT',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'JD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'U': 'U', 'B': 'B', 'V': 'V', 'R': 'R', 'I': 'I'},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+    
+    # source extractor settings
+    'source_minarea': 12,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath + '/setup/mexman.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    
+    # scamp settings
+    'scamp-config-file': rootpath + '/setup/mexman.scamp',
+    'reg_max_mag'          : 19,
+    'reg_search_radius'    : 0.5, # deg
+    'source_tolerance': 'high',
+
+    
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
+                              'DATE-OBS,RA,DEC,AIRMASS'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/mexman.swarp',
+
+            
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['SDSS-R9', 'APASS9', '2MASS']
+}
+
+
+
 ##### access functions for telescope configurations
 
 
@@ -1658,7 +1726,8 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS',
                           'WIYN09HDI', 'RATIR', 'SOARGOODMAN', 'OHP120',
                           #'SL74SAH',
-                          'TNGDOLORES', 'GENERIC', 'KPNO4MOS1', 'FROST']
+                          'TNGDOLORES', 'GENERIC', 'KPNO4MOS1', 'FROST',
+                          'MEXMAN']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword 
@@ -1691,7 +1760,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'mosaic_1_1':        'KPNO4MOS1',
                           'mosaic_1':          'KPNO4MOS1',
                           'KMTS':              'KMTNETS',
-                          'SI Model 620 SN 263': 'FROST'}
+                          'SI Model 620 SN 263': 'FROST',
+                          'Mexman': 'MEXMAN'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K' :       vatt4k_param, 
@@ -1716,7 +1786,8 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'TNGDOLORES':    tngdolores_param,
                         'KPNO4MOS1':     kpno4mos1_param,
                         'KMTNETS':       kmtnets_param,
-                        'FROST':         frost_param}
+                        'FROST':         frost_param,
+                        'MEXMAN':        mexman_param}
 
 
 #### append mytelescopes.py, if available
