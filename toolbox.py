@@ -143,14 +143,11 @@ def read_scamp_output():
     abort = False
     for i in range(len(data)):
       if len(headers) != len(data[i]):
-        print('ERROR: data and header lists from SCAMP output file have ' \
-          + 'different lengths for image %s; do the FITS files have the ' \
-          + 'OBJECT keyword populated?' % data[i][headers['Catalog_Name']])
-        abort = True
-    if abort:
-      return ()
-    else:
-      return (headers, data)
+        raise (RuntimeError,
+               ('data and header lists from SCAMP output file have ' 
+                'different lengths for image %s; do the FITS files have the ' 
+                'OBJECT keyword populated?') % data[i][headers['Catalog_Name']])
+    return (headers, data)
 
 
 ##### PP tools
