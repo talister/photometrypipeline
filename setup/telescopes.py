@@ -1367,13 +1367,73 @@ tngdolores_param = {
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
 }
 
-
-# KPNO 4m Mayall, MOSAIC-1
+# KPNO 4m Mayall, MOSAIC-1, 1.1 and 3
 kpno4mos1_param = {
     'telescope_instrument': 'KPNO4m/MOSAIC',  # telescope/instrument name
     'telescope_keyword': 'KPNO4MOS1',  # telescope/instrument keyword
     'observatory_code': '695',  # MPC observatory code
-    'secpix': (0.27, 0.27),  # pixel size (arcsec) before binning
+    'secpix': (0.2666, 0.2666),  # pixel size (arcsec) before binning
+    #'secpix': (0.25, 0.25),  # pixel size (arcsec) before binning
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': (1, 1),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),  # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': ':',  # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MJD-OBS',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'g SDSS k1017': 'g',
+                            'r SDSS k1018': 'r',
+                            'i SDSS k1019': 'i',
+                            'z SDSS c6020': 'z', # mosaic1.1/3
+                            'z SDSS k1020': 'z', # broken filter
+                            'KXs': 'K',
+                            'none': None},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+    # source extractor settings
+    'source_minarea': 5,  # default sextractor source minimum N_pixels
+    'source_snr': 1.5,  # default sextractor snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath + '/setup/kpno4mos1.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file': rootpath + '/setup/kpno4mos1.scamp',
+    'reg_max_mag': 19,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'low',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['SDSS-R13', 'PANSTARRS', 'APASS9', '2MASS']
+}
+
+# KPNO 4m Mayall, MOSAIC3
+kpno4mos3_param = {
+    'telescope_instrument': 'KPNO4m/MOSAIC',  # telescope/instrument name
+    'telescope_keyword': 'KPNO4MOS3',  # telescope/instrument keyword
+    'observatory_code': '695',  # MPC observatory code
+    'secpix': (0.25, 0.25),  # pixel size (arcsec) before binning
+    #'secpix': (0.2666, 0.2666),  # pixel size (arcsec) before binning
 
     # image orientation preferences
     'flipx': True,
@@ -1401,31 +1461,87 @@ kpno4mos1_param = {
                             'i SDSS k1019': 'i',
                             'z SDSS c6020': 'z',
                             'B Harris k1002': 'B',
+                            'KXs': 'K',
                             'none': None},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
 
     # source extractor settings
-    'source_minarea': 12,  # default sextractor source minimum N_pixels
-    'source_snr': 3, # default sextractor source snr for registration
+    'source_minarea': 5,  # default sextractor source minimum N_pixels
+    'source_snr': 1.5,  # default sextractor snr for registration
     'aprad_default': 5,  # default aperture radius in px
     'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath + '/setup/kpno4mos1.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
 
-    # registration settings (Scamp)
+    # scamp settings
     'scamp-config-file': rootpath + '/setup/kpno4mos1.scamp',
-    'reg_max_mag'          : 19,  
-    'reg_search_radius'    : 0.5, # deg       
-    'source_tolerance': 'high', 
+    'reg_max_mag': 19,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'low',
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
+    'photometry_catalogs': ['SDSS-R13', 'PANSTARRS', 'APASS9', '2MASS']
 }
 
+# KPNO 4m Mayall, NEWFIRM
+kpno4newf_param = {
+    'telescope_instrument': 'KPNO4m/NEWFIRM',  # telescope/instrument name
+    'telescope_keyword': 'KPNO4NEWF',  # telescope/instrument keyword
+    'observatory_code': '695',  # MPC observatory code
+    'secpix': (0.4, 0.4),  # pixel size (arcsec) before binning
+    #'secpix': (0.2666, 0.2666),  # pixel size (arcsec) before binning
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': (1, 1),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),  # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': ':',  # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MJD-OBS',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'KXs': 'K',
+                            'JX': 'J',
+                            'none': None},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+    # source extractor settings
+    'source_minarea': 5,  # default sextractor source minimum N_pixels
+    'source_snr': 1.5,  # default sextractor snr for registration
+    'aprad_default': 10,  # default aperture radius in px
+    'aprad_range': [5, 20],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath + '/setup/kpno4mos1.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file': rootpath + '/setup/kpno4mos1.scamp',
+    'reg_max_mag': 19,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'low',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['2MASS']
+}
 
 # KMTNET-S
 kmtnets_param = {
@@ -1727,7 +1843,8 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'WIYN09HDI', 'RATIR', 'SOARGOODMAN', 'OHP120',
                           #'SL74SAH',
                           'TNGDOLORES', 'GENERIC', 'KPNO4MOS1', 'FROST',
-                          'MEXMAN']
+                          'MEXMAN', 'KPNO4MOS1', 'KPNOMOS3',
+                          'KPNO4NEWF']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword 
@@ -1761,7 +1878,13 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'mosaic_1':          'KPNO4MOS1',
                           'KMTS':              'KMTNETS',
                           'SI Model 620 SN 263': 'FROST',
-                          'Mexman': 'MEXMAN'}
+                          'Mexman': 'MEXMAN',
+                          'mosaic_1_1':        'KPNO4MOS1',
+                          'mosaic_1':          'KPNO4MOS1',
+                          'KMTS':              'KMTNETS',
+                          'newfirm': 'KPNO4NEWF',
+                          'Mosaic3': 'KPNO4MOS3'
+}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K' :       vatt4k_param, 
@@ -1787,7 +1910,13 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'KPNO4MOS1':     kpno4mos1_param,
                         'KMTNETS':       kmtnets_param,
                         'FROST':         frost_param,
-                        'MEXMAN':        mexman_param}
+                        'MEXMAN':        mexman_param,
+                        'KPNO4MOS1':     kpno4mos1_param,
+                        'KMTNETS':       kmtnets_param,
+                        'FROST':         frost_param,
+                        'KPNO4MOS3': kpno4mos3_param,
+                        'KPNO4NEWF': kpno4newf_param
+}
 
 
 #### append mytelescopes.py, if available
