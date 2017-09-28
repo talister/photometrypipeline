@@ -25,6 +25,10 @@ from __future__ import division
 
 
 from past.utils import old_div
+from astropy import units as u
+from astropy.coordinates import SkyCoord
+from astropy.coordinates import FK5, ICRS
+from astropy.time import Time
 import numpy
 import os
 import re
@@ -214,8 +218,8 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         # add header keywords for Source Extractor
         if 'EPOCH' not in header:
             header['EPOCH'] = (2000, 'PP: required for registration')
-        if 'EQUINOX' not in header:
-            header['EQUINOX'] = (2000, 'PP: required for registration')
+        # if 'EQUINOX' not in header:
+        #     header['EQUINOX'] = (2000, 'PP: required for registration')
 
         # add header keywords for SCAMP
         header['PHOTFLAG'] = ('F', 'PP: data is not photometric (SCAMP)')
@@ -245,7 +249,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
                          'AP_2_0', 'BP_ORDER', 'BP_0_0', 'BP_0_1',
                          'BP_0_2', 'BP_1_0', 'BP_1_1', 'BP_2_0', 'CDELT1',
                          'CDELT2', 'CRDELT1', 'CRDELT2']:
-                if toolbox.if_val_in_dict(key, obsparam):
+                if not toolbox.if_val_in_dict(key, obsparam):
                     header.remove(key)
 
         # normalize CUNIT keywords
@@ -357,6 +361,7 @@ def prepare(filenames, obsparam, header_update, flipx=False,
 
         # add fake wcs information that is necessary to run SCAMP
 
+        
         # read out ra and dec from header
         if obsparam['radec_separator'] == 'XXX':
             ra_deg = float(header[obsparam['ra']])
@@ -375,6 +380,19 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             if dec_string[0].find('-') > -1:
                 dec_deg = -1 * dec_deg
 
+        # transform to equinox J2000, if necessary
+        if 'EQUINOX' in header:
+            equinox = float(header['EQUINOX'])
+            if equinox != 2000.:
+                anyeq = SkyCoord(ra=ra_deg*u.deg, dec=dec_deg*u.deg,
+                                 frame=FK5,
+                                 equinox=Time(equinox, format='jyear',
+                                              scale='utc'))
+                coo = anyeq.transform_to(ICRS)
+                ra_deg = coo.ra.deg
+                dec_deg = coo.dec.deg
+                header['EQUINOX'] = (2000.0, 'PP: normalized to ICRS')
+                
         if man_ra is not None and man_dec is not None:
             ra_deg = float(man_ra)
             dec_deg = float(man_dec)

@@ -146,7 +146,7 @@ dctlmi_param = {
     # registration settings (Scamp)
     'scamp-config-file'    : rootpath+'/setup/dctlmi.scamp', 
     'reg_max_mag'          : 19,  
-    'reg_search_radius'    : 0.5, # deg       
+    'reg_search_radius'    : 0.2, # deg       
     'source_tolerance': 'high', 
 
     # swarp settings

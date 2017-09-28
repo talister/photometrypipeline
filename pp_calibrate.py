@@ -173,6 +173,8 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
 
         ### read this: if there is a
         # ValueError: boolean index array should have 1 dimension
+        # or
+        # IndexError: too many indices for array
         # pointing here, the problem is that pp_extract has not been
         # properly run using a single aperture
         ### currently it seems like pp_photometry (maybe callhorizons)
