@@ -414,7 +414,7 @@ class catalog(object):
                     print('no data available from %s' % self.catalogname)
                 logging.error('no data available from %s' % self.catalogname)
                 return 0
-
+     
             # filter columns to only have really good detections
             # see the Vizier webpage for a description of what the flags mean
             Qflags = set('ABC') # only A, B, or C flagged detections
@@ -422,7 +422,7 @@ class catalog(object):
                         for item in self.data['Qflg']]
             # filter columns to only have really good detections
             self.data = self.data[qmask]
-
+            
             ### rename column names using PP conventions
             self.data.rename_column('_2MASS', 'ident')
             self.data.rename_column('RAJ2000', 'ra.deg')            

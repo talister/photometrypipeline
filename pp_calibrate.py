@@ -132,9 +132,6 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                              (min_sources, n_sources))
                 continue
 
-
-
-
     # end up here if none of the catalogs has n_sources > min_sources
     if display:
         print('ERROR: not enough sources in reference catalog %s (%d)' % \

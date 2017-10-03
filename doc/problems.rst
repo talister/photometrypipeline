@@ -42,6 +42,10 @@ pp_calibrate (Photometric Calibration)
    with known magnitudes in the field, in which case there is not a
    lot that can be done...
 
+**The pipeline fails to derive useful magnitude zeropoints from 2MASS data**
+   This problem might be solved by installing the latest version of astropy
+   (currently 2.0.2).
+   
 
 pp_distill (Target Photometry Extraction)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -16,6 +16,7 @@ try:
 except ImportError:
     print('Module astropy not found. Please install with: pip install astropy')
     sys.exit()
+
 try:
     import numpy as np
 except ImportError:

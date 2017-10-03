@@ -389,7 +389,7 @@ def serendipitous_asteroids(catalogs, display=True):
                        'in catalog "{:s}"').format(catalogs[0].catalogname))
         return []
 
-    maglims = [numpy.percentile(cat[band_key], 95) for cat in catalogs] 
+    maglims = [numpy.percentile(cat[band_key], 99.9) for cat in catalogs] 
 
     # maximum positional uncertainty = 5 px (unbinned)
     obsparam = _pp_conf.telescope_parameters[
@@ -411,6 +411,11 @@ def serendipitous_asteroids(catalogs, display=True):
                               '-mime': 'text'},
                      timeout=180)
 
+    if 'No solar system object was found in the requested FOV' in r.text:
+        print('No Solar System object found')
+        logging.warning('SkyBot failed: ' + r.text)
+        return []
+    
     results = ascii.read(r.text, delimiter='|',
                          names=('number', 'name', 'ra', 'dec', 'type',
                                 'V', 'posunc', 'd'))
