@@ -48,6 +48,8 @@ observatories/instruments:
 | Telescopio Nazionale     | DOLORES            | TNGDOLORES     |
 | Galileo                  |                    |                |
 +--------------------------+--------------------+----------------+
+| UKIRT                    | WFCAM              | UKIRTWFCAM     |
++--------------------------+--------------------+----------------+
 | Vatican Advanced         | VATT4k             | VATT4K         |
 | Technology Telescope     |                    |                |
 +--------------------------+--------------------+----------------+

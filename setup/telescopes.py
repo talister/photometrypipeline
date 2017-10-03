@@ -1831,6 +1831,85 @@ mexman_param = {
     'photometry_catalogs': ['SDSS-R9', 'APASS9', '2MASS']
 }
 
+# UKIRT, WFCAM
+ukirtwfcam_param = {
+    'telescope_instrument' : 'UKIRT/WFCAM', # telescope/instrument name
+    'telescope_keyword'    : 'UKIRTWFCAM',      # telescope/instrument keyword
+    'observatory_code'     : '568',         # MPC observatory code
+    'secpix'               : (0.402, 0.402), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # # image orientation preferences
+    # 'flipx'                : False,
+    # 'flipy'                : False,
+    # 'rotate'               : 0,
+
+    # image orientation preferences (for each chip)
+    'chip_id'              : 'CAMNUM',        # chip identifier (remove,
+                                            # if not existent) 
+    # the following keys are dictionaries if 'chip_id' exists, single
+    # values otherwise
+    'flipx'                : {1:True, 2:True, 3:True, 4:True},
+    'flipy'                : {1:True, 2:True, 3:True, 4:True}, 
+    'rotate'               : {1:270, 2:0, 3:90, 4:180},
+    'chip_offset_fixed'    : {1:(-0.44, -0.44), 2:(0,-0.44),
+                              3:(0,0), 4:(-0.440,0)},
+                             # chip offset (ra, dec in degress) [optional]
+
+    
+    # instrument-specific FITS header keywords
+    'binning'              : (1, 1), # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'TELRA',  # telescope pointing, RA
+    'dec'                  : 'TELDEC', # telescope pointin, Dec 
+    'radec_separator'      : 'XXX',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTER',  # filter keyword
+    'filter_translations'  : {'J': 'J', 'Z': 'Z', 
+                              'H': 'H', 'K': 'K'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXP_TIME', # exposure time keyword (s)
+    'airmass'              : 'AMSTART', # airmass keyword
+
+    # source extractor settings
+    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
+    'aprad_default'        : 5, # default aperture radius in px 
+    'aprad_range'          : [3, 8], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/ukirtwfcam.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file'    : rootpath+'/setup/ukirtwfcam.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.05, # deg       
+    'source_tolerance': 'high', 
+    
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXP_TIME,PROJECT,'+
+                              'AIRMASS,OBJECT,DATE-OBS,MJD-OBS,GAIN,'+
+                              'READNOIS,TELRA,TELDEC,SECPIX1,SECPIX2,'+
+                              'MIDTIMJD,TEL_KEYW'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/ukirtwfcam.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['GAIA'], 
+    'photometry_catalogs'  : ['2MASS']
+}
+
 
 
 ##### access functions for telescope configurations
@@ -1844,7 +1923,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           #'SL74SAH',
                           'TNGDOLORES', 'GENERIC', 'KPNO4MOS1', 'FROST',
                           'MEXMAN', 'KPNO4MOS1', 'KPNOMOS3',
-                          'KPNO4NEWF']
+                          'KPNO4NEWF', 'UKIRTWFCAM']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword 
@@ -1883,7 +1962,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'mosaic_1':          'KPNO4MOS1',
                           'KMTS':              'KMTNETS',
                           'newfirm': 'KPNO4NEWF',
-                          'Mosaic3': 'KPNO4MOS3'
+                          'Mosaic3': 'KPNO4MOS3',
+                          'WFCAM': 'UKIRTWFCAM'
 }
 
 # translate telescope keyword into parameter set defined here
@@ -1915,7 +1995,8 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'KMTNETS':       kmtnets_param,
                         'FROST':         frost_param,
                         'KPNO4MOS3': kpno4mos3_param,
-                        'KPNO4NEWF': kpno4newf_param
+                        'KPNO4NEWF': kpno4newf_param,
+                        'UKIRTWFCAM': ukirtwfcam_param
 }
 
 
