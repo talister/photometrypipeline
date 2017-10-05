@@ -67,7 +67,7 @@ logging.basicConfig(filename=_pp_conf.log_filename,
                     datefmt=_pp_conf.log_datefmt)
 
 
-def prepare(filenames, obsparam, header_update, flipx=False,
+def prepare(filenames, obsparam, header_update, keep_wcs, flipx=False,
             flipy=False, rotate=0, man_ra=None, man_dec=None,
             diagnostics=False, display=False):
     """
@@ -226,45 +226,47 @@ def prepare(filenames, obsparam, header_update, flipx=False,
         header['PHOT_K'] = (0.05, 'PP: assumed extinction coefficient')
 
         
-        # remove keywords that might collide with fake wcs
-        for key in list(header.keys()):
-            if re.match('^CD[1,2]_[1,2]', key) is not None:
-                # if key not in obsparam.values():
-                #     header.remove(key)
-                if not toolbox.if_val_in_dict(key, obsparam):
-                    header.remove(key)
-            elif 'PV' in key and '_' in key:
-                header.remove(key)
-            elif key in ['CTYPE1', 'CRPIX1', 'CRVAL1', 'CROTA1',
-                         'CROTA2', 'CFINT1', 'CTYPE2', 'CRPIX2',
-                         'CRVAL2', 'CFINT2', 'LTM1_1', 'LTM2_2',
-                         'WAT0_001', 'LTV1', 'LTV2', 'PIXXMIT',
-                         'PIXOFFST', 'PC1_1', 'PC1_2', 'PC2_1', 'PC2_2',
-                         #'CUNIT1', 'CUNIT2',
-                         'A_ORDER', 'A_0_0',
-                         'A_0_1', 'A_0_2', 'A_1_0', 'A_1_1', 'A_2_0',
-                         'B_ORDER', 'B_0_0', 'B_0_1', 'B_0_2', 'B_1_0',
-                         'B_1_1', 'B_2_0', 'AP_ORDER', 'AP_0_0',
-                         'AP_0_1', 'AP_0_2', 'AP_1_0', 'AP_1_1',
-                         'AP_2_0', 'BP_ORDER', 'BP_0_0', 'BP_0_1',
-                         'BP_0_2', 'BP_1_0', 'BP_1_1', 'BP_2_0', 'CDELT1',
-                         'CDELT2', 'CRDELT1', 'CRDELT2']:
-                if not toolbox.if_val_in_dict(key, obsparam):
-                    header.remove(key)
+        if not keep_wcs:
 
-        # normalize CUNIT keywords
-        try:
-            if 'degree' in header['CUNIT1'].lower():
-                header['CUNIT1'] = ('deg')
-            if 'degree' in header['CUNIT2'].lower():
-                header['CUNIT2'] = ('deg')
-        except KeyError:
-            pass
+            # remove keywords that might collide with fake wcs
+            for key in list(header.keys()):
+                if re.match('^CD[1,2]_[1,2]', key) is not None:
+                    # if key not in obsparam.values():
+                    #     header.remove(key)
+                    if not toolbox.if_val_in_dict(key, obsparam):
+                        header.remove(key)
+                elif 'PV' in key and '_' in key:
+                    header.remove(key)
+                elif key in ['CTYPE1', 'CRPIX1', 'CRVAL1', 'CROTA1',
+                             'CROTA2', 'CFINT1', 'CTYPE2', 'CRPIX2',
+                             'CRVAL2', 'CFINT2', 'LTM1_1', 'LTM2_2',
+                             'WAT0_001', 'LTV1', 'LTV2', 'PIXXMIT',
+                             'PIXOFFST', 'PC1_1', 'PC1_2', 'PC2_1', 'PC2_2',
+                             #'CUNIT1', 'CUNIT2',
+                             'A_ORDER', 'A_0_0',
+                             'A_0_1', 'A_0_2', 'A_1_0', 'A_1_1', 'A_2_0',
+                             'B_ORDER', 'B_0_0', 'B_0_1', 'B_0_2', 'B_1_0',
+                             'B_1_1', 'B_2_0', 'AP_ORDER', 'AP_0_0',
+                             'AP_0_1', 'AP_0_2', 'AP_1_0', 'AP_1_1',
+                             'AP_2_0', 'BP_ORDER', 'BP_0_0', 'BP_0_1',
+                             'BP_0_2', 'BP_1_0', 'BP_1_1', 'BP_2_0',
+                             'CDELT1', 'CDELT2', 'CRDELT1', 'CRDELT2']:
+                    if not toolbox.if_val_in_dict(key, obsparam):
+                        header.remove(key)
+
+            # normalize CUNIT keywords
+            try:
+                if 'degree' in header['CUNIT1'].lower():
+                    header['CUNIT1'] = ('deg')
+                if 'degree' in header['CUNIT2'].lower():
+                    header['CUNIT2'] = ('deg')
+            except KeyError:
+                pass
                     
-        # if GENERIC telescope, add implants to header
-        if obsparam['telescope_keyword'] is 'GENERIC':
-            for key, val in list(implants.items()):
-                header[key] = (val[0], val[1])
+            # if GENERIC telescope, add implants to header
+            if obsparam['telescope_keyword'] is 'GENERIC':
+                for key, val in list(implants.items()):
+                    header[key] = (val[0], val[1])
 
         # read out image binning mode
         binning = toolbox.get_binning(header, obsparam)
@@ -419,21 +421,22 @@ def prepare(filenames, obsparam, header_update, flipx=False,
             ra_offset = float(obsparam['chip_offset_fixed'][cid][0])
             dec_offset = float(obsparam['chip_offset_fixed'][cid][1])
 
-        # create fake header
-        header['RADECSYS'] = ('FK5', 'PP: fake wcs coordinates')
-        header['RADESYS'] = ('FK5', 'PP: fake wcs coordinates')
-        header['CTYPE1'] = ('RA---TAN', 'PP: fake Coordinate type')
-        header['CTYPE2'] = ('DEC--TAN', 'PP: fake Coordinate type')
-        header['CRVAL1'] = (ra_deg+ra_offset,
-                            'PP: fake Coordinate reference value')
-        header['CRVAL2'] = (dec_deg+dec_offset,
-                            'PP: fake Coordinate reference value')
-        header['CRPIX1'] = (int(old_div(
-                                float(header[obsparam['extent'][0]]), 2)),
-                            'PP: fake Coordinate reference pixel')
-        header['CRPIX2'] = (int(old_div(
-                                float(header[obsparam['extent'][1]]), 2)),
-                            'PP: fake Coordinate reference pixel')
+        if not keep_wcs:
+            # create fake header
+            header['RADECSYS'] = ('FK5', 'PP: fake wcs coordinates')
+            header['RADESYS'] = ('FK5', 'PP: fake wcs coordinates')
+            header['CTYPE1'] = ('RA---TAN', 'PP: fake Coordinate type')
+            header['CTYPE2'] = ('DEC--TAN', 'PP: fake Coordinate type')
+            header['CRVAL1'] = (ra_deg+ra_offset,
+                                'PP: fake Coordinate reference value')
+            header['CRVAL2'] = (dec_deg+dec_offset,
+                                'PP: fake Coordinate reference value')
+            header['CRPIX1'] = (int(old_div(
+                float(header[obsparam['extent'][0]]), 2)),
+                                'PP: fake Coordinate reference pixel')
+            header['CRPIX2'] = (int(old_div(
+                float(header[obsparam['extent'][1]]), 2)),
+                                'PP: fake Coordinate reference pixel')
 
         # plugin default distortion parameters, if available
         if 'distort' in obsparam:
@@ -505,6 +508,9 @@ if __name__ == '__main__':
                         default=0)
     parser.add_argument("-target",
                         help='target name (will overwrite OBJECT keyword)')
+    parser.add_argument("-keep_wcs",
+                        help='retain original wcs header information',
+                        action='store_true')
     parser.add_argument("-telescope", help='manual telescope override',
                         default=None)
 
@@ -519,6 +525,7 @@ if __name__ == '__main__':
     man_flipy = args.flipy
     man_rotate = float(args.rotate)
     man_target = args.target
+    keep_wcs = args.keep_wcs
     telescope = args.telescope
     filenames = args.images
 
@@ -554,7 +561,7 @@ if __name__ == '__main__':
         header_update[obsparam['object']] = man_target
 
     # run prepare wrapper
-    preparation = prepare(filenames, obsparam, header_update,
+    preparation = prepare(filenames, obsparam, header_update, keep_wcs,
                           flipx=man_flipx, flipy=man_flipy,
                           man_ra=man_ra, man_dec=man_dec, rotate=man_rotate,
                           diagnostics=True, display=True)

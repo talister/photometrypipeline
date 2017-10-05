@@ -43,7 +43,7 @@ The following functions describe the individual pipeline processes in
 the logical order:
 
 
-.. function:: pp_prepare ([-ra degrees], [-dec degrees], [-flipx], [-flipy], [-rotate degrees], [-target string], images)
+.. function:: pp_prepare ([-ra degrees], [-dec degrees], [-flipx], [-flipy], [-rotate degrees], [-target string], [-keep_wcs], images)
 
    prepares image files for use in the pipeline
 
@@ -62,6 +62,8 @@ the logical order:
                    images, this overwrites the ``OBJECT`` keyword in the
                    FITS headers; note to replace blanks with
                    underscores if the target's name is a designation
+   :param keep_wcs: retain original wcs header information and use that as
+		    initial seed for the image registration process
    :param images: images on which `pp_prepare` is supposed to run
 
 		  
