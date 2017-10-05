@@ -67,9 +67,9 @@ logging.basicConfig(filename=_pp_conf.log_filename,
                     datefmt=_pp_conf.log_datefmt)
 
 
-def prepare(filenames, obsparam, header_update, keep_wcs, flipx=False,
-            flipy=False, rotate=0, man_ra=None, man_dec=None,
-            diagnostics=False, display=False):
+def prepare(filenames, obsparam, header_update, keep_wcs=False,
+            flipx=False, flipy=False, rotate=0, man_ra=None,
+            man_dec=None, diagnostics=False, display=False):
     """
     prepare wrapper
     output: diagnostic properties
@@ -562,7 +562,7 @@ if __name__ == '__main__':
         header_update[obsparam['object']] = man_target
 
     # run prepare wrapper
-    preparation = prepare(filenames, obsparam, header_update, keep_wcs,
+    preparation = prepare(filenames, obsparam, header_update, keep_wcs=keep_wcs,
                           flipx=man_flipx, flipy=man_flipy,
                           man_ra=man_ra, man_dec=man_dec, rotate=man_rotate,
                           diagnostics=True, display=True)
