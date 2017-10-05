@@ -438,35 +438,36 @@ def prepare(filenames, obsparam, header_update, keep_wcs, flipx=False,
                 float(header[obsparam['extent'][1]]), 2)),
                                 'PP: fake Coordinate reference pixel')
 
-        # plugin default distortion parameters, if available
-        if 'distort' in obsparam:
-            if 'functionof' in obsparam['distort']:
-                pv_dict = obsparam['distort'][header[obsparam['distort']
-                                                     ['functionof']]]
-            else:
-                pv_dict = obsparam['distort']
 
-            try:
-                for pv_key, pv_val in pv_dict.items():
-                    header[pv_key] = (pv_val, 'PP: default distortion')
-            except KeyError:
-                logging.error(('No distortion coefficients available for %s '
-                              '%s') % (obsparam['distort']['functionof'],
-                                       header[obsparam['distort']
-                                              ['functionof']]))
+            # plugin default distortion parameters, if available
+            if 'distort' in obsparam:
+                if 'functionof' in obsparam['distort']:
+                    pv_dict = obsparam['distort'][header[obsparam['distort']
+                                                         ['functionof']]]
+                else:
+                    pv_dict = obsparam['distort']
+
+                try:
+                    for pv_key, pv_val in pv_dict.items():
+                        header[pv_key] = (pv_val, 'PP: default distortion')
+                except KeyError:
+                    logging.error(('No distortion coefficients available for '
+                                '%s %s') % (obsparam['distort']['functionof'],
+                                            header[obsparam['distort']
+                                                   ['functionof']]))
         
-        header['CD1_1'] = (xnorm * numpy.cos(this_rotate/180.*numpy.pi) *
-                           obsparam['secpix'][0]*binning[0]/3600.,
-                           'PP: fake Coordinate matrix')
-        header['CD1_2'] = (ynorm * -numpy.sin(this_rotate/180.*numpy.pi) *
-                           obsparam['secpix'][1]*binning[1]/3600.,
-                           'PP: fake Coordinate matrix')
-        header['CD2_1'] = (xnorm * numpy.sin(this_rotate/180.*numpy.pi) *
-                           obsparam['secpix'][0]*binning[0]/3600.,
-                           'PP: fake Coordinate matrix')
-        header['CD2_2'] = (ynorm * numpy.cos(this_rotate/180.*numpy.pi) *
-                           obsparam['secpix'][1]*binning[1]/3600.,
-                           'PP: fake Coordinate matrix')
+            header['CD1_1'] = (xnorm * numpy.cos(this_rotate/180.*numpy.pi) *
+                               obsparam['secpix'][0]*binning[0]/3600.,
+                               'PP: fake Coordinate matrix')
+            header['CD1_2'] = (ynorm * -numpy.sin(this_rotate/180.*numpy.pi) *
+                               obsparam['secpix'][1]*binning[1]/3600.,
+                               'PP: fake Coordinate matrix')
+            header['CD2_1'] = (xnorm * numpy.sin(this_rotate/180.*numpy.pi) *
+                               obsparam['secpix'][0]*binning[0]/3600.,
+                               'PP: fake Coordinate matrix')
+            header['CD2_2'] = (ynorm * numpy.cos(this_rotate/180.*numpy.pi) *
+                               obsparam['secpix'][1]*binning[1]/3600.,
+                               'PP: fake Coordinate matrix')
 
         # crop center from LOWELL42 frames
         if obsparam['telescope_keyword'] == 'LOWELL42':
