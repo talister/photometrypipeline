@@ -3,6 +3,9 @@ Changelog
 
 Major changes to the pipeline since 2016-10-01 (see `Mommert 2017`_) are documented here.
 
+* 2017-10-04: implementation of ``pp_combine``, which enables
+  automated image combination
+
 * 2017-08-29: implementation of Gaia/TGAS as an alternative
   astrometric catalog for shallow widefield observations
 

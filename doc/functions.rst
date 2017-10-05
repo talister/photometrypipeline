@@ -393,8 +393,41 @@ Functions that provide additional functionality:
    please refer to the :ref:`manual target identification` walkthrough
    for a recipe on how to use this function.
 
-		  
+   
+.. function:: pp_combine ([-comoving], [-targetname str],
+	      [-manual_rates float, float], [-method str], [-keep_files],
+	      images)
+
+   image combination
+
+   :param comoving: if used, the images will be combined in the moving
+                    frame of a moving target; the target name will be
+                    taken from the ``OBJECT`` header keyword or the
+                    ``targetname`` parameter
+   :param targetname: manual override for the target name if
+                      ``comoving`` parameter is used
+   :param manual_rates: use manual rates instead of queried
+                        ephemerides; in units of arcsec per second in
+                        RA and Dec; RA rate includes factor of cosine
+                        Dec
+   :param method: image combination method: [average, median, clipped]
+                  as provided by `SWARP`_
+   :param keep_files: if used, intermediate files are not deleted
+   :param images: images to run `pp_manident` on
+
+   This function allows the combination of images using different
+   methods. The function makes use of the `SWARP`_ software. By
+   default, images are combined in the rest frame of the background
+   (stars are enhanced, moving objects are partially removed); the
+   ``-comoving`` option enables the combination in the moving frame of
+   one target. In the latter case, images are shifted based on target
+   ephemerides; manual rates can be provided, too. For details on the
+   combination process, please refer to the `SWARP`_ manual. Image
+   files produced by ``pp_combine`` can be used in any other PP
+   function.
+
 
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp
 .. _CDS Vizier: http://vizier.u-strasbg.fr/vizier/
+.. _SWARP: http://www.astromatic.net/software/swarp
