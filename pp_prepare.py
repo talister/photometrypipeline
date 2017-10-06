@@ -556,7 +556,7 @@ if __name__ == '__main__':
             telescope = 'GENERIC'
 
     obsparam = _pp_conf.telescope_parameters[telescope]
-
+    
     header_update = {}
     if man_target is not None:
         header_update[obsparam['object']] = man_target

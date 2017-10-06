@@ -92,7 +92,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
              ('APASS' in catalogname and
               filtername not in {'B', 'V', 'g', 'r', 'i'}) or
              ('2MASS' in catalogname and
-              filtername not in {'J', 'H', 'K'}) or 
+              filtername not in {'J', 'H', 'K', 'Ks'}) or 
              ('PANSTARRS' in catalogname and
               filtername not in {'g', 'r', 'i', 'z', 'y'}) ):
 
