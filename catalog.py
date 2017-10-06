@@ -427,6 +427,8 @@ class catalog(object):
             self.data.rename_column('_2MASS', 'ident')
             self.data.rename_column('RAJ2000', 'ra.deg')            
             self.data.rename_column('DEJ2000', 'dec.deg')
+            self.data.rename_column('Kmag', 'Ksmag')
+            self.data.rename_column('e_Kmag', 'e_Ksmag')                        
             self.data['mag'] = self.data['Jmag'] # use J as default mag
             
             ### determine RA and Dec positional uncertainties and
@@ -1149,9 +1151,9 @@ class catalog(object):
                           +'UKIRT YZJHK') % self.shape[0])
 
             # transformations using the recipe by Hodgkin et al. 2009, MNRAS
-            mags  = [self['Jmag'], self['Hmag'], self['Kmag'],
+            mags  = [self['Jmag'], self['Hmag'], self['Ksmag'],
                      self['e_Jmag'], self['e_Hmag'], 
-                     self['e_Kmag']]
+                     self['e_Ksmag']]
             lbl   = {'_Ymag': 0, '_e_Ymag': 1, '_Zmag': 2, '_e_Zmag': 3, 
                      '_Jmag': 4, '_e_Jmag': 5, '_Hmag': 6, '_e_Hmag': 7, 
                      '_Kmag': 8, '_e_Kmag': 9}
