@@ -3,8 +3,8 @@
 """ PP_COMBINE - combine frames based on wcs 
     v1.0: 2017-10-03, michael.mommert@nau.edu
 """
-from __future__ import print_function
-
+from __future__ import print_function, division
+                        
 # Photometry Pipeline
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
 
@@ -33,6 +33,7 @@ import subprocess
 import argparse, shlex
 import time
 from astropy.io import fits
+from past.utils import old_div
 
 ### pipeline-specific modules
 import _pp_conf
@@ -105,7 +106,7 @@ def combine(filenames, comoving, targetname,
                    old_div(float(dec_string[1]), 60.) +
                    old_div(float(dec_string[2]), 3600.))
         if dec_string[0].find('-') > -1:
-            ref_dec_deg = -1 * dec_deg
+            ref_dec_deg = -1 * ref_dec_deg
 
     if telescope == 'UKIRTWFCAM':
         ref_ra_deg = ref_ra_deg/24.*360.
@@ -166,14 +167,14 @@ def combine(filenames, comoving, targetname,
                         obsparam['radec_separator'])
                     dec_string = header[obsparam['dec']].split(
                         obsparam['radec_separator'])
-                    ref_ra_deg = 15.*(float(ra_string[0]) +
-                                      old_div(float(ra_string[1]), 60.) +
-                                      old_div(float(ra_string[2]), 3600.))
-                    ref_dec_deg = (abs(float(dec_string[0])) +
+                    ra_deg = 15.*(float(ra_string[0]) +
+                                  old_div(float(ra_string[1]), 60.) +
+                                  old_div(float(ra_string[2]), 3600.))
+                    dec_deg = (abs(float(dec_string[0])) +
                                    old_div(float(dec_string[1]), 60.) +
                                    old_div(float(dec_string[2]), 3600.))
                     if dec_string[0].find('-') > -1:
-                        ref_dec_deg = -1 * dec_deg
+                        dec_deg = -1 * dec_deg
         
                 if filename == filenames[0]:
                     ref_offset_ra = target_ra - ref_ra_deg
