@@ -24,6 +24,8 @@ observatories/instruments:
 | Discovery Channel        | Large Monolithic   | DCTLMI         |
 | Telescope                | Imager             |                |
 +--------------------------+--------------------+----------------+
+| IRSF 1.4m                | SIRIUS             | IRSFSIRIUS     |
++--------------------------+--------------------+----------------+
 | KMTnet SAAO              | --- (*)            | KMTNETS        |
 +--------------------------+--------------------+----------------+
 | KPNO 4m                  | Mosaic 1           | KPNO4MOS1      |

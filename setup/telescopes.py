@@ -1885,7 +1885,7 @@ ukirtwfcam_param = {
     'source_minarea'       : 12, # default sextractor source minimum N_pixels
     'source_snr': 3, # default sextractor source snr for registration
     'aprad_default'        : 5, # default aperture radius in px 
-    'aprad_range'          : [3, 8], # [minimum, maximum] aperture radius (px)
+    'aprad_range'          : [1, 8], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/ukirtwfcam.sex',
     'mask_file'            : {},
     #                        mask files as a function of x,y binning
@@ -1904,6 +1904,71 @@ ukirtwfcam_param = {
     #                         keywords to be copied in image
     #                         combination using swarp
     'swarp-config-file'    : rootpath+'/setup/ukirtwfcam.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['GAIA'], 
+    'photometry_catalogs'  : ['2MASS']
+}
+
+# IRSF 1.4m, SIRIUS
+irsfsirius_param = {
+    'telescope_instrument' : 'IRSF/SIRIUS', # telescope/instrument name
+    'telescope_keyword'    : 'IRSFSIRIUS',      # telescope/instrument keyword
+    'observatory_code'     : 'K94',         # MPC observatory code
+    'secpix'               : (0.453, 0.453), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True,
+    'flipy'                : False,
+    'rotate'               : 0,
+
+    # instrument-specific FITS header keywords
+    'binning'              : (1, 1), # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE_UTC|TIME_UTC', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTER',  # filter keyword
+    'filter_translations'  : {'J': 'H', 'H': 'H', 'Ks': 'Ks'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPOS', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 12, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
+    'aprad_default'        : 5, # default aperture radius in px 
+    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/irsfsirius.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file'    : rootpath+'/setup/irsfsirius.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
+    
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
+                              'DATE-OBS,TIME-OBS,RA,DEC,SECPIX,AIRMASS,' +
+                              'TEL_KEYW'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/vatt4k.swarp',  
 
     # default catalog settings
     'astrometry_catalogs'  : ['GAIA'], 
@@ -1963,7 +2028,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'KMTS':              'KMTNETS',
                           'newfirm': 'KPNO4NEWF',
                           'Mosaic3': 'KPNO4MOS3',
-                          'WFCAM': 'UKIRTWFCAM'
+                          'WFCAM': 'UKIRTWFCAM',
+                          'SIRIUS': 'IRSFSIRIUS'
 }
 
 # translate telescope keyword into parameter set defined here
@@ -1996,7 +2062,8 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'FROST':         frost_param,
                         'KPNO4MOS3': kpno4mos3_param,
                         'KPNO4NEWF': kpno4newf_param,
-                        'UKIRTWFCAM': ukirtwfcam_param
+                        'UKIRTWFCAM': ukirtwfcam_param,
+                        'IRSFSIRIUS': irsfsirius_param
 }
 
 
