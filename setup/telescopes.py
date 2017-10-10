@@ -105,7 +105,7 @@ dctlmi_param = {
     'rotate'               : 0, 
 
     # instrument-specific FITS header keywords
-    'binning'              : ('CCDSUM_blank0', 'CCDSUM_blank1'), 
+    'binning'              : ('CCDSUM#blank0', 'CCDSUM#blank1'), 
                            # binning in x/y, '_blankN' denotes that both axes
                            # are listed in one keyword, sep. by blanks
     'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
@@ -327,7 +327,7 @@ magimacs_param = {
                              # chip offset (ra, dec in degress) [optional]
 
     # instrument-specific FITS header keywords
-    'binning'              : ('BINNING_x1', 'BINNING_x2'), 
+    'binning'              : ('BINNING#x1', 'BINNING#x2'), 
                            # binning in x/y, '_blankN' denotes that both axes
                            # are listed in one keyword, sep. by blanks
     'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
@@ -530,7 +530,7 @@ lowell42_param = {
     'rotate'               : 90,
 
     # instrument-specific FITS header keywords
-    'binning'              : ('CCDSUM_blank1', 'CCDSUM_blank2'), 
+    'binning'              : ('CCDSUM#blank1', 'CCDSUM#blank2'), 
                            # binning in x/y, '_blankN' denotes that both axes
                            # are listed in one keyword, sep. by blanks
     'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
@@ -669,7 +669,7 @@ ctio09_param = {
     'rotate'               : 180,
 
     # instrument-specific FITS header keywords
-    'binning'              : ('CCDSUM_blank1', 'CCDSUM_blank2'), 
+    'binning'              : ('CCDSUM#blank1', 'CCDSUM#blank2'), 
                              # binning in x/y
     'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
     'ra'                   : 'RA',  # telescope pointing, RA
@@ -737,7 +737,7 @@ ctio10_param = {
     'rotate'               : 180,
 
     # instrument-specific FITS header keywords
-    'binning'              : ('CCDSUM_blank1', 'CCDSUM_blank2'), 
+    'binning'              : ('CCDSUM#blank1', 'CCDSUM#blank2'), 
                              # binning in x/y
     'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
     'ra'                   : 'RA',  # telescope pointing, RA
@@ -1072,7 +1072,7 @@ ratir_param = {
     'rotate'               : 0, 
 
     # instrument-specific FITS header keywords
-    'binning'              : ('SC_CH_DTBN', 'SC_CH_DTBN'), # binning in x/y
+    'binning'              : ('SC#CH#DTBN', 'SC#CH#DTBN'), # binning in x/y
                              # _CH_ gets replaced with Channel number
     'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
     'ra'                   : 'STRSTRA',  # telescope pointing, RA
@@ -1186,10 +1186,10 @@ ratir_param = {
 #     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
 # }
 
-# SOAR, Goodman (imager)
+# SOAR, Goodman [old] (imager) 
 # running Goodman data requires the removal of header keywords
 # PARAM0, PARAM61, PARAM62, PARAM63 (degree symbol is non-ASCII)
-soargoodman_param = {
+soargoodmanold_param = {
     'telescope_instrument' : 'SOAR/GOODMAN', # telescope/instrument name
     'telescope_keyword'    : 'SOARGOODMAN',  # telescope/instrument keyword
     'observatory_code'     : 'I33',         # MPC observatory code
@@ -1256,6 +1256,77 @@ soargoodman_param = {
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
 }
 
+# SOAR, Goodman [new] (imager) 
+# running Goodman data requires the removal of header keywords
+# PARAM0, PARAM61, PARAM62, PARAM63 (degree symbol is non-ASCII)
+soargoodman_param = {
+    'telescope_instrument' : 'SOAR/GOODMAN', # telescope/instrument name
+    'telescope_keyword'    : 'SOARGOODMAN',  # telescope/instrument keyword
+    'observatory_code'     : 'I33',         # MPC observatory code
+    'secpix'               : (0.15, 0.15), # pixel size (arcsec)
+                                               # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True, 
+    'flipy'                : True, 
+    'rotate'               : 0, 
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('PG5_9', 'PG5_4'), # binning in x/y
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointin, Dec 
+    'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                                  # keyword; use
+                                                  # 'date|time' if
+                                                  # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'FILTER',  # filter keyword
+    'filter_translations'  : {'Rc': 'R', 'V':'V', 'B':'B', 'u':'u', 
+                              'g-SDSS': 'g', 'r-SDSS': 'r', 'i-SDSS': 'i', 
+                              'z-SDSS': 'z', 'VR': None},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 15, # default sextractor source minimum N_pixels
+    'source_snr': 3, # default sextractor source snr for registration
+    'aprad_default'        : 4, # default aperture radius in px 
+    'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/soargoodman.sex',
+    'mask_file'            : {'1,1' : rootpath+'/setup/mask_soargoodman_1x1.fits',
+                              '2,2' : rootpath+'/setup/mask_soargoodman_2x2.fits'},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file'    : rootpath+'/setup/soargoodman.scamp', 
+    'reg_max_mag'          : 19,  
+    'reg_search_radius'    : 0.5, # deg       
+    'source_tolerance': 'high', 
+
+    # swarp settings
+    'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
+                              'DATE-OBS,RA,DEC,SECPIX,AIRMASS,' +
+                              'TEL_KEYW'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/soargoodman.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['GAIA'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
+}
+
+
 # Observatoire de Haute-Provence, 120cm, CCD
 ohp120_param = {
     'telescope_instrument' : 'OHP120cm/CCD', # telescope/instrument name
@@ -1311,6 +1382,7 @@ ohp120_param = {
     'astrometry_catalogs'  : ['GAIA'], 
     'photometry_catalogs'  : ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
 }
+
 
 
 # Telescopio Nazionale Galileo, DOLORES
@@ -1984,7 +2056,8 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'ARC35AGILE', 'MAGIMACS', 'LOWELL31', 'LOWELL42',
                           'LOWELL72',
                           'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS',
-                          'WIYN09HDI', 'RATIR', 'SOARGOODMAN', 'OHP120',
+                          'WIYN09HDI', 'RATIR', 'SOARGOODMANold', 'SOARGOODMAN',
+                          'OHP120',
                           #'SL74SAH',
                           'TNGDOLORES', 'GENERIC', 'KPNO4MOS1', 'FROST',
                           'MEXMAN', 'KPNO4MOS1', 'KPNOMOS3',
@@ -2015,7 +2088,7 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'C3':                'RATIR',
                           'C4':                'RATIR',
                           #'SHA':               'SL74SHA',
-                          'Goodman Spectrograph': 'SOARGOODMAN',
+                          'Goodman Spectrograph': 'SOARGOODMANold',
                           'Andor Tech':        'OHP120',
                           'LRS':               'TNGDOLORES',
                           'mosaic_1_1':        'KPNO4MOS1',
@@ -2029,7 +2102,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'newfirm': 'KPNO4NEWF',
                           'Mosaic3': 'KPNO4MOS3',
                           'WFCAM': 'UKIRTWFCAM',
-                          'SIRIUS': 'IRSFSIRIUS'
+                          'SIRIUS': 'IRSFSIRIUS',
+                          'Goodman Spectro': 'SOARGOODMAN'
 }
 
 # translate telescope keyword into parameter set defined here
@@ -2050,7 +2124,8 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'GENERIC':       generic_param,
                         'RATIR':         ratir_param,
                         #'SL74SHA':       sl74sha_param,
-                        'SOARGOODMAN':   soargoodman_param,
+                        'SOARGOODMANold': soargoodmanold_param,
+                        'SOARGOODMAN': soargoodman_param,
                         'OHP120':        ohp120_param,
                         'TNGDOLORES':    tngdolores_param,
                         'KPNO4MOS1':     kpno4mos1_param,

@@ -230,8 +230,7 @@ def combine(filenames, comoving, targetname,
                     outfile_name, obsparam['copy_keywords'], fileline))
 
     logging.info('call SWARP as: %s' % commandline)
-    print('running SWARP to combine {:d} frames...'.format(n_frames), flush=True,
-          end=' ')
+    print('running SWARP to combine {:d} frames...'.format(n_frames))
 
     try:
         swarp = subprocess.Popen(shlex.split(commandline),
