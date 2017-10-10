@@ -94,7 +94,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
              ('2MASS' in catalogname and
               filtername not in {'J', 'H', 'K', 'Ks'}) or 
              ('PANSTARRS' in catalogname and
-              filtername not in {'g', 'r', 'i', 'z', 'y'}) ):
+              filtername not in {'gp1', 'rp1', 'ip1', 'zp1', 'yp1'}) ):
 
             n_transformed = cat.transform_filters(filtername) - \
                             cat.reject_sources_with(\
