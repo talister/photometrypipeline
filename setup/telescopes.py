@@ -85,7 +85,7 @@ vatt4k_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['GAIA'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
+    'photometry_catalogs'  : ['SDSS-R9', 'PANSTARRS', 'APASS9']
 }
 
 
