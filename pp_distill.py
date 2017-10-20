@@ -639,16 +639,25 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
 
             # sort measured magnitudes by target
             if dat[0] == target:
+                print(dat[13])
+                print(dat[13].split(';'))
+
                 try:
                     filtername = dat[13].split(';')[3]
-                    if 'manual_zp' in filtername:
-                        filtername = filtername[0]
+                    if 'manual_zp' in dat[13].split(';')[2]:
+                        filtername = dat[13].split(';')[2][0]
                 except IndexError:
                     filtername = '-'
+                    if 'manual_zp' in dat[13].split(';')[2]:
+                        filtername = dat[13].split(';')[2][0]
                 try:
                     catalogname = dat[13].split(';')[2]
+                    if 'manual_zp' in catalogname:
+                        catalogname = 'manual_zp'
                 except IndexError:
                     catalogname = dat[13].split(';')[1]
+                    if 'manual_zp' in catalogname:
+                        catalogname = 'manual_zp'
 
                 output[target].append(dat)
                 outf.write(('%35.35s ' % dat[10].replace(' ', '_')) +
