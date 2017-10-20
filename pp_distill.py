@@ -639,9 +639,6 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
 
             # sort measured magnitudes by target
             if dat[0] == target:
-                print(dat[13])
-                print(dat[13].split(';'))
-
                 try:
                     filtername = dat[13].split(';')[3]
                     if 'manual_zp' in dat[13].split(';')[2]:
