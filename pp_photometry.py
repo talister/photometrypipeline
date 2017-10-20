@@ -34,6 +34,7 @@ import subprocess
 import logging
 import argparse
 import time
+from copy import deepcopy
 from astropy.io import fits
 import matplotlib
 matplotlib.use('Agg')
@@ -382,10 +383,11 @@ def photometry(filenames, sex_snr, source_minarea, aprad,
             hdu.close()
 
     # run extract using (optimum) aprad
-    photpar['aprad'] = aprad
+    photpar['aprad'] = round(aprad, 2)
     photpar['paramfile'] = _pp_conf.rootpath+'/setup/singleaperture.sexparam'
     logging.info('extract sources using optimum aperture from %d images' % \
                  len(filenames))
+    
     if display:
         print(('* extract sources from %d images using aperture ' \
                + 'radius %4.2fpx') % \

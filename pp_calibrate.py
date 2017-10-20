@@ -342,7 +342,8 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
 
 
 def calibrate(filenames, minstars, manfilter, manualcatalog,
-              obsparam, maxflag=3, display=False, diagnostics=False):
+              obsparam, maxflag=3,
+              magzp=None, display=False, diagnostics=False):
     """
     wrapper for photometric calibration
     """
@@ -352,7 +353,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     for filename in filenames:
         hdulist = fits.open(filename, ignore_missing_end=True)
         try:
-            filtername = hdulist[0].header['FILTER']
+            filtername = hdulist[0].header['filter']
         except KeyError:
             print('Cannot read filter name from file %s' % filename)
             logging.error('Cannot read filter name from file %s' % filename)
@@ -413,7 +414,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     else:
         preferred_catalogs = obsparam['photometry_catalogs']
 
-    if filtername is not None:
+    if filtername is not None and magzp is None:
         ref_cat = create_photometrycatalog(ra_deg, dec_deg, rad_deg,
                                            filtername, preferred_catalogs,
                                            max_sources=2e4, display=display)
@@ -421,9 +422,28 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         ref_cat = None
 
     if ref_cat == None:
-        print('Skip calibration - report instrumental magnitudes')
-        logging.error('Skip calibration - report instrumental magnitudes')
+        if magzp == None:
+            print('Skip calibration - report instrumental magnitudes')
+            logging.info('Skip calibration - report instrumental magnitudes')
+        else:
+            print(('use externally provided magnitude zeropoint: '+
+                   '%5.2f+-%4.2f') % (magzp[0], magzp[1]))
+            logging.info(('use externally provided magnitude zeropoint: '+
+                   '%5.2f+-%4.2f') % (magzp[0], magzp[1]))
 
+            # manually add catalog fields and apply magnitude zeropoint
+            filterkey = filtername+'mag'
+            efilterkey = 'e_' + filtername + 'mag'
+            for cat in catalogs:
+                cat.add_fields([filterkey, efilterkey],
+                               [cat['MAG_APER'] + magzp[0],
+                                numpy.sqrt(cat['MAGERR_APER']**2 + \
+                                           magzp[1]**2)],
+                               ['F', 'F'])
+                cat.origin  = (cat.origin.strip()+
+                               ';manual_magnitude_zeropoint;')
+                cat.history += 'calibrated using manual zeropoint'
+            
         ### write calibrated database files
         logging.info('write calibrated data into database files')
         if display:
@@ -516,6 +536,9 @@ if __name__ == '__main__':
                         help='skip calibration, ' + \
                              'only report instrumental magnitudes',
                         action="store_true")
+    parser.add_argument('-magzp', help=('provide external magnitude zeropoint' +
+                                        ' and uncertainty'),
+                        nargs=2)
     parser.add_argument('images', help='images to process', nargs='+')
     args = parser.parse_args()
     minstars = float(args.minstars)
@@ -523,6 +546,7 @@ if __name__ == '__main__':
     maxflag = int(float(args.maxflag))
     manualcatalog = args.cat
     instrumental = args.instrumental
+    man_magzp = args.magzp
     filenames = args.images
 
     # manfilter: None: instrumental magnitudes, False: no manfilter provided
@@ -548,9 +572,12 @@ if __name__ == '__main__':
         sys.exit(0)
     obsparam = _pp_conf.telescope_parameters[telescope]
 
+    if man_magzp is not None:
+        man_magzp = (float(man_magzp[0]), float(man_magzp[1]))
+    
     calibration = calibrate(filenames, minstars, manfilter,
                             manualcatalog, obsparam, maxflag=maxflag,
-                            display=True, diagnostics=True)
+                            magzp=man_magzp, display=True, diagnostics=True)
 
 
 

@@ -78,7 +78,7 @@ vatt4k_param = {
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
                               'DATE-OBS,TIME-OBS,RA,DEC,SECPIX,AIRMASS,' +
-                              'TEL_KEYW'),
+                              'TEL_KEYW,CCDBIN1,CCDBIN2,MIDTIMJD'),
     #                         keywords to be copied in image
     #                         combination using swarp
     'swarp-config-file'    : rootpath+'/setup/vatt4k.swarp',  

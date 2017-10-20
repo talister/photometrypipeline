@@ -639,7 +639,8 @@ def add_calibration(data, imagestretch='linear'):
                      + "<TD>%12.8f</TD><TD>%.3f+-%.3f</TD>" \
                      + "<TD>%.3f+-%.3f</TD>" \
                      + "<TD>%.3f+-%.3f</TD><TD>%.3f</TD></TR>") % \
-                (i+1, dat['match'][0][2][idx], dat['match'][0][3][idx],
+                (i+1, dat['match'][0][2][idx].decode('utf8'),
+                 dat['match'][0][3][idx],
                  dat['match'][0][4][idx], dat['match'][0][0][idx], 
                  dat['match'][0][1][idx],
                  dat['match'][1][0][idx], dat['match'][1][1][idx],
