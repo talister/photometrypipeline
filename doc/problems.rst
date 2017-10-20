@@ -47,17 +47,18 @@ pp_calibrate (Photometric Calibration)
    (currently 2.0.2).
    
 **The pipeline crashes in ``pp_calibrate`` with the following error
-message: `IndexError: too many indices for array`.**
-   Well, this is embarassing... I am familiar with this problem, but I
-   haven't found a way to solve it, yet. The problem is that Source
-   Extractor runs in ``pp_photometry`` to produce an array of aperture
-   photometry results for the curve-of-growth analysis. After that,
-   Source Extractor is supposed to run then once again using the
-   optimum aperture radius. Sometimes, this second Source Extractor
-   runs seems to fail, causing ``pp_calibrate`` to fail. A manual
-   workaround is to run ``pp_photometry`` again using the ``-aprad``
-   option and the optimum aperture derived from the last run. Running
-   ``pp_calibrate`` again will then succeed. 
+message: `IndexError: too many indices for array`.
+** Well, this is embarassing... I am familiar with this problem, but I
+haven't found a way to solve it, yet. The problem is that Source
+Extractor runs in ``pp_photometry`` to produce an array of aperture
+photometry results for the curve-of-growth analysis. After that,
+Source Extractor is supposed to run then once again using the optimum
+aperture radius. Sometimes, this second Source Extractor runs seems to
+fail, causing ``pp_calibrate`` to fail. A manual workaround is to run
+``pp_photometry`` again using the ``-aprad`` option and the optimum
+aperture derived from the last run. Running ``pp_calibrate`` again
+will then succeed. - **Update: this problem should now be fixed. If
+you still encounter problems, please let me know!**
 
    
 pp_distill (Target Photometry Extraction)

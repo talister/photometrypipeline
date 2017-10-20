@@ -397,7 +397,8 @@ Functions that provide additional functionality:
 
    
 .. function:: pp_combine ([-comoving], [-targetname str],
-	      [-manual_rates float, float], [-method str], [-keep_files],
+	      [-manual_rates float, float],
+	      [-method {average, median, clipped}], [-keep_files],
 	      images)
 
    image combination
@@ -428,6 +429,42 @@ Functions that provide additional functionality:
    files produced by ``pp_combine`` can be used in any other PP
    function.
 
+
+.. function:: pp_stackedphotometry ([-comoving], [-filter str],
+	      [-method {average, median, clipped}], [-fixed_aprad
+	      float], [-snr float], images)
+
+   perform automated aperture photometry on stacked images
+
+   :param comoving: if used, the images will be combined in the moving
+                    frame of a moving target; the target name will be
+                    taken from the ``OBJECT`` header keyword or the
+                    ``targetname`` parameter
+   :param filter: manual override for the filter band
+   :param method: image combination method: [average, median, clipped]
+                  as provided by `SWARP`_; default: clipped
+   :param fixed_aprad: use fixed aperture radius for aperture
+                       photometry instead of performing a
+                       curve-of-growth analysis
+   :param snr: minimum SNR for sources to be identified
+   :param images: images to run `pp_stackedphotometry` on
+
+   This function stacks the images provided in the background frame
+   (`skycoadd.fits`) using ``pp_combine``. If the ``-comoving`` option
+   is used, it also creates a combined image in the moving frame of
+   the target provided in the ``OBJECT`` FITS header keyword
+   (resulting in `comove.fits`). The combination method can be set
+   with the ``-clipped`` parameter; the default is a clipped
+   average. Note that while a median combination might produce cleaner
+   images, it does not conserve flux; hence, you are advised not to
+   use the median here. The magnitude zeropoint for the respective
+   filter band (override of header filter information using the
+   ``-filter`` option) is then derived from the `skycoadd.fits` image
+   using ``pp_photometry`` and ``pp_calibrate``. The target photometry
+   is finally extracted using ``pp_distill``.  If the ``-comoving``
+   option is used, the magnitude zeropoint derived from
+   `skycoadd.fits` is applied to `comove.fits`, from which the
+   target's instrumental magnitude is extracted in that case.
 
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp

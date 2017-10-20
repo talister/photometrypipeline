@@ -3,6 +3,9 @@ Changelog
 
 Major changes to the pipeline since 2016-10-01 (see `Mommert 2017`_) are documented here.
 
+* 2017-10-20: implementation of ``pp_stackedphotometry``, providing
+  automated image stacking and subsequent photometry
+
 * 2017-10-04: implementation of ``pp_combine``, which enables
   automated image combination
 
