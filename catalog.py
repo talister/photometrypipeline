@@ -253,7 +253,7 @@ class catalog(object):
                                       'outputformat': 'VOTABLE',
                                       'coordformat': 'FLOAT',
                                       'ndetections': ('>%d' % max_mag)},
-                             timeout=180)
+                             timeout=300)
 
             # write query data into local file
             outf = open('panstarrs.xml', 'w')
