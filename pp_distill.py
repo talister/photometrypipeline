@@ -641,6 +641,8 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
             if dat[0] == target:
                 try:
                     filtername = dat[13].split(';')[3]
+                    if 'manual_zp' in filtername:
+                        filtername = filtername[0]
                 except IndexError:
                     filtername = '-'
                 try:

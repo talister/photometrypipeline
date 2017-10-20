@@ -148,7 +148,7 @@ def combine(filenames, obsparam, comoving, targetname,
                     logging.warning('WARNING: No position from Horizons!'+\
                                     'Name (%s) correct?' % targetname)
                     logging.warning('HORIZONS call: %s' % eph.url)
-                    logging.info('proceeding with background sources analysis')
+                    raise(ValueError, 'no Horizons ephemerides available')
                 else:
                     logging.info('ephemerides for %s pulled from Horizons' %
                                  targetname)

@@ -441,7 +441,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
                                            magzp[1]**2)],
                                ['F', 'F'])
                 cat.origin  = (cat.origin.strip()+
-                               ';manual_magnitude_zeropoint;')
+                               ';'+filtername+'_manual_zp;')
                 cat.history += 'calibrated using manual zeropoint'
             
         ### write calibrated database files
