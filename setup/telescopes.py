@@ -464,10 +464,10 @@ lowell31_param = {
     'rotate'               : 270,
 
     # instrument-specific FITS header keywords
-    'binning'              : ('CDELT1', 'CDELT2'), # binning in x/y
+    'binning'              : ('CCDSUM#blank1', 'CCDSUM#blank2'), # binning in x/y
     'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
-    'ra'                   : 'TELRA',  # telescope pointing, RA
-    'dec'                  : 'TELDEC', # telescope pointin, Dec 
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointin, Dec 
     'radec_separator'      : ':',   # RA/Dec hms separator, use 'XXX'
                                     # if already in degrees
     'date_keyword'         : 'DATE-OBS|UT', # obs date/time
@@ -479,7 +479,7 @@ lowell31_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER2',  # filter keyword
-    'filter_translations'  : {'V': 'V', 'I': 'I'},
+    'filter_translations'  : {'V': 'V', 'I': 'I', 'clear':None},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -1315,7 +1315,7 @@ soargoodman_param = {
 
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
-                              'DATE-OBS,RA,DEC,SECPIX,AIRMASS,' +
+                              'DATE-OBS,RA,DEC,SECPIX,AIRMASS,PG5_9,PG5_4,' +
                               'TEL_KEYW'),
     #                        keywords to be copied in image
     #                        combination using swarp
@@ -1323,7 +1323,7 @@ soargoodman_param = {
 
     # default catalog settings
     'astrometry_catalogs'  : ['GAIA'], 
-    'photometry_catalogs'  : ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
+    'photometry_catalogs'  : ['SDSS-R9', 'PANSTARRS', 'APASS9']
 }
 
 
@@ -2047,6 +2047,71 @@ irsfsirius_param = {
     'photometry_catalogs'  : ['2MASS']
 }
 
+# VLT, FORS2
+vltfors2_param = {
+    'telescope_instrument' : 'VLT/FORS2', # telescope/instrument name
+    'telescope_keyword'    : 'VLTFORS2',  # telescope/instrument keyword
+    'observatory_code'     : '309',         # MPC observatory code
+    'secpix'               : (0.126, 0.126), # pixel size (arcsec)
+                                            # before binning
+    'ext_coeff'            : 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx'                : True, 
+    'flipy'                : False, 
+    'rotate'               : 0, 
+
+    # instrument-specific FITS header keywords
+    'binning'              : ('ESO DET WIN1 BINX', 'ESO DET WIN1 BINY'), 
+                           # binning in x/y, '_blankN' denotes that both axes
+                           # are listed in one keyword, sep. by blanks
+    'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra'                   : 'RA',  # telescope pointing, RA
+    'dec'                  : 'DEC', # telescope pointin, Dec 
+    'radec_separator'      : 'XXX',   # RA/Dec hms separator, use 'XXX'
+                                    # if already in degrees
+    'date_keyword'         : 'DATE-OBS', # obs date/time
+                                         # keyword; use
+                                         # 'date|time' if
+                                         # separate
+    'obsmidtime_jd'        : 'MIDTIMJD', # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object'               : 'OBJECT',  # object name keyword 
+    'filter'               : 'ESO INS FILT1 NAME',  # filter keyword
+    'filter_translations'  : {'R_SPECIAL': 'R'},
+                             # filtername translation dictionary
+    'exptime'              : 'EXPTIME', # exposure time keyword (s)
+    'airmass'              : 'AIRMASS', # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea'       : 9, # default sextractor source minimum N_pixels
+    'source_snr': 10, # default sextractor source snr for registration
+    'aprad_default'        : 4, # default aperture radius in px 
+    'aprad_range'          : [2, 20], # [minimum, maximum] aperture radius (px)
+    'sex-config-file'      : rootpath+'/setup/vltfors2.sex',
+    'mask_file'            : {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file'    : rootpath+'/setup/vltfors2.scamp', 
+    'reg_max_mag'          : 21,  
+    'reg_search_radius'    : 0.3, # deg       
+    'source_tolerance': 'high', 
+
+    # swarp settings
+    'copy_keywords'        : ('OBSERVAT,INSTRUME,ESO INS FILT1 NAME,EXPTIME,' +
+                              'OBJECT,DATE-OBS,RA,DEC,SCALE,AIRMASS,TEL_KEYW'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file'    : rootpath+'/setup/vltfors2.swarp',  
+
+    # default catalog settings
+    'astrometry_catalogs'  : ['GAIA'], 
+    'photometry_catalogs'  : ['SDSS-R9', 'PANSTARRS', 'APASS9']
+}
 
 
 ##### access functions for telescope configurations
@@ -2061,7 +2126,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           #'SL74SAH',
                           'TNGDOLORES', 'GENERIC', 'KPNO4MOS1', 'FROST',
                           'MEXMAN', 'KPNO4MOS1', 'KPNOMOS3',
-                          'KPNO4NEWF', 'UKIRTWFCAM']
+                          'KPNO4NEWF', 'UKIRTWFCAM', 'VLTFORS2']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword 
@@ -2103,7 +2168,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'Mosaic3': 'KPNO4MOS3',
                           'WFCAM': 'UKIRTWFCAM',
                           'SIRIUS': 'IRSFSIRIUS',
-                          'Goodman Spectro': 'SOARGOODMAN'
+                          'Goodman Spectro': 'SOARGOODMAN',
+                          'FORS2': 'VLTFORS2'
 }
 
 # translate telescope keyword into parameter set defined here
@@ -2138,7 +2204,8 @@ telescope_parameters = {'VATT4K' :       vatt4k_param,
                         'KPNO4MOS3': kpno4mos3_param,
                         'KPNO4NEWF': kpno4newf_param,
                         'UKIRTWFCAM': ukirtwfcam_param,
-                        'IRSFSIRIUS': irsfsirius_param
+                        'IRSFSIRIUS': irsfsirius_param,
+                        'VLTFORS2': vltfors2_param
 }
 
 

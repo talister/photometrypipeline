@@ -645,7 +645,8 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
                         filtername = dat[13].split(';')[2][0]
                 except IndexError:
                     filtername = '-'
-                    if 'manual_zp' in dat[13].split(';')[2]:
+                    if (len(dat[13].split(';')) > 2 and
+                        'manual_zp' in dat[13].split(';')[2]):
                         filtername = dat[13].split(';')[2][0]
                 try:
                     catalogname = dat[13].split(';')[2]
