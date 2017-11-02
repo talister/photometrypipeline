@@ -263,7 +263,8 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
                                "only </FONT>; "
     # a fixed aperture radius has been used
     else:
-        summary_message += "using a fixed aperture radius of %.1f px;" % aprad
+        if _pp_conf.photmode == 'APER':
+            summary_message += "using a fixed aperture radius of %.1f px;" % aprad
 
 
     # add information to summary website, if requested

@@ -162,8 +162,6 @@ fluxmargin_aprad = 0.05
 # photometric calibration
 minstars = 0.5
 
-# support
+# photometry flavor ['APER', 'ISOCOR', 'AUTO']
+photmode = 'AUTO'
 
-# path to local variable star database file
-# make sure set this variable accordingly if you want to use the catalog
-vsx_database_file = os.environ.get('PPVARSTARSDB')

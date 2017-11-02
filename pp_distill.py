@@ -574,7 +574,8 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
 
         # build field lists for observed catalogs
         match_keys_other_catalog, extract_other_catalog = [], []
-        for key in ['ra.deg', 'dec.deg', 'XWIN_IMAGE', 'YWIN_IMAGE', 'FLAGS']:
+        for key in ['ra.deg', 'dec.deg', 'XWIN_IMAGE', 'YWIN_IMAGE',
+                    'FLAGS', 'FWHM_WORLD']:
             if key in cat.fields:
                 match_keys_other_catalog.append(key)
                 extract_other_catalog.append(key)
@@ -606,11 +607,11 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
                          cal_mag, cal_magerr,
                          cat.obstime, cat.catalogname,
                          match[1][2][i], match[1][3][i],
-                         cat.origin, match[1][4][i]])
+                         cat.origin, match[1][4][i], match[1][5][i]])
             # format: ident, RA_exp, Dec_exp, RA_img, Dec_img,
             #         mag_inst, sigmag_instr, mag_cal, sigmag_cal
             #         obstime, filename, img_x, img_y, origin, flags
-
+            #         fwhm
             targetnames[match[0][2][i]] = 1
 
 
@@ -630,13 +631,13 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
 
         outf = open('photometry_%s.dat' %
                     target.translate(_pp_conf.target2filename), 'w')
-        outf.write('#                          filename    julian_date '
-                   'ast_mag ast_sig        ast_ra       ast_dec    '
-                   '[1]   [2]    [3]   [4]    [5]       ZP ZP_sig '
-                   'inst_mag in_sig   [6] [7] [8] [9]\n')
+        outf.write('#                          filename     julian_date      ' +
+                   'mag    sig     source_ra    source_dec   [1]   [2]   ' +
+                   '[3]   [4]    [5]       ZP ZP_sig inst_mag ' +
+                   'in_sig               [6] [7] [8]    [9]          [10] ' +
+                   'FWHM\n')
 
         for dat in data:
-
             # sort measured magnitudes by target
             if dat[0] == target:
                 try:
@@ -676,17 +677,20 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
                            ('%s ' % catalogname) +
                            ('%s ' % filtername) +
                            ('%3d ' % dat[14]) +
-                           ('%s\n' % dat[13].split(';')[0]))
+                           ('%s' % dat[13].split(';')[0]) +
+                           ('%10s ' % _pp_conf.photmode) +
+                           ('%4.2f\n' % (dat[15]*3600)))
 
-        outf.writelines('#\n# [1]: predicted_RA - image_RA [arcsec]\n'+
-                        '# [2]: predicted_Dec - image_Dec [arcsec]\n'+
+        outf.writelines('#\n# [1]: predicted_RA - source_RA [arcsec]\n'+
+                        '# [2]: predicted_Dec - source_Dec [arcsec]\n'+
                         '# [3,4]: manual target offsets in RA and DEC ' +
                         '[arcsec]\n'+
                         '# [5]: exposure time (s)\n'+
                         '# [6]: photometric catalog\n' +
                         '# [7]: photometric band\n' +
                         '# [8]: Source Extractor flag\n' +
-                        '# [9]: telescope/instrument\n')
+                        '# [9]: telescope/instrument\n' +
+                        '# [10]: photometry method\n')
         outf.close()
 
 

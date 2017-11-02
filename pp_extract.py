@@ -99,8 +99,11 @@ def extract_singleframe(data):
 
     # prepare running SEXTRACTOR
     os.remove(ldacname) if os.path.exists(ldacname) else None
-    optionstring  = ' -PHOT_APERTURES %s ' % \
-                    param['aperture_diam']
+
+    optionstring = ''
+    if _pp_conf.photmode == 'APER':
+        optionstring  += ' -PHOT_APERTURES %s ' % \
+                        param['aperture_diam']
     if ('global_background' in param and 
         param['global_background']):
         optionstring += ' -BACKPHOTO_TYPE GLOBAL '
@@ -239,18 +242,21 @@ def extract_multiframe(filenames, parameters):
         return {}
 
     # set aperture photometry DIAMETER as string
-    if ((type(parameters['aprad']) == float and parameters['aprad'] == 0)
-        or (type(parameters['aprad']) == list
-            and len(parameters['aprad']) == 0)):
-        parameters['aperture_diam'] = str(parameters['obsparam']
-                                          ['aprad_default']*2)
-    else:
-        if not isinstance(parameters['aprad'], list) and \
-           not isinstance(parameters['aprad'], numpy.ndarray):
-            parameters['aprad'] = [str(parameters['aprad'])]
-        parameters['aperture_diam'] = ','.join([str(float(rad)*2.) for
-                                                rad in parameters['aprad']])
-
+    if _pp_conf.photmode == 'APER':
+        if ((type(parameters['aprad']) == float and
+             parameters['aprad'] == 0)
+            or (type(parameters['aprad']) == list
+                and len(parameters['aprad']) == 0)):
+            parameters['aperture_diam'] = str(parameters['obsparam']
+                                              ['aprad_default']*2)
+        else:
+            if not isinstance(parameters['aprad'], list) and \
+               not isinstance(parameters['aprad'], numpy.ndarray):
+                parameters['aprad'] = [str(parameters['aprad'])]
+            parameters['aperture_diam'] = ','.join([str(float(rad)*2.)
+                                                for rad in
+                                                parameters['aprad']])
+                
     #check what the binning is and if there is a mask available
     binning = get_binning(hdu[0].header, parameters['obsparam'])
     bin_string = '%d,%d' % (binning[0], binning[1])

@@ -835,7 +835,8 @@ def add_results(data, imagestretch='linear'):
                                 stretch={'linear': LinearStretch(),
                                          'log': LogStretch()}[imagestretch])
                 # extract aperture radius
-                aprad = float(hdulist[0].header['APRAD'])
+                if _pp_conf.photmode == 'APER':
+                    aprad = float(hdulist[0].header['APRAD'])
 
                 # create plot
                 #plotsize = 7. # inches
@@ -852,10 +853,16 @@ def add_results(data, imagestretch='linear'):
                              color='white')
 
                 # place aperture
-                circle = plt.Circle((old_div(boxsize,2.), old_div(boxsize,2.)), 
-                                    aprad, ec='red', fc='none', linewidth=1)
-                plt.gca().add_patch(circle)
-
+                if _pp_conf.photmode == 'APER':
+                    targetpos = plt.Circle((boxsize/2, boxsize/2), 
+                                           aprad, ec='red', fc='none',
+                                           linewidth=1)
+                else:
+                    targetpos = plt.Rectangle((boxsize/2-7, boxsize/2-7),
+                                              15, 15, ec='red', fc='none',
+                                              linewidth=1)
+                plt.gca().add_patch(targetpos)
+                    
                 # place expected position (if within thumbnail)
                 if (abs(exp_x-obj_x) <= old_div(boxsize,2.) and 
                     abs(exp_y-obj_y) <= old_div(boxsize,2.)): 
