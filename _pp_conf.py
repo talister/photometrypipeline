@@ -163,5 +163,5 @@ fluxmargin_aprad = 0.05
 minstars = 0.5
 
 # photometry flavor ['APER', 'ISOCOR', 'AUTO']
-photmode = 'AUTO'
-
+photmode = 'APER'
+## don't change this unless you understand what you are doing
