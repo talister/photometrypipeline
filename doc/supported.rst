@@ -55,6 +55,8 @@ observatories/instruments:
 | Vatican Advanced         | VATT4k             | VATT4K         |
 | Technology Telescope     |                    |                |
 +--------------------------+--------------------+----------------+
+| Very Large Telescope     | FORS2              | VLTFORS2       |
++--------------------------+--------------------+----------------+
 | WIYN 0.9m                | Half Degree Imager | WIYN09HDI      |
 +--------------------------+--------------------+----------------+
 | Generic Telescope        | any                | GENERIC        |
