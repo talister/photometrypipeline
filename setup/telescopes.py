@@ -2013,7 +2013,7 @@ irsfsirius_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
-    'filter_translations'  : {'J': 'H', 'H': 'H', 'Ks': 'Ks'},
+    'filter_translations'  : {'J': 'J', 'H': 'H', 'Ks': 'Ks'},
                              # filtername translation dictionary
     'exptime'              : 'EXPOS', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
