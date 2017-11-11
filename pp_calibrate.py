@@ -356,7 +356,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     for filename in filenames:
         hdulist = fits.open(filename, ignore_missing_end=True)
         try:
-            filtername = hdulist[0].header['filter']
+            filtername = hdulist[0].header[obsparam['filter']]
         except KeyError:
             print('Cannot read filter name from file %s' % filename)
             logging.error('Cannot read filter name from file %s' % filename)

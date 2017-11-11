@@ -150,8 +150,9 @@ dctlmi_param = {
     'source_tolerance': 'high', 
 
     # swarp settings
-    'copy_keywords'        : ('OBSERVAT,INSTRUME,CCDFLTID,EXPTIME,OBJECT,' +
-                              'DATE-OBS,RA,DEC,SCALE,AIRMASS,TEL_KEYW'),
+    'copy_keywords'        : ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
+                              'DATE-OBS,RA,DEC,AIRMASS,TEL_KEYW,CCDSUM,' +
+                              'FILTERS,MIDTIMJD'),
     #                        keywords to be copied in image
     #                        combination using swarp
     'swarp-config-file'    : rootpath+'/setup/dctlmi.swarp',  

@@ -196,6 +196,7 @@ def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None,
             targetname = man_targetname.replace('_', ' ')
         for smallbody in [True, False]:
             eph = callhorizons.query(targetname, smallbody=smallbody)
+            #eph = callhorizons.query(targetname, smallbody=False)
             eph.set_discreteepochs(cat.obstime[0])
             n = 0
             try:
@@ -227,6 +228,7 @@ def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None,
             targetname = man_targetname.replace('_', ' ')
             cat.obj = targetname
         eph = callhorizons.query(targetname, smallbody=is_asteroid)
+        #eph = callhorizons.query(targetname, smallbody=False)
         eph.set_discreteepochs(cat.obstime[0])
 
         try:
