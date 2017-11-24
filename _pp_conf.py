@@ -162,6 +162,13 @@ fluxmargin_aprad = 0.05
 # photometric calibration
 minstars = 0.5
 
+# solar color margin
+# solar color filtering allows for color indices
+# [color-_pp_conf.solcol -- color+_pp_conf.solcol]
+solcol = 0.2
+
+
 # photometry flavor ['APER', 'ISOCOR', 'AUTO']
 photmode = 'APER'
 ## don't change this unless you understand what you are doing
+

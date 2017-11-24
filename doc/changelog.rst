@@ -3,6 +3,10 @@ Changelog
 
 Major changes to the pipeline since 2016-10-01 (see `Mommert 2017`_) are documented here.
 
+* 2017-11-24: implementation of `-solar` option in ``pp_run`` and
+  ``pp_calibrate`` to obtain photometric calibration only from stars
+  with Sun-like colors
+
 * 2017-10-20: implementation of ``pp_stackedphotometry``, providing
   automated image stacking and subsequent photometry
 

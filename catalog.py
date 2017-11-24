@@ -943,8 +943,7 @@ class catalog(object):
         ### SDSS to BVRI
         ### transformations based on Chonis & Gaskell 2008, AJ, 135 
         if (('SDSS' in self.catalogname) and 
-            (targetfilter in {'B', 'V', 'R', 'I'}) and 
-            (self.magsystem == 'AB')):
+            (targetfilter in {'B', 'V', 'R', 'I'})):
 
             logging.info(('trying to transform %d SDSS sources to ' \
                           + '%s') % (self.shape[0], targetfilter))
@@ -1193,9 +1192,8 @@ class catalog(object):
             return self.shape[0]
 
         # PANSTARRS to BVRI
-        elif (self.catalogname == 'PANSTARRS' and
-              targetfilter in ['B', 'V', 'R', 'I'] and
-              self.magsystem == 'AB'):
+        elif ('PANSTARRS' in self.catalogname and
+              targetfilter in ['B', 'V', 'R', 'I']):
 
             logging.info(('trying to transform %d PANSTARRS sources to ' \
                           + '%s') % (self.shape[0], targetfilter))
@@ -1243,9 +1241,8 @@ class catalog(object):
             return self.shape[0]
 
         # PANSTARRS to Sloan griz
-        elif (self.catalogname == 'PANSTARRS' and
-              targetfilter in ['g', 'r', 'i', 'z'] and
-              self.magsystem == 'AB'):
+        elif ('PANSTARRS' in self.catalogname and
+              targetfilter in ['g', 'r', 'i', 'z']):
 
             logging.info(('trying to transform %d PANSTARRS sources to ' \
                           + '%s') % (self.shape[0], targetfilter))

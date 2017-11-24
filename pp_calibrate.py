@@ -61,7 +61,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                              preferred_catalogs,
                         min_sources=_pp_conf.min_sources_photometric_catalog,
                              max_sources=1e4, mag_accuracy=0.1,
-                             display=False):
+                             solar=False, display=False):
     """create a photometric catalog of the field of view"""
 
     for catalogname in preferred_catalogs:
@@ -74,7 +74,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             print(n_sources, 'sources downloaded from', catalogname)
         if n_sources < min_sources:
             continue
-
+        
         if 'URAT' in catalogname:
             print(catalogname + ' should only be used as an astrometric ' 
                   'catalog; please use APASS9 instead')
@@ -82,6 +82,43 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                           'astrometric catalog; please use APASS9 instead')
             return None
 
+        # reject non-solar colors, if requested by user
+        if solar:
+            sol_gr = 0.44 # g-r
+            sol_ri = 0.11 # r-i
+            n_rejected = 0
+            n_raw = cat.shape[0]
+            if ('SDSS' in cat.catalogname or
+                'APASS' in cat.catalogname):
+                n_rejected += cat.reject_sources_with(
+                    (cat['gmag']-cat['rmag']) < sol_gr-_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['gmag']-cat['rmag']) > sol_gr+_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['rmag']-cat['imag']) < sol_ri-_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['rmag']-cat['imag']) > sol_ri+_pp_conf.solcol)
+            elif 'PANSTARRS' in cat.catalogname:
+                cat.transform_filters('g') # derive Sloan griz
+                n_rejected += cat.reject_sources_with(
+                    (cat['_gmag']-cat['_rmag']) <sol_gr-_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['_gmag']-cat['_rmag']) >sol_gr+_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['_rmag']-cat['_imag']) <sol_ri-_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['_rmag']-cat['_imag']) >sol_ri+_pp_conf.solcol)
+            else:
+                if display:
+                    print('Warning: solar colors not supported for catalog',
+                          cat.catalogname)
+                    logging.warning(('Warning: solar colors not supported ' +
+                                 'for catalog'), cat.catalogname)
+            if display:
+                print('%d/%d sources left with solar-like colors' %
+                      (n_raw-n_rejected, n_raw))
+                logging.info('%d/%d sources left with solar-like colors' %
+                             (n_raw-n_rejected, n_raw))
         
         # transform catalog to requested filtername, if necessesary
         if ( n_sources > 0 and
@@ -131,7 +168,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                 logging.info('less than %d sources (%d), try other catalog' %
                              (min_sources, n_sources))
                 continue
-
+            
     # end up here if none of the catalogs has n_sources > min_sources
     if display:
         print('ERROR: not enough sources in reference catalog %s (%d)' % \
@@ -346,7 +383,8 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
 
 def calibrate(filenames, minstars, manfilter, manualcatalog,
               obsparam, maxflag=3,
-              magzp=None, display=False, diagnostics=False):
+              magzp=None, solar=False,
+              display=False, diagnostics=False):
     """
     wrapper for photometric calibration
     """
@@ -420,10 +458,9 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     if filtername is not None and magzp is None:
         ref_cat = create_photometrycatalog(ra_deg, dec_deg, rad_deg,
                                            filtername, preferred_catalogs,
-                                           max_sources=2e4, display=display)
-    else:
-        ref_cat = None
-
+                                           max_sources=2e4, solar=solar,
+                                           display=display)
+       
     if ref_cat == None:
         if magzp == None:
             print('Skip calibration - report instrumental magnitudes')
@@ -542,6 +579,9 @@ if __name__ == '__main__':
     parser.add_argument('-magzp', help=('provide external magnitude zeropoint' +
                                         ' and uncertainty'),
                         nargs=2)
+    parser.add_argument('-solar',
+                        help='restrict to solar-color stars',
+                        action="store_true", default=False)
     parser.add_argument('images', help='images to process', nargs='+')
     args = parser.parse_args()
     minstars = float(args.minstars)
@@ -550,6 +590,7 @@ if __name__ == '__main__':
     manualcatalog = args.cat
     instrumental = args.instrumental
     man_magzp = args.magzp
+    solar = args.solar
     filenames = args.images
 
     # manfilter: None: instrumental magnitudes, False: no manfilter provided
@@ -580,7 +621,8 @@ if __name__ == '__main__':
     
     calibration = calibrate(filenames, minstars, manfilter,
                             manualcatalog, obsparam, maxflag=maxflag,
-                            magzp=man_magzp, display=True, diagnostics=True)
+                            magzp=man_magzp, solar=solar,
+                            display=True, diagnostics=True)
 
 
 

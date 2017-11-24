@@ -4,7 +4,7 @@ Functions
 The individual pipeline functions are introduced and explained
 below. All functions presented here can be called from the terminal. 
 
-.. function:: pp_run ([-prefix string], [-target string], [-filter string], [-fixed_aprad float], images)
+.. function:: pp_run ([-prefix string], [-target string], [-filter string], [-fixed_aprad float], [-solar], images)
 
    serves as a wrapper for all the individual pipeline processes
 
@@ -23,8 +23,9 @@ below. All functions presented here can be called from the terminal.
                              level at which sources are rejected in
                              the image registration process; see
                              :func:`pp_register` for details.
-		   
-
+   :param -solar: the photometric calibration (`pp_calibrate`) is only
+                  using stars with solar-like colors (see
+                  `pp_calibrate` documentation for details)
    :param images: images on which the pipeline is supposed to run,
                   wildcard symbols (``'*'``, ``'?'``) can be used; or,
                   by using ``all``, PP runs on all FITS files in
@@ -229,7 +230,7 @@ the logical order:
    the measured FWHMs.
 
 
-.. function:: pp_calibrate ([-minstars int/float], [-catalog string], [-filter string], [-maxflag integer], [-instrumental], images)
+.. function:: pp_calibrate ([-minstars int/float], [-catalog string], [-filter string], [-maxflag integer], [-instrumental], [-solar], images)
 
    photometric calibration of each input frame in one specific filter
    
@@ -262,6 +263,15 @@ the logical order:
                          calibration process is skipped entirely and
                          instrumental magnitudes are written to the
                          photometry database for each image
+   :param -solar: only use stars with solar-like colors; use this
+                  feature for photometry of Solar System
+                  bodies. Solar-like stars are selected based on their
+                  `g-i` and `r-i` colors, hence, this feature is
+                  currently only available for photometric calibration
+                  using the PANSTARRS, APASS, and SDSS catalogs. The
+                  threshold of solar-like colors is defined by the
+                  `_pp_conf.solcol` parameter; the default is the
+                  actual color index +- 0.2 mag.
    :param images: images to run `pp_calibrate` on
 
    
