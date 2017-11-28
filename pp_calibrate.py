@@ -455,6 +455,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
     else:
         preferred_catalogs = obsparam['photometry_catalogs']
 
+    ref_cat = None
     if filtername is not None and magzp is None:
         ref_cat = create_photometrycatalog(ra_deg, dec_deg, rad_deg,
                                            filtername, preferred_catalogs,

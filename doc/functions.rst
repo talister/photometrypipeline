@@ -442,7 +442,7 @@ Functions that provide additional functionality:
 
 .. function:: pp_stackedphotometry ([-comoving], [-filter str],
 	      [-method {average, median, clipped}], [-fixed_aprad
-	      float], [-snr float], images)
+	      float], [-snr float], [-solar], images)
 
    perform automated aperture photometry on stacked images
 
@@ -457,6 +457,9 @@ Functions that provide additional functionality:
                        photometry instead of performing a
                        curve-of-growth analysis
    :param snr: minimum SNR for sources to be identified
+   :param -solar: the photometric calibration (`pp_calibrate`) is only
+		  using stars with solar-like colors (see
+		  `pp_calibrate` documentation for details)
    :param images: images to run `pp_stackedphotometry` on
 
    This function stacks the images provided in the background frame

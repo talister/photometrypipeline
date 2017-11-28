@@ -82,6 +82,9 @@ if __name__ == '__main__':
     parser.add_argument('-snr',
                         help='SNR limit for detected sources',
                         default=3)
+    parser.add_argument('-solar',
+                        help='restrict to solar-color stars',
+                        action="store_true", default=False)    
     parser.add_argument('images', help='images to process',
                         nargs='+')
     args = parser.parse_args()
@@ -90,6 +93,7 @@ if __name__ == '__main__':
     combinemethod = args.method
     fixed_aprad = float(args.fixed_aprad)
     snr = args.snr
+    solar = args.solar
     filenames = args.images
 
     # use current directory as root directory
@@ -190,7 +194,8 @@ if __name__ == '__main__':
     
     calibration = pp_calibrate.calibrate(['skycoadd.fits'], minstars,
                                          man_filtername,
-                                         manualcatalog, obsparam, display=True,
+                                         manualcatalog, obsparam, solar=solar,
+                                         display=True,
                                          diagnostics=True)
 
     zp = calibration['zeropoints'][0]['zp']
@@ -272,7 +277,7 @@ if __name__ == '__main__':
         calibration = pp_calibrate.calibrate(['comove.fits'], minstars,
                                              man_filtername,
                                              manualcatalog, obsparam,
-                                             magzp=(zp, zp_err),
+                                             magzp=(zp, zp_err), solar=solar,
                                              display=True,
                                              diagnostics=True)
 
