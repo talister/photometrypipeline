@@ -303,7 +303,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                    match])
 
             # identify most significant outliers (not weighted) and remove them
-            for repeat in range(max([1, int(old_div(len(residuals),25.))])):
+            for repeat in range(max([1, int(len(residuals)/50)])):
                 popidx        = numpy.argmax(numpy.absolute(residuals \
                                                             - zeropoint))
                 residuals     = numpy.delete(residuals, popidx)
@@ -314,13 +314,16 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         # select best-fit zeropoint based on minimum chi2
         idx = numpy.nanargmin([step[2] for step in clipping_steps])
         # # select best-fit zeropoint based on minimum sigma
-        # idx = numpy.nanargmin([step[1] for step in clipping_steps])
+        #idx = numpy.nanargmin([step[1] for step in clipping_steps])
 
-
-
-        # reduce idx to increase the number of source until minstars is met
-        while len(clipping_steps[idx][3]) < minstars and idx > 0:
-            idx -= 1
+        # reduce/increase idx to increase the number of sources until
+        # minstars is met
+        if len(clipping_steps[idx][3]) < minstars:
+            while len(clipping_steps[idx][3]) < minstars and idx > 0:
+                idx -= 1
+        else:
+            while len(clipping_steps[idx][3]) < minstars and idx > 0:
+                idx += 1
 
         output['zeropoints'].append({'filename':cat.catalogname,
                                      'zp': clipping_steps[idx][0],
