@@ -749,7 +749,9 @@ class catalog(object):
             
         # # combine HDUs and write file
         hdulist = fits.HDUList([primaryhdu, hdrhdu, datahdu])
-        if float(astropyversion.split('.')[1]) >= 3:
+        if float(astropyversion.split('.')[0]) > 1:
+            hdulist.writeto(ldac_filename, overwrite=True)            
+        elif float(astropyversion.split('.')[1]) >= 3:
             hdulist.writeto(ldac_filename, overwrite=True)
         else:
             hdulist.writeto(ldac_filename, clobber=True)
