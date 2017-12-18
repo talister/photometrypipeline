@@ -942,6 +942,11 @@ class catalog(object):
         if len(self.data) == 0:
             return 0
 
+        # check if this specific transformation has already been done
+        if '_'+targetfilter+'mag' in self.fields:
+            logging.info(targetfilter + ' already available')
+            return self.shape[0]
+        
         ### SDSS to BVRI
         ### transformations based on Chonis & Gaskell 2008, AJ, 135 
         if (('SDSS' in self.catalogname) and 
