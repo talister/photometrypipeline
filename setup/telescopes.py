@@ -1292,9 +1292,12 @@ soargoodman_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'FILTER',  # filter keyword
-    'filter_translations'  : {'Rc': 'R', 'V':'V', 'B':'B', 'u':'u', 
+    'filter_translations'  : {'Rc': 'R', 'V':'V', 'B':'B', 'u':'u',
+                              'B-Bessel': 'B', 'V-Bessel': 'V',
+                              'R-Bessel': 'R', 'I-Bessel': 'I',
                               'g-SDSS': 'g', 'r-SDSS': 'r', 'i-SDSS': 'i', 
-                              'z-SDSS': 'z', 'VR': None},
+                              'z-SDSS': 'z', 'VR': None,
+                              '<NO FILTER>': None},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -1307,7 +1310,7 @@ soargoodman_param = {
     'aprad_range'          : [2, 10], # [minimum, maximum] aperture radius (px)
     'sex-config-file'      : rootpath+'/setup/soargoodman.sex',
     'mask_file'            : {'1,1' : rootpath+'/setup/mask_soargoodman_1x1.fits',
-                              '2,2' : rootpath+'/setup/mask_soargoodman_2x2.fits'},
+                             '2,2' : rootpath+'/setup/mask_soargoodman_2x2.fits'},
     #                        mask files as a function of x,y binning
 
     # registration settings (Scamp)
@@ -1319,7 +1322,7 @@ soargoodman_param = {
     # swarp settings
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
                               'DATE-OBS,RA,DEC,SECPIX,AIRMASS,PG5_9,PG5_4,' +
-                              'TEL_KEYW'),
+                              'MIDTIMJD,TEL_KEYW'),
     #                        keywords to be copied in image
     #                        combination using swarp
     'swarp-config-file'    : rootpath+'/setup/soargoodman.swarp',  
@@ -2066,7 +2069,7 @@ vltfors2_param = {
     'rotate'               : 0, 
 
     # instrument-specific FITS header keywords
-    'binning'              : ('ESO DET WIN1 BINX', 'ESO DET WIN1 BINY'), 
+    'binning'              : ('ESO DET WIN1 BINX', 'ESO DET WIN1 BINY'),
                            # binning in x/y, '_blankN' denotes that both axes
                            # are listed in one keyword, sep. by blanks
     'extent'               : ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
@@ -2083,7 +2086,7 @@ vltfors2_param = {
                                          # pp_prepare
     'object'               : 'OBJECT',  # object name keyword 
     'filter'               : 'ESO INS FILT1 NAME',  # filter keyword
-    'filter_translations'  : {'R_SPECIAL': 'R'},
+    'filter_translations'  : {'R_SPECIAL': 'r'},
                              # filtername translation dictionary
     'exptime'              : 'EXPTIME', # exposure time keyword (s)
     'airmass'              : 'AIRMASS', # airmass keyword
@@ -2105,8 +2108,12 @@ vltfors2_param = {
     'source_tolerance': 'high', 
 
     # swarp settings
-    'copy_keywords'        : ('OBSERVAT,INSTRUME,ESO INS FILT1 NAME,EXPTIME,' +
-                              'OBJECT,DATE-OBS,RA,DEC,SCALE,AIRMASS,TEL_KEYW'),
+    # swarp does not work for FORS2 due to hierarchical header keywords
+    # requires a workaround
+    'copy_keywords'        : ('OBSERVAT,INSTRUME,'
+                              'EXPTIME,'
+                              'OBJECT,DATE-OBS,RA,DEC,SCALE,AIRMASS,'
+                              'TEL_KEYW'),
     #                        keywords to be copied in image
     #                        combination using swarp
     'swarp-config-file'    : rootpath+'/setup/vltfors2.swarp',  
