@@ -402,11 +402,15 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
 
         # special treatment for UKIRT/WFCAM
         if obsparam['telescope_keyword'] == 'UKIRTWFCAM':
-            ra_deg = (float(header['TELRA'])/24.*360. -
-                      old_div(float(header['JITTER_X']), 3600.))
-            dec_deg = (float(header['TELDEC']) -
-                       old_div(float(header['JITTER_Y']), 3600.))
-
+            try:
+                ra_deg = (float(header['TELRA'])/24.*360. -
+                          old_div(float(header['JITTER_X']), 3600.))
+                dec_deg = (float(header['TELDEC']) -
+                           old_div(float(header['JITTER_Y']), 3600.))
+            except KeyError:
+                # JITTER keywords not in combined images
+                pass
+                
         # apply flips
         xnorm, ynorm = 1, 1
         if this_flipx:
