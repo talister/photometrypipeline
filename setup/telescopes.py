@@ -1978,7 +1978,7 @@ ukirtwfcam_param = {
     'copy_keywords'        : ('TELESCOP,INSTRUME,FILTER,EXP_TIME,PROJECT,'+
                               'AIRMASS,OBJECT,DATE-OBS,MJD-OBS,GAIN,'+
                               'READNOIS,TELRA,TELDEC,SECPIX1,SECPIX2,'+
-                              'CAMNUM,MIDTIMJD,TEL_KEYW'),
+                              'CAMNUM,MIDTIMJD,TEL_KEYW,AMSTART'),
     #                         keywords to be copied in image
     #                         combination using swarp
     'swarp-config-file'    : rootpath+'/setup/ukirtwfcam.swarp',
