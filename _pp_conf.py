@@ -22,7 +22,7 @@ try:
 except ImportError:
     print('Module numpy not found. Please install with: pip install numpy')
     sys.exit()
-    
+
 # import pipeline-specific modules
 from toolbox import *
 
