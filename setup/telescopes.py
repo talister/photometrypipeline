@@ -669,7 +669,7 @@ lowell72_param = {
     'rotate': 0,
 
     # instrument-specific FITS header keywords
-    'binning': ('CRDELT1', 'CRDELT2'),
+    'binning': (3, 3),
     # binning in x/y, '_blankN' denotes that both axes
     # are listed in one keyword, sep. by blanks
     'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
@@ -686,17 +686,17 @@ lowell72_param = {
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
     'filter': 'FILTNME3',  # filter keyword
-    'filter_translations': {'V': 'V', 'I': 'I', 'R': 'R', 'VR': None},
+    'filter_translations': {'B': 'B', 'V': 'V', 'I': 'I', 'R': 'R', 'VR': None},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
 
 
     # source extractor settings
-    'source_minarea': 12,  # default sextractor source minimum N_pixels
+    'source_minarea': 3,  # default sextractor source minimum N_pixels
     'source_snr': 3,  # default sextractor source snr for registration
-    'aprad_default': 5,  # default aperture radius in px
-    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'aprad_default': 2,  # default aperture radius in px
+    'aprad_range': [1, 5],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/lowell72.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
@@ -708,7 +708,7 @@ lowell72_param = {
     'source_tolerance': 'high',
 
     # swarp settings
-    'copy_keywords': ('TELESCOP,INSTRUME,CRDELT1, CRDELT2,FILTNME3,' +
+    'copy_keywords': ('TELESCOP,INSTRUME,FILTNME3,' +
                       'EXPTIME,OBJECT,' +
                       'DATE-OBS,TELRA,TELDEC,PIXSCAL,AIRMASS,' +
                       'TEL_KEYW'),
@@ -718,9 +718,8 @@ lowell72_param = {
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9', '2MASS']
 }
-
 
 # CTIO 0.9m, CFCCD
 ctio09_param = {
