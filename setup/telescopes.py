@@ -1856,7 +1856,7 @@ frost_param = {
     'rotate': 0,
 
     # instrument-specific FITS header keywords
-    'binning': ('CCDBIN1', 'CCDBIN2'),  # binning in x/y
+    'binning': (1, 1),  # binning in x/y
     'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
     'ra': 'RA',  # telescope pointing, RA
     'dec': 'DEC',  # telescope pointin, Dec
@@ -1871,17 +1871,17 @@ frost_param = {
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
     'filter': 'FILTER',  # filter keyword
-    'filter_translations': {'clear': 'V'},
+    'filter_translations': {'clear': 'V', 'Clear': 'V'},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
 
 
     # source extractor settings
-    'source_minarea': 5,  # default sextractor source minimum N_pixels
+    'source_minarea': 4,  # default sextractor source minimum N_pixels
     'source_snr': 3,  # default sextractor source snr for registration
     'aprad_default': 3,  # default aperture radius in px
-    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'aprad_range': [1, 4],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/frost.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
@@ -2297,7 +2297,7 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'mosaic_1_1':        'KPNO4MOS1',
                           'mosaic_1':          'KPNO4MOS1',
                           'KMTS':              'KMTNETS',
-                          'SI Model 620 SN 263': 'FROST',
+                          'SI 600-277': 'FROST',
                           'Mexman': 'MEXMAN',
                           'mosaic_1_1':        'KPNO4MOS1',
                           'mosaic_1':          'KPNO4MOS1',
