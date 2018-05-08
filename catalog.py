@@ -336,7 +336,8 @@ class catalog(object):
             try:
                 self.data = vquery.query_region(field,
                                                 width=("%fd" % rad_deg),
-                                                catalog="I/337/gaia")[0]
+                                                catalog="I/337/gaia",
+                                                cache=False)[0]
             except IndexError:
                 if self.display:
                     print('no data available from %s' % self.catalogname)
@@ -375,7 +376,8 @@ class catalog(object):
             try:
                 self.data = vquery.query_region(field,
                                                 width=("%fd" % rad_deg),
-                                                catalog="I/337/tgas")[0]
+                                                catalog="I/337/tgas",
+                                                cache=False)[0]
             except IndexError:
                 if self.display:
                     print('no data available from %s' % self.catalogname)
@@ -412,7 +414,8 @@ class catalog(object):
             try:
                 self.data = vquery.query_region(field,
                                                 width=("%fd" % rad_deg),
-                                                catalog="II/246/out")[0]
+                                                catalog="II/246/out",
+                                                cache=False)[0]
             except IndexError:
                 if self.display:
                     print('no data available from %s' % self.catalogname)
@@ -475,7 +478,8 @@ class catalog(object):
             try:
                 self.data = vquery.query_region(field,
                                                 width=("%fd" % rad_deg),
-                                                catalog="I/329/urat1")[0]
+                                                catalog="I/329/urat1",
+                                                cache=False)[0]
             except IndexError:
                 if self.display:
                     print('no data available from %s' % self.catalogname)
@@ -513,7 +517,8 @@ class catalog(object):
             try:
                 self.data = vquery.query_region(field,
                                                 width=("%fd" % rad_deg),
-                                                catalog="II/336/apass9")[0]
+                                                catalog="II/336/apass9",
+                                                cache=False)[0]
             except IndexError:
                 if self.display:
                     print('no data available from %s' % self.catalogname)
@@ -546,7 +551,8 @@ class catalog(object):
             try:
                 self.data = vquery.query_region(field,
                                                 width=("%fd" % rad_deg),
-                                                catalog="V/139/sdss9")[0]
+                                                catalog="V/139/sdss9",
+                                                cache=False)[0]
             except IndexError:
                 if self.display:
                     print('no data available from %s' % self.catalogname)
@@ -587,7 +593,8 @@ class catalog(object):
                                                                'clean',
                                                                'type'],
                                               timeout=180,
-                                              data_release=13)
+                                              data_release=13,
+                                              cache=False)
             except IndexError:
                 if self.display:
                     print('no data available from %s' % self.catalogname)
