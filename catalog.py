@@ -1,4 +1,4 @@
-""" 
+"""
 CATALOG - class structure for dealing with astronomical catalogs,
           FITS_LDAC files, and sqlite databases.
 
@@ -29,7 +29,7 @@ import os
 import sys
 import numpy
 import logging
-#import urllib.request, urllib.error, urllib.parse
+# import urllib.request, urllib.error, urllib.parse
 import time
 import sqlite3 as sql
 
@@ -105,8 +105,8 @@ class catalog(object):
 
     @property
     def fields(self):
-        """ 
-        return: array of all available fields 
+        """
+        return: array of all available fields
         """
         return self.data.columns
 
@@ -119,7 +119,7 @@ class catalog(object):
     # data manipulation functions
 
     def reject_sources_other_than(self, condition):
-        """ 
+        """
         reject sources based on condition
         input: condition
         return: number of sources left
@@ -135,7 +135,7 @@ class catalog(object):
         return len(self.data)
 
     def reject_sources_with(self, condition):
-        """ 
+        """
         reject sources based on condition
         input: condition
         return: number of sources left
@@ -161,7 +161,7 @@ class catalog(object):
                                            format=field_type))
 
     def add_fields(self, field_names, field_arrays, field_types):
-        """ 
+        """
         add fields to self.data
         input: field_names, field_arrays, field_types
         output: number of added fields
@@ -186,9 +186,9 @@ class catalog(object):
     def download_catalog(self, ra_deg, dec_deg, rad_deg,
                          max_sources, save_catalog=False,
                          max_mag=21):
-        """ 
+        """
         download existing catalog from VIZIER server using self.catalogname
-        input: ra_deg, dec_deg, rad_deg, max_sources, (display_progress), 
+        input: ra_deg, dec_deg, rad_deg, max_sources, (display_progress),
                (sort=['ascending', 'descending', None])
         return: number of sources downloaded
 
@@ -666,8 +666,8 @@ class catalog(object):
     def read_ldac(self, filename, fits_filename=None, maxflag=None,
                   time_keyword='MIDTIMJD', exptime_keyword='EXPTIME',
                   object_keyword='OBJECT', telescope_keyword='TEL_KEYW'):
-        """ 
-        read in FITS_LDAC file 
+        """
+        read in FITS_LDAC file
         input: LDAC filename
         return: (number of sources, number of fields)
         """
@@ -713,6 +713,10 @@ class catalog(object):
         if 'YWIN_WORLD' in self.fields:
             self.data.rename_column('YWIN_WORLD', 'dec.deg')
 
+        # force positive RA values
+        flip_idc = numpy.where(self.data['ra.deg'] < 0)[0]
+        self.data['ra.deg'][flip_idc] += 360
+
         logging.info('read %d sources in %d columns from LDAC file %s' %
                      (self.shape[0], self.shape[1], filename))
 
@@ -721,8 +725,8 @@ class catalog(object):
         return self.shape
 
     def write_ldac(self, ldac_filename):
-        """ 
-        write data in new FITS_LDAC file (mainly for use in SCAMP) 
+        """
+        write data in new FITS_LDAC file (mainly for use in SCAMP)
         input: filename, ra/dec field names, projection_type
         return: number of sources written to file
         """
