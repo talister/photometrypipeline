@@ -253,8 +253,6 @@ def curve_of_growth_analysis(filenames, parameters,
         flux_res = numpy.fabs(target_flux[0][flux_select] -
                               background_flux[0][flux_select])
 
-        print(flux_res)
-
         if numpy.min(flux_res) < _pp_conf.fluxmargin_aprad:
             aprad_strategy = 'target+background fluxes > fluxlimit, ' + \
                              'flux difference < margin'

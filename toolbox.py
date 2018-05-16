@@ -197,10 +197,16 @@ def skycenter(catalogs, ra_key='ra.deg', dec_key='dec.deg'):
     from astropy.coordinates import SkyCoord
     from astropy import units as u
 
-    min_ra = min([numpy.min(cat[ra_key]) for cat in catalogs])
-    max_ra = max([numpy.max(cat[ra_key]) for cat in catalogs])
-    min_dec = min([numpy.min(cat[dec_key]) for cat in catalogs])
-    max_dec = max([numpy.max(cat[dec_key]) for cat in catalogs])
+    # using percentiles instead of min/max to get better handle
+    # on outliers
+    min_ra = min([numpy.percentile(cat[ra_key], 1)
+                  for cat in catalogs])
+    max_ra = max([numpy.percentile(cat[ra_key], 99)
+                  for cat in catalogs])
+    min_dec = min([numpy.percentile(cat[dec_key], 1)
+                   for cat in catalogs])
+    max_dec = max([numpy.percentile(cat[dec_key], 99)
+                   for cat in catalogs])
 
     ra, dec = (max_ra+min_ra)/2, (max_dec+min_dec)/2
 
