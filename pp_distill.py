@@ -540,15 +540,16 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
         for obj in objects:
             if obj['cat_idx'] != cat_idx:
                 continue
-            if (obj['ra.deg'] > max_ra or obj['ra.deg'] < min_ra or
-                    obj['dec.deg'] > max_dec or obj['dec.deg'] < min_dec):
-                if display:
-                    print('\"%s\" not in image %s' % (obj['ident'],
-                                                      cat.catalogname))
-                    logging.info('\"%s\" not in image %s' % (obj['ident'],
-                                                             cat.catalogname))
+            # # not required since there is exactly one entry per catalog
+            # if (obj['ra.deg'] > max_ra or obj['ra.deg'] < min_ra or
+            #         obj['dec.deg'] > max_dec or obj['dec.deg'] < min_dec):
+            #     if display:
+            #         print('\"%s\" not in image %s' % (obj['ident'],
+            #                                           cat.catalogname))
+            #         logging.info('\"%s\" not in image %s' % (obj['ident'],
+            #                                                  cat.catalogname))
 
-                continue
+            #     continue
             objects_thiscat.append(obj)
 
         if len(objects_thiscat) == 0:
