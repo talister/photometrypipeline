@@ -2383,6 +2383,71 @@ lcosbigkb78_param = {
     'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
+# Apache Point Observatory 3.5m, SPICAM
+arc35spicam_param = {
+    'telescope_instrument': 'ARC35/SPICAM',  # telescope/instrument name
+    'telescope_keyword': 'ARC35SPICAM',      # telescope/instrument keyword
+    'observatory_code': '705',         # MPC observatory code
+    'secpix': (0.141, 0.141),  # pixel size (arcsec)
+    # before binning
+    'ext_coeff': 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('CCDSUM#blank0', 'CCDSUM#blank1'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': ':',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'SDSS g': 'g', 'SDSS r': 'r',
+                            'SDSS i': 'i', 'SDSS z': 'z'},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 15,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [3, 15],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/arc35spicam.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/arc35spicam.scamp',
+    'reg_max_mag': 18,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
+                      'DATE-OBS,RA,DEC,SECPIX,AIRMASS,' +
+                      'TEL_KEYW,MIDTIMJD'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file': rootpath+'/setup/vatt4k.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
+}
 
 # access functions for telescope configurations
 
@@ -2398,7 +2463,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'MEXMAN', 'KPNO4MOS1', 'KPNOMOS3',
                           'KPNO4NEWF', 'UKIRTWFCAM', 'VLTFORS2',
                           'LOWELL42SITE', 'PLUTOPLATE', 'TCS15MUSCAT2',
-                          'LCOSBIGKB78']
+                          'LCOSBIGKB78', 'ARC35SPICAM']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword
@@ -2445,7 +2510,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           '2:1 f/17 direct': 'LOWELL42SITE',
                           'Pluto plate': 'PLUTOPLATE',
                           'MuSCAT2': 'TCS15MUSCAT2',
-                          'kb78': 'LCOSBIGKB78'}
+                          'kb78': 'LCOSBIGKB78',
+                          'spicam': 'ARC35SPICAM'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
@@ -2484,7 +2550,8 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'LOWELL42SITE': lowell42site_param,
                         'PLUTOPLATE': plutoplate_param,
                         'TCS15MUSCAT2': tcs15muscat2_param,
-                        'LCOSBIGKB78': lcosbigkb78_param}
+                        'LCOSBIGKB78': lcosbigkb78_param,
+                        'ARC35SPICAM': arc35spicam_param}
 
 
 # append mytelescopes.py, if available
