@@ -26,6 +26,8 @@ observatories/instruments:
 | Discovery Channel        | Large Monolithic   | DCTLMI         |
 | Telescope                | Imager             |                |
 +--------------------------+--------------------+----------------+
+| Gran Canaria 1.5m        | MUSCAT2            | TCS15MUSCAT2   |
++--------------------------+--------------------+----------------+
 | IRSF 1.4m                | SIRIUS             | IRSFSIRIUS     |
 +--------------------------+--------------------+----------------+
 | KMTnet SAAO              | --- (*)            | KMTNETS        |
@@ -51,13 +53,14 @@ observatories/instruments:
 | Magellan                 | IMACS              | MAGIMACS       |
 +--------------------------+--------------------+----------------+
 | Observatoire Haute-      | CCD                | OHP120         |
-| Provence 1.2m            |                    | OHP120         |
+| Provence 1.2m            |                    |                |
++--------------------------+--------------------+----------------+
+| Palomar 60-inch          | optical facility   | P60OPT         |
+|                          | camera             |                |
 +--------------------------+--------------------+----------------+
 | SOAR 4.1m                | Goodman (**)       | SOARGOODMAN    |
 +--------------------------+--------------------+----------------+
 | San Pedro Martir 84cm    | Mexman (E2V CCD)   | MEXMAN         |
-+--------------------------+--------------------+----------------+
-| Gran Canaria 1.5m        | MUSCAT2            | TCS15MUSCAT2   |
 +--------------------------+--------------------+----------------+
 | Telescopio Nazionale     | DOLORES            | TNGDOLORES     |
 | Galileo                  |                    |                |
@@ -74,8 +77,6 @@ observatories/instruments:
 | Generic Telescope        | any                | GENERIC        |
 +--------------------------+--------------------+----------------+
 
-
-
 (*): This camera is a multi-detector instrument; it is recommended to
 split multi-extension FITS frames from this instrument into individual
 single-extension FITS images and to run the pipeline on these
@@ -87,6 +88,8 @@ keywords ``PARAM0``, ``PARAM61``, ``PARAM62``, and ``PARAM63`` prior
 to running PP, e.g., using the ``delhead`` command provided by
 `WCSTools`_.
 
+It is recommended to stitch images from cameras with multiple amplifiers
+together using the correct orientations.
  
 If you would like to use the pipeline for other observatories, please
 contact me.
