@@ -58,6 +58,8 @@ observatories/instruments:
 | Palomar 60-inch          | optical facility   | P60OPT         |
 |                          | camera             |                |
 +--------------------------+--------------------+----------------+
+| Palomar 60-inch          | SED Machine        | P60SEDM        |
++--------------------------+--------------------+----------------+
 | SOAR 4.1m                | Goodman (**)       | SOARGOODMAN    |
 +--------------------------+--------------------+----------------+
 | San Pedro Martir 84cm    | Mexman (E2V CCD)   | MEXMAN         |
