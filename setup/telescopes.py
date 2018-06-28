@@ -345,30 +345,31 @@ magimacs_param = {
     'object': 'OBJECT',  # object name keyword
     'filter': 'FILTER',  # filter keyword
     'filter_translations': {'Sloan_u': 'u', 'Sloan_g': 'g', 'Sloan_r': 'r',
-                              'Sloan_i': 'i', 'Sloan_z': 'z'},
+                            'Sloan_i': 'i', 'Sloan_z': 'z',
+                            'Bessell_V1': 'V', 'WB4800-7800': None},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
 
 
     # source extractor settings
-    'source_minarea': 20,  # default sextractor source minimum N_pixels
+    'source_minarea': 10,  # default sextractor source minimum N_pixels
     'source_snr': 3,  # default sextractor source snr for registration
     'aprad_default': 8,  # default aperture radius in px
-    'aprad_range': [5, 25],  # [minimum, maximum] aperture radius (px)
+    'aprad_range': [3, 15],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/magimacs.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
 
     # registration settings (Scamp)
     'scamp-config-file': rootpath+'/setup/magimacs.scamp',
-    'reg_max_mag': 19,
+    'reg_max_mag': 21,
     'reg_search_radius': 0.5,  # deg
     'source_tolerance': 'high',
 
     # swarp settings
-    'copy_keywords': ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
-                      'DATE-OBS,UT-TIME,RA,DEC,AIRMASS,' +
+    'copy_keywords': ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,CHIP,EXPTYPE,' +
+                      'DATE-OBS,UT-TIME,BINNING,RA,DEC,AIRMASS,' +
                       'SECPIX,TEL_KEYW'),
     #                        keywords to be copied in image
     #                        combination using swarp
@@ -376,7 +377,7 @@ magimacs_param = {
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
+    'photometry_catalogs': ['SDSS-R9', 'PANSTARRS', 'SkyMapper', 'APASS9', '2MASS']
 }
 
 
