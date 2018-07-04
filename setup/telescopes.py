@@ -2716,6 +2716,74 @@ p60sedm_param = {
 }
 
 
+# Gemini South, GMOS
+gmoss_param = {
+    'telescope_instrument': 'Gemini-S/GMOS',  # telescope/instrument name
+    'telescope_keyword': 'GMOSS',  # telescope/instrument keyword
+    'observatory_code': 'I11',         # MPC observatory code
+    'secpix': (0.08, 0.08),  # pixel size (arcsec)
+    # before binning
+    'ext_coeff': 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx': False,
+    'flipy': False,
+    'rotate': 90,
+
+    # instrument-specific FITS header keywords
+    'binning': ('CCDSUM#blank0', 'CCDSUM#blank1'),
+    # binning in x/y, '_blankN' denotes that both axes
+    # are listed in one keyword, sep. by blanks
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointing, Dec
+    'radec_separator': 'XXX',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; guse
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'V': 'V'},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 9,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 4,  # default aperture radius in px
+    'aprad_range': [2, 15],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/gmoss.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/gmoss.scamp',
+    'reg_max_mag': 19,
+    'reg_search_radius': 0.2,  # deg
+    'source_tolerance': 'none',
+
+    # swarp settings
+    'copy_keywords': ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
+                      'DATE-OBS,RA,DEC,AIRMASS,TEL_KEYW,CCDSUM,' +
+                      'FILTER,MIDTIMJD'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file': rootpath+'/setup/gmoss.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['SDSS-R9', 'PANSTARRS', 'APASS9']
+}
+
+
 # access functions for telescope configurations
 
 
@@ -2731,7 +2799,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'KPNO4NEWF', 'UKIRTWFCAM', 'VLTFORS2',
                           'LOWELL42SITE', 'PLUTOPLATE', 'TCS15MUSCAT2',
                           'LCOSBIGKB78', 'ARC35SPICAM', 'LCOSINFL03',
-                          'LCOSPECFS01', 'P60OPT', 'P60SEDM']
+                          'LCOSPECFS01', 'P60OPT', 'P60SEDM', 'GMOSS']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword
@@ -2783,7 +2851,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'fl03': 'LCOSINFL03',
                           'fs01': 'LCOSPECFS01',
                           'P60': 'P60OPT',
-                          'Rainbow Cam': 'P60SEDM'
+                          'Rainbow Cam': 'P60SEDM',
+                          'GMOS-S': 'GMOSS'
                           }
 
 # translate telescope keyword into parameter set defined here
@@ -2828,7 +2897,8 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'LCOSINFL03': lcosinfl03_param,
                         'LCOSPECFS01': lcospecfs01_param,
                         'P60OPT': p60opt_param,
-                        'P60SEDM': p60sedm_param}
+                        'P60SEDM': p60sedm_param,
+                        'GMOSS': gmoss_param}
 
 
 # append mytelescopes.py, if available
