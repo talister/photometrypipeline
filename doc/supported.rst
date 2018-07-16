@@ -26,6 +26,8 @@ observatories/instruments:
 | Discovery Channel        | Large Monolithic   | DCTLMI         |
 | Telescope                | Imager             |                |
 +--------------------------+--------------------+----------------+
+| Gemini North 8.2m        | GMOS               | GMOSN          |
++--------------------------+--------------------+----------------+
 | Gran Canaria 1.5m        | MUSCAT2            | TCS15MUSCAT2   |
 +--------------------------+--------------------+----------------+
 | IRSF 1.4m                | SIRIUS             | IRSFSIRIUS     |
