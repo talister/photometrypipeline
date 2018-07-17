@@ -133,7 +133,7 @@ def curve_of_growth_analysis(filenames, parameters,
                 date = hdu[0].header['MIDTIMJD']
 
             # call HORIZONS to get target coordinates
-            eph = callhorizons.query(targetname)
+            eph = callhorizons.query(targetname.replace('_', ' '))
             eph.set_discreteepochs(date)
             try:
                 n = eph.get_ephemerides(str(obsparam['observatory_code']))

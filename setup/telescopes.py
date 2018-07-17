@@ -1379,7 +1379,7 @@ soargoodman_param = {
 
     # registration settings (Scamp)
     'scamp-config-file': rootpath+'/setup/soargoodman.scamp',
-    'reg_max_mag': 19,
+    'reg_max_mag': 21,
     'reg_search_radius': 0.5,  # deg
     'source_tolerance': 'high',
 
