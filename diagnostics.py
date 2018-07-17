@@ -45,8 +45,8 @@ except ImportError:
     sys.exit()
 
 try:
-    from scipy.misc import toimage  # requires Pillow
-    from scipy.misc import imresize  # requires Pillow
+    from scipy.misc import toimage
+    from scipy.misc import imresize
     from scipy.misc import bytescale
 except ImportError:
     print('Modules scipy or pillow not found. Please install with: pip '

@@ -1300,7 +1300,7 @@ class catalog(object):
                       0.011*(self.data['gp1mag']-self.data['rp1mag']) +
                       0.010*(self.data['gp1mag']-self.data['rp1mag'])**2)
             ierr_sdss = numpy.sqrt(self.data['e_ip1mag']**2 + 0.004**2)
-            z_sdss = (self.data['rp1mag'] + 0.013 -
+            z_sdss = (self.data['zp1mag'] + 0.013 -
                       0.039*(self.data['gp1mag']-self.data['rp1mag']) -
                       0.012*(self.data['gp1mag']-self.data['rp1mag'])**2)
             zerr_sdss = numpy.sqrt(self.data['e_zp1mag']**2 + 0.01**2)

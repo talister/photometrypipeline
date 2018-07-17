@@ -222,10 +222,15 @@ def skycenter(catalogs, ra_key='ra.deg', dec_key='dec.deg'):
 
 def if_val_in_dict(target_val, dic):
     """check if a value appears in a nested dict structure"""
+    result = False
     for key, val in dic.items():
         if type(val) is dict:
-            return if_val_in_dict(target_val, val)
+            if if_val_in_dict(target_val, val):
+                result = True
         elif type(val) is list:
-            return target_val in val
+            if target_val in val:
+                result = True
         else:
-            return target_val == val
+            if target_val == val:
+                result = True
+    return result
