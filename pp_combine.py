@@ -142,7 +142,7 @@ def combine(filenames, obsparam, comoving, targetname,
             # use ephemerides from Horizons if no manual rates are provided
             if manual_rates is None:
                 # call HORIZONS to get target coordinates
-                eph = callhorizons.query(targetname)
+                eph = callhorizons.query(targetname.replace('_', ' '))
                 eph.set_discreteepochs(date)
                 try:
                     n = eph.get_ephemerides(str(obsparam['observatory_code']))
