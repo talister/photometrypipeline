@@ -197,14 +197,14 @@ arc35arctic_param = {
     'object': 'OBJNAME',  # object name keyword
     'filter': 'FILTER',  # filter keyword
     'filter_translations': {'SDSS U': 'u', 'SDSS G': 'g', 'SDSS R': 'r',
-                              'SDSS I': 'i', 'SDSS Z': 'z'},
+                              'SDSS I': 'i', 'SDSS Z': 'z', 'clear': None},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
 
 
     # source extractor settings
-    'source_minarea': 10,  # default sextractor source minimum N_pixels
+    'source_minarea': 12,  # default sextractor source minimum N_pixels
     'source_snr': 3,  # default sextractor source snr for registration
     'aprad_default': 4,  # default aperture radius in px
     'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
@@ -221,7 +221,7 @@ arc35arctic_param = {
     # swarp settings
     'copy_keywords': ('OBSERVAT,INSTRUME,FILTER,EXPTIME,OBJNAME,' +
                       'DATE-OBS,RA,DEC,AIRMASS,SECPIX,TEL_KEYW'),
-    #                        keywords to be copied in image
+    #                       keywords to be copied in image
     #                        combination using swarp
     'swarp-config-file': rootpath+'/setup/arc35arctic.swarp',
 
