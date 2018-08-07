@@ -146,7 +146,7 @@ dctlmi_param = {
     # registration settings (Scamp)
     'scamp-config-file': rootpath+'/setup/dctlmi.scamp',
     'reg_max_mag': 19,
-    'reg_search_radius': 0.2,  # deg
+    'reg_search_radius': 0.5,  # deg
     'source_tolerance': 'high',
 
     # swarp settings
@@ -1287,7 +1287,8 @@ soargoodmanold_param = {
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
     'filter': 'FILTER',  # filter keyword
-    'filter_translations': {'Rc': 'R', 'V': 'V', 'B': 'B', 'u': 'u',
+    'filter_translations': {'Rc': 'R', 'R-Bessel': 'R',
+                            'V': 'V', 'B': 'B', 'u': 'u',
                               'g-SDSS': 'g', 'r-SDSS': 'r', 'i-SDSS': 'i',
                               'z-SDSS': 'z', 'VR': None},
     # filtername translation dictionary
@@ -2749,7 +2750,7 @@ gmosn_param = {
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
     'filter': 'FILTER2',  # filter keyword
-    'filter_translations': {'i_G0302': 'i'},
+    'filter_translations': {'i_G0302': 'i', 'clear': None},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword

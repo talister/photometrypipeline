@@ -307,8 +307,8 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
         except KeyError:
             logging.warning('cannot translate filter keyword \"' +
                             header[obsparam['filter']] +
-                            '\"; assume clear filter')
-            header[obsparam['filter']] = 'clear'
+                            '\"')
+            #header[obsparam['filter']] = 'clear'
         header['FILTER'] = (header[obsparam['filter']], 'PP:copied')
 
         # perform header update
