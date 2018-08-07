@@ -139,8 +139,12 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             ('SkyMapper' in catalogname and
              filtername not in {'g', 'r', 'i'})):
 
-            n_transformed = cat.transform_filters(filtername) - \
-                cat.reject_sources_with(
+            n_transformed = cat.transform_filters(filtername)
+            if n_transformed == 0:
+                raise ValueError(('unable to transform {:s} to {:s}'.format(
+                    cat.catalogname, filtername) +
+                    '; refer to LOG file for details'))
+            n_transformed -= cat.reject_sources_with(
                 cat['_e_'+filtername+'mag'] > mag_accuracy)
 
             if display and n_transformed > 0:

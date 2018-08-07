@@ -1020,7 +1020,6 @@ class catalog(object):
             # ... derive a linear best fit and remove outliers (>3 sigma)
             ri = numpy.array(filtered_mags[1]) - numpy.array(filtered_mags[2])
             gr = numpy.array(filtered_mags[0]) - numpy.array(filtered_mags[1])
-
             if len(ri) == 0 or len(gr) == 0:
                 logging.warning('no suitable stars for transformation to %s' %
                                 targetfilter)
