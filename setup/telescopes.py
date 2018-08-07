@@ -1258,8 +1258,8 @@ ratir_param = {
 # running Goodman data requires the removal of header keywords
 # PARAM0, PARAM61, PARAM62, PARAM63 (degree symbol is non-ASCII)
 soargoodmanold_param = {
-    'telescope_instrument': 'SOAR/GOODMAN',  # telescope/instrument name
-    'telescope_keyword': 'SOARGOODMAN',  # telescope/instrument keyword
+    'telescope_instrument': 'SOAR/GOODMANOLD',  # telescope/instrument name
+    'telescope_keyword': 'SOARGOODMANOLD',  # telescope/instrument keyword
     'observatory_code': 'I33',         # MPC observatory code
     'secpix': (0.15, 0.15),  # pixel size (arcsec)
     # before binning
@@ -2942,7 +2942,7 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'GENERIC':       generic_param,
                         'RATIR':         ratir_param,
                         #'SL74SHA':       sl74sha_param,
-                        'SOARGOODMANold': soargoodmanold_param,
+                        'SOARGOODMANOLD': soargoodmanold_param,
                         'SOARGOODMAN': soargoodman_param,
                         'OHP120':        ohp120_param,
                         'TNGDOLORES':    tngdolores_param,
