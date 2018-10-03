@@ -482,7 +482,8 @@ lowell31_param = {
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
     'filter': 'FILTER2',  # filter keyword
-    'filter_translations': {'V': 'V', 'I': 'I', 'clear': None},
+    'filter_translations': {'V': 'V', 'I': 'I', 'R': 'R',
+                            'clear': None},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
