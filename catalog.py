@@ -28,7 +28,7 @@ import os
 import sys
 import logging
 
-import numpy
+import numpy as np
 import sqlite3 as sql
 import astropy.units as u
 import astropy.coordinates as coord
@@ -38,10 +38,10 @@ from astropy.io import fits
 import scipy.optimize as optimization
 
 # translates numpy datatypes to sql-readable datatypes
-sql.register_adapter(numpy.float64, float)
-sql.register_adapter(numpy.float32, float)
-sql.register_adapter(numpy.int64, int)
-sql.register_adapter(numpy.int32, int)
+sql.register_adapter(np.float64, float)
+sql.register_adapter(np.float32, float)
+sql.register_adapter(np.int64, int)
+sql.register_adapter(np.int32, int)
 
 try:
     from scipy import spatial
@@ -171,7 +171,7 @@ class catalog(object):
             self.data = Table()
 
         for i in range(len(field_names)):
-            self.data.add_column(Column(numpy.array(field_arrays[i]),
+            self.data.add_column(Column(np.array(field_arrays[i]),
                                         name=field_names[i],
                                         format=field_types[i]))
 
@@ -311,10 +311,13 @@ class catalog(object):
         # --------------------------------------------------------------------
 
         elif self.catalogname == 'GAIA':
-            # astrometric catalog
+            # astrometric and photometric catalog (as of DR2)
             vquery = Vizier(columns=['Source', 'RA_ICRS', 'DE_ICRS',
                                      'e_RA_ICRS', 'e_DE_ICRS', 'pmRA',
-                                     'pmDE', 'phot_g_mean_mag'],
+                                     'pmDE', 'Epoch',
+                                     'Gmag', 'e_Gmag',
+                                     'BPmag', 'e_BPmag',
+                                     'RPmag', 'eRPmag'],
                             column_filters={"phot_g_mean_mag":
                                             ("<%f" % max_mag)},
                             row_limit=max_sources,
@@ -323,7 +326,7 @@ class catalog(object):
             try:
                 self.data = vquery.query_region(field,
                                                 radius=rad_deg*u.deg,
-                                                catalog="I/337/gaia",
+                                                catalog="I/345/gaia2",
                                                 cache=False)[0]
             except IndexError:
                 if self.display:
@@ -339,10 +342,7 @@ class catalog(object):
             self.data['e_ra.deg'].convert_unit_to(u.deg)
             self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
             self.data['e_dec.deg'].convert_unit_to(u.deg)
-            self.data.rename_column('__Gmag_', 'mag')
-
-            self.data.add_column(Column(numpy.ones(len(self.data))*2457023.5,
-                                        name='epoch_jd', unit=u.day))
+            self.data.rename_column('Epoch', 'epoch_yr')
 
             # TBD:
             # - implement proper error ellipse handling
@@ -381,7 +381,7 @@ class catalog(object):
             self.data['e_dec.deg'].convert_unit_to(u.deg)
             self.data.rename_column('__Gmag_', 'mag')
 
-            self.data.add_column(Column(numpy.ones(len(self.data))*2457023.5,
+            self.data.add_column(Column(np.ones(len(self.data))*2457023.5,
                                         name='epoch_jd', unit=u.day))
 
             # TBD:
@@ -429,23 +429,23 @@ class catalog(object):
             #   add respective columns
             self.data['errPA'][self.data['errPA'] == 0] = 1  # workaround
 
-            arc_xopt = numpy.arctan(-self.data['errMin']/self.data['errMaj'] *
-                                    numpy.tan(self.data['errPA'].to(u.rad)))
-            ra_err = abs(self.data['errMaj']*numpy.cos(arc_xopt) *
-                         numpy.cos(self.data['errPA'].to(u.rad)) -
-                         self.data['errMin']*numpy.sin(arc_xopt) *
-                         numpy.sin(self.data['errPA'].to(u.rad)))
+            arc_xopt = np.arctan(-self.data['errMin']/self.data['errMaj'] *
+                                 np.tan(self.data['errPA'].to(u.rad)))
+            ra_err = abs(self.data['errMaj']*np.cos(arc_xopt) *
+                         np.cos(self.data['errPA'].to(u.rad)) -
+                         self.data['errMin']*np.sin(arc_xopt) *
+                         np.sin(self.data['errPA'].to(u.rad)))
             self.data.add_column(Column(data=ra_err*1000,
                                         name='e_ra.deg', unit=u.mas),
                                  index=2)
 
-            arc_yopt = numpy.arctan(self.data['errMin']/self.data['errMaj'] *
-                                    numpy.cos(self.data['errPA'].to(u.rad)) /
-                                    numpy.sin(self.data['errPA'].to(u.rad)))
-            dec_err = abs(self.data['errMaj']*numpy.cos(arc_yopt) *
-                          numpy.sin(self.data['errPA'].to(u.rad)) +
-                          self.data['errMin']*numpy.sin(arc_yopt) *
-                          numpy.cos(self.data['errPA'].to(u.rad)))
+            arc_yopt = np.arctan(self.data['errMin']/self.data['errMaj'] *
+                                 np.cos(self.data['errPA'].to(u.rad)) /
+                                 np.sin(self.data['errPA'].to(u.rad)))
+            dec_err = abs(self.data['errMaj']*np.cos(arc_yopt) *
+                          np.sin(self.data['errPA'].to(u.rad)) +
+                          self.data['errMin']*np.sin(arc_yopt) *
+                          np.cos(self.data['errPA'].to(u.rad)))
             self.data.add_column(Column(data=dec_err*1000,
                                         name='e_dec.deg', unit=u.mas), index=3)
 
@@ -702,7 +702,7 @@ class catalog(object):
             self.data.rename_column('YWIN_WORLD', 'dec.deg')
 
         # force positive RA values
-        flip_idc = numpy.where(self.data['ra.deg'] < 0)[0]
+        flip_idc = np.where(self.data['ra.deg'] < 0)[0]
         self.data['ra.deg'][flip_idc] += 360
 
         logging.info('read %d sources in %d columns from LDAC file %s' %
@@ -761,12 +761,12 @@ class catalog(object):
                                      disp='F8.4',
                                      format='1E',
                                      unit='mag',
-                                     array=numpy.ones(len(self.data))*0.01))
+                                     array=np.ones(len(self.data))*0.01))
         data_cols.append(fits.Column(name='OBSDATE',
                                      disp='F13.8',
                                      format='1D',
                                      unit='yr',
-                                     array=numpy.ones(len(self.data))*2015.0))
+                                     array=np.ones(len(self.data))*2015.0))
 
         datahdu = fits.BinTableHDU.from_columns(fits.ColDefs(data_cols))
         datahdu.header['EXTNAME'] = ('LDAC_OBJECTS')
@@ -810,8 +810,8 @@ class catalog(object):
                 formatline += '%15d'
 
         # write data into file
-        numpy.savetxt(filename, self.data, fmt=formatline,
-                      header=legend+headerline)
+        np.savetxt(filename, self.data, fmt=formatline,
+                   header=legend+headerline)
 
         logging.info('wrote %d sources from %s to ASCII file %s' %
                      (self.shape[0], self.catalogname, filename))
@@ -845,13 +845,13 @@ class catalog(object):
         table_cmd = "CREATE TABLE data ("
         for key_idx, key in enumerate(self.fields):
             db_key = key
-            if type(self.data[key][0]) == numpy.float32 \
-               or type(self.data[key][0]) == numpy.float64:
+            if type(self.data[key][0]) == np.float32 \
+               or type(self.data[key][0]) == np.float64:
                 table_cmd += "'%s' REAL" % db_key
-            elif type(self.data[key][0]) == numpy.int16 \
-                    or type(self.data[key][0]) == numpy.int32:
+            elif type(self.data[key][0]) == np.int16 \
+                    or type(self.data[key][0]) == np.int32:
                 table_cmd += "'%s' INTEGER" % db_key
-            elif type(self.data[key][0]) == numpy.string_:
+            elif type(self.data[key][0]) == np.string_:
                 table_cmd += "'%s' TEXT" % db_key
             else:
                 print('unknown data type: ' + type(self.data[key][0]))
@@ -862,8 +862,8 @@ class catalog(object):
         db.execute(table_cmd)
 
         # create a data array in which data types are converted to SQL types
-        sqltypes = {numpy.float32: numpy.float64, numpy.float64: numpy.float64,
-                    numpy.int16: numpy.int64, numpy.int32: numpy.int64}
+        sqltypes = {np.float32: np.float64, np.float64: np.float64,
+                    np.int16: np.int64, np.int32: np.int64}
 
         data_cols = [self.data[key].astype(sqltypes[type(self.data[key][0])])
                      for key in self.fields]
@@ -917,8 +917,8 @@ class catalog(object):
 
         # read in field names and types
         fieldnames, types = [], []
-        type_dict = {float: numpy.float64,
-                     int: numpy.int64, str: numpy.string_}
+        type_dict = {float: np.float64,
+                     int: np.int64, str: np.string_}
         for key_idx, key in enumerate(db.description):
             fieldnames.append(key[0])
             # if isinstance(rows[0][key_idx], bytes):
@@ -933,7 +933,7 @@ class catalog(object):
         for row in rows:
             for col in range(len(row)):
                 data[col].append(types[col](row[col]))
-        type_dict = {numpy.float64: 'E', numpy.int64: 'I', numpy.string_: 'A'}
+        type_dict = {np.float64: 'E', np.int64: 'I', np.string_: 'A'}
         columns = [fits.Column(name=fieldnames[idx],
                                format=type_dict[types[idx]],
                                array=data[idx])
@@ -977,13 +977,13 @@ class catalog(object):
             logging.info(('trying to transform %d SDSS sources to '
                           + '%s') % (self.shape[0], targetfilter))
 
-            mags = numpy.array([self['gmag'].data, self['rmag'].data,
-                                self['imag'].data,
-                                self['e_gmag'].data,
-                                self['e_rmag'].data,
-                                self['e_imag'].data,
-                                self['umag'].data,
-                                self['e_umag'].data])
+            mags = np.array([self['gmag'].data, self['rmag'].data,
+                             self['imag'].data,
+                             self['e_gmag'].data,
+                             self['e_rmag'].data,
+                             self['e_imag'].data,
+                             self['umag'].data,
+                             self['e_umag'].data])
 
             # sort out sources that do not meet the C&G requirements
             keep_idc = (mags[1]-mags[2] > 0.08) & (mags[1]-mags[2] < 0.5) & \
@@ -991,56 +991,56 @@ class catalog(object):
                 (mags[0] >= 14.5) & (mags[0] < 19.5) & \
                 (mags[1] >= 14.5) & (mags[1] < 19.5) & \
                 (mags[2] >= 14.5) & (mags[2] < 19.5)
-            filtered_mags = numpy.array([mags[i][keep_idc]
-                                         for i in range(len(mags))])
+            filtered_mags = np.array([mags[i][keep_idc]
+                                      for i in range(len(mags))])
 
             # ... derive a linear best fit and remove outliers (>3 sigma)
-            ri = numpy.array(filtered_mags[1]) - numpy.array(filtered_mags[2])
-            gr = numpy.array(filtered_mags[0]) - numpy.array(filtered_mags[1])
+            ri = np.array(filtered_mags[1]) - np.array(filtered_mags[2])
+            gr = np.array(filtered_mags[0]) - np.array(filtered_mags[1])
             if len(ri) == 0 or len(gr) == 0:
                 logging.warning('no suitable stars for transformation to %s' %
                                 targetfilter)
                 return 0
 
             param = optimization.curve_fit(self.lin_func, ri, gr, [1, 0])[0]
-            resid = numpy.sqrt(((ri+param[0]*gr-param[0]*param[1])/(param[0]**2+1))**2 +
-                               (param[0]*(ri+param[0]*gr-param[0]*param[1]) /
+            resid = np.sqrt(((ri+param[0]*gr-param[0]*param[1])/(param[0]**2+1))**2 +
+                            (param[0]*(ri+param[0]*gr-param[0]*param[1]) /
                                 (param[0]**2+1)+param[1]-gr)**2)
-            remove = numpy.where(numpy.array(resid) > 3.*numpy.std(resid))[0]
+            remove = np.where(np.array(resid) > 3.*np.std(resid))[0]
 
-            keep = [idx for idx in numpy.arange(len(keep_idc))[keep_idc]
+            keep = [idx for idx in np.arange(len(keep_idc))[keep_idc]
                     if idx not in set(remove)]
 
             # transformed magnitudes; uncertainties through Gaussian and C&G2008
-            nmags = numpy.array([numpy.empty(len(mags[0])),
-                                 numpy.empty(len(mags[0]))])
+            nmags = np.array([np.empty(len(mags[0])),
+                              np.empty(len(mags[0]))])
             if targetfilter == 'U':
                 nmags[0] = mags[6] - 0.854
-                nmags[1] = numpy.sqrt(mags[7]**2 + 0.007**2)
+                nmags[1] = np.sqrt(mags[7]**2 + 0.007**2)
             elif targetfilter == 'B':
                 nmags[0] = mags[0] + 0.327*(mags[0] - mags[1]) + 0.216
-                nmags[1] = numpy.sqrt(((1+0.327)*mags[3])**2
-                                      + (0.327*mags[4])**2
-                                      + ((mags[0]-mags[1])*0.047)**2
-                                      + 0.027**2)
+                nmags[1] = np.sqrt(((1+0.327)*mags[3])**2
+                                   + (0.327*mags[4])**2
+                                   + ((mags[0]-mags[1])*0.047)**2
+                                   + 0.027**2)
             elif targetfilter == 'V':
                 nmags[0] = mags[0] - 0.587*(mags[0] - mags[1]) - 0.011
-                nmags[1] = numpy.sqrt(((1+0.587)*mags[3])**2
-                                      + (0.587*mags[4])**2
-                                      + ((mags[0]-mags[1])*0.022)**2
-                                      + 0.011**2)
+                nmags[1] = np.sqrt(((1+0.587)*mags[3])**2
+                                   + (0.587*mags[4])**2
+                                   + ((mags[0]-mags[1])*0.022)**2
+                                   + 0.011**2)
             elif targetfilter == 'R':
                 nmags[0] = mags[1] - 0.272*(mags[1] - mags[2]) - 0.159
-                nmags[1] = numpy.sqrt(((1-0.272)*mags[4])**2
-                                      + (0.272*mags[5])**2
-                                      + ((mags[1]-mags[2])*0.092)**2
-                                      + 0.022**2)
+                nmags[1] = np.sqrt(((1-0.272)*mags[4])**2
+                                   + (0.272*mags[5])**2
+                                   + ((mags[1]-mags[2])*0.092)**2
+                                   + 0.022**2)
             elif targetfilter == 'I':
                 nmags[0] = mags[2] - 0.337*(mags[1] - mags[2]) - 0.370
-                nmags[1] = numpy.sqrt(((1+0.337)*mags[5])**2
-                                      + (0.337*mags[4])**2
-                                      + ((mags[1]-mags[2])*0.191)**2
-                                      + 0.041**2)
+                nmags[1] = np.sqrt(((1+0.337)*mags[5])**2
+                                   + (0.337*mags[4])**2
+                                   + ((mags[1]-mags[2])*0.191)**2
+                                   + 0.041**2)
 
             # add new filter and according uncertainty to catalog
             self.add_field('_'+targetfilter+'mag', nmags[0])
@@ -1071,30 +1071,30 @@ class catalog(object):
                          (self.shape[0], self.catalogname, targetfilter))
 
             # transformations based on Chonis & Gaskell 2008, AJ, 135
-            mags = numpy.array([self['rmag'].data,
-                                self['imag'].data,
-                                self['e_rmag'].data,
-                                self['e_imag'].data])
+            mags = np.array([self['rmag'].data,
+                             self['imag'].data,
+                             self['e_rmag'].data,
+                             self['e_imag'].data])
 
             # sort out sources that do not meet the C&G requirements
             keep_idc = (mags[0]-mags[1] > 0.08) & (mags[0]-mags[1] < 0.5)
 
             # transformed magnitudes; uncertainties through Gaussian and C&G2008
-            nmags = numpy.array([numpy.empty(len(mags[0])),
-                                 numpy.empty(len(mags[0]))])
+            nmags = np.array([np.empty(len(mags[0])),
+                              np.empty(len(mags[0]))])
 
             if targetfilter == 'R':
                 nmags[0] = mags[0] - 0.272*(mags[0] - mags[1]) - 0.159
-                nmags[1] = numpy.sqrt(((1-0.272)*mags[2])**2
-                                      + (0.272*mags[3])**2
-                                      + ((mags[0]-mags[1])*0.092)**2
-                                      + 0.022**2)
+                nmags[1] = np.sqrt(((1-0.272)*mags[2])**2
+                                   + (0.272*mags[3])**2
+                                   + ((mags[0]-mags[1])*0.092)**2
+                                   + 0.022**2)
             elif targetfilter == 'I':
                 nmags[0] = mags[1] - 0.337*(mags[0] - mags[1]) - 0.370
-                nmags[1] = numpy.sqrt(((1+0.337)*mags[3])**2
-                                      + (0.337*mags[2])**2
-                                      + ((mags[0]-mags[1])*0.191)**2
-                                      + 0.041**2)
+                nmags[1] = np.sqrt(((1+0.337)*mags[3])**2
+                                   + (0.337*mags[2])**2
+                                   + ((mags[0]-mags[1])*0.191)**2
+                                   + 0.041**2)
 
             # add new filter and according uncertainty to catalog
             self.add_field('_'+targetfilter+'mag', nmags[0])
@@ -1130,7 +1130,7 @@ class catalog(object):
             lbl = {'_Ymag': 0, '_e_Ymag': 1, '_Zmag': 2, '_e_Zmag': 3,
                    '_Jmag': 4, '_e_Jmag': 5, '_Hmag': 6, '_e_Hmag': 7,
                    '_Kmag': 8, '_e_Kmag': 9}
-            nmags = [numpy.zeros(self.shape[0]) for i in range(len(lbl))]
+            nmags = [np.zeros(self.shape[0]) for i in range(len(lbl))]
 
             for idx in range(self.shape[0]):
                 keep = True
@@ -1149,8 +1149,8 @@ class catalog(object):
                     nmags[lbl['_Zmag']][idx] = mags[0][idx] \
                         + 0.95*(mags[0][idx]
                                 - mags[1][idx]) + 0.064
-                    nmags[lbl['_e_Zmag']][idx] = numpy.sqrt(mags[3][idx]**2
-                                                            + 0.035**2)
+                    nmags[lbl['_e_Zmag']][idx] = np.sqrt(mags[3][idx]**2
+                                                         + 0.035**2)
 
                     nmags[lbl['_Ymag']][idx] = mags[0][idx] \
                         + 0.5*(mags[0][idx]
@@ -1211,13 +1211,13 @@ class catalog(object):
             e_i = self.data['e_ip1mag'].data
 
             B = (g + 0.212 + 0.556*(g-r) + 0.034*(g-r)**2)
-            Berr = numpy.sqrt(e_g**2 + 0.032**2)
+            Berr = np.sqrt(e_g**2 + 0.032**2)
             V = (g + 0.005 - 0.536*(g-r) + 0.011*(g-r)**2)
-            Verr = numpy.sqrt(e_g**2 + 0.012**2)
+            Verr = np.sqrt(e_g**2 + 0.012**2)
             R = (r - 0.137 - 0.108*(g-r) - 0.029*(g-r)**2)
-            Rerr = numpy.sqrt(e_r**2 + 0.015**2)
+            Rerr = np.sqrt(e_r**2 + 0.015**2)
             I = (i - 0.366 - 0.136*(g-r) - 0.018*(g-r)**2)
-            Ierr = numpy.sqrt(e_i**2 + 0.017**2)
+            Ierr = np.sqrt(e_i**2 + 0.017**2)
 
             self.data.add_column(Column(data=B, name='_Bmag', unit=u.mag))
             self.data.add_column(Column(data=Berr, name='_e_Bmag',
@@ -1261,13 +1261,13 @@ class catalog(object):
             e_i = self.data['e_ip1mag'].data
 
             g_sdss = (g + 0.013 + 0.145*(g-r) + 0.019*(g-r)**2)
-            gerr_sdss = numpy.sqrt(e_g**2 + 0.008**2)
+            gerr_sdss = np.sqrt(e_g**2 + 0.008**2)
             r_sdss = (r - 0.001 + 0.004*(g-r) + 0.007*(g-r)**2)
-            rerr_sdss = numpy.sqrt(e_r**2 + 0.004**2)
+            rerr_sdss = np.sqrt(e_r**2 + 0.004**2)
             i_sdss = (i - 0.005 + 0.011*(g-r) + 0.010*(g-r)**2)
-            ierr_sdss = numpy.sqrt(e_i**2 + 0.004**2)
+            ierr_sdss = np.sqrt(e_i**2 + 0.004**2)
             z_sdss = (z + 0.013 - 0.039*(g-r) - 0.012*(g-r)**2)
-            zerr_sdss = numpy.sqrt(e_z**2 + 0.01**2)
+            zerr_sdss = np.sqrt(e_z**2 + 0.01**2)
 
             self.data.add_column(Column(data=g_sdss, name='_gmag',
                                         unit=u.mag))
@@ -1310,7 +1310,7 @@ class catalog(object):
             mags = [self['zmag'].data, self['imag'].data,
                     self['e_zmag'].data]
             lbl = {'_Zmag': 0, '_e_Zmag': 1}
-            nmags = [numpy.zeros(self.shape[0]) for i in range(len(lbl))]
+            nmags = [np.zeros(self.shape[0]) for i in range(len(lbl))]
 
             for idx in range(self.shape[0]):
                 # transformations according to Hewett et al. 2006, MNRAS
@@ -1336,10 +1336,123 @@ class catalog(object):
 
             return self.shape[0]
 
+        # Gaia DR2+ to Johnson Cousins VRI
+        elif ('GAIA' in self.catalogname and
+              targetfilter in ['V', 'R', 'I']):
+
+            logging.info(('trying to transform %d GAIA sources to '
+                          + '%s') % (self.shape[0], targetfilter))
+
+            # transform magnitudes to Johnson-Cousins, Vega system
+            # using http://gea.esac.esa.int/archive/documentation/GDR2/Data_processing/chap_cu5pho/sec_cu5pho_calibr/ssec_cu5pho_PhotTransf.html
+
+            colormask = ((self.data['BPmag']-self.data['RPmag'] > -0.5) &
+                         (self.data['BPmag']-self.data['RPmag'] < 2.75))
+            self.data = self.data[colormask]
+
+            g = self.data['Gmag'].data
+            e_g = self.data['e_Gmag'].data
+            bp = self.data['BPmag'].data
+            rp = self.data['RPmag'].data
+
+            V = g - 0.0176 - 0.00686*(bp-rp) - 0.1732*(bp-rp)**2
+            e_V = np.sqrt(e_g**2 + 0.045858**2)
+            R = g - 0.003226 + 0.3833*(bp-rp) - 0.1345*(bp-rp)**2
+            e_R = np.sqrt(e_g**2 + 0.04840**2)
+            I = g - 0.02085 + 0.7419*(bp-rp) - 0.09531*(bp-rp)**2
+            e_I = np.sqrt(e_g**2 + 0.04956**2)
+
+            self.data.add_column(Column(data=V, name='_Vmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=e_V, name='_e_Vmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=R, name='_Rmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=e_R, name='_e_Rmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=I, name='_Imag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=e_I, name='_e_Imag',
+                                        unit=u.mag))
+
+            if '_transformed' not in self.catalogname:
+                self.catalogname += '_transformed'
+                self.history += ', {:d} transformed to {:s} (Vega)'.format(
+                    self.shape[0], targetfilter)
+                self.magsystem = 'Vega'
+
+            logging.info(
+                '{:d} sources sucessfully transformed to {:s}'.format(
+                    self.shape[0], targetfilter))
+
+            return self.shape[0]
+
+        # Gaia DR2+ to SDSS
+        elif ('GAIA' in self.catalogname and
+              targetfilter in ['g', 'r', 'i']):
+
+            logging.info(('trying to transform %d GAIA sources to '
+                          + '%s') % (self.shape[0], targetfilter))
+
+            # transform magnitudes to Johnson-Cousins, Vega system
+            # using http://gea.esac.esa.int/archive/documentation/GDR2/Data_processing/chap_cu5pho/sec_cu5pho_calibr/ssec_cu5pho_PhotTransf.html
+
+            if targetfilter == 'g':
+                colormask = ((self.data['BPmag']-self.data['RPmag'] > -0.5) &
+                             (self.data['BPmag']-self.data['RPmag'] < 2.75))
+            elif targetfilter == 'r':
+                colormask = ((self.data['BPmag']-self.data['RPmag'] > 0.2) &
+                             (self.data['BPmag']-self.data['RPmag'] < 2.7))
+            elif targetfilter == 'i':
+                colormask = ((self.data['BPmag']-self.data['RPmag'] > 0) &
+                             (self.data['BPmag']-self.data['RPmag'] < 4.5))
+
+            self.data = self.data[colormask]
+
+            g = self.data['Gmag'].data
+            e_g = self.data['e_Gmag'].data
+            bp = self.data['BPmag'].data
+            rp = self.data['RPmag'].data
+
+            g_sdss = (g + 0.13518 - 0.46245*(bp-rp) -
+                      0.25171*(bp-rp)**2 + 0.021349*(bp-rp)**3)
+            e_g_sdss = np.sqrt(e_g**2 + 0.16497**2)
+            r_sdss = (g - 0.12879 + 0.24662*(bp-rp) -
+                      0.027464*(bp-rp)**2 - 0.049465*(bp-rp)**3)
+            e_r_sdss = np.sqrt(e_g**2 + 0.066739**2)
+            i_sdss = g - 0.29676 + 0.64728*(bp-rp) - 0.10141*(bp-rp)**2
+            e_i_sdss = np.sqrt(e_g**2 + 0.098957**2)
+
+            self.data.add_column(Column(data=g_sdss, name='_gmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=e_g_sdss, name='_e_gmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=r_sdss, name='_rmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=e_r_sdss, name='_e_rmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=i_sdss, name='_imag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=e_i_sdss, name='_e_imag',
+                                        unit=u.mag))
+
+            if '_transformed' not in self.catalogname:
+                self.catalogname += '_transformed'
+                self.history += ', {:d} transformed to {:s} (AB)'.format(
+                    self.shape[0], targetfilter)
+                self.magsystem = 'AB'
+
+            logging.info(
+                '{:d} sources sucessfully transformed to {:s}'.format(
+                    self.shape[0], targetfilter))
+
+            return self.shape[0]
+
         else:
             if self.display:
-                print('ERROR: no transformation from %s to %s available' %
-                      (self.catalogname, targetfilter))
+                print(('ERROR: no transformation from {:s} to '
+                       '{:s} available').format(self.catalogname,
+                                                targetfilter))
             return 0
 
     # catalog operations
@@ -1385,10 +1498,10 @@ class catalog(object):
             indices_this_catalog, indices_other_catalog = [], []
 
             for target_idx in range(self.shape[0]):
-                other_cat_indices = numpy.where(match[1] == target_idx)[0]
+                other_cat_indices = np.where(match[1] == target_idx)[0]
                 if len(other_cat_indices) > 0:
                     # find closest match
-                    min_idx = other_cat_indices[numpy.argmin(
+                    min_idx = other_cat_indices[np.argmin(
                         [match[0][i] for i in other_cat_indices])]
 
                     indices_this_catalog.append(target_idx)
@@ -1400,8 +1513,8 @@ class catalog(object):
         indices = list(zip(indices_this_catalog, indices_other_catalog))
         # check if element is either not nan or not a float
 
-        def check_not_nan(x): return not numpy.isnan(x) if \
-            (type(x) is numpy.float_) else True
+        def check_not_nan(x): return not np.isnan(x) if \
+            (type(x) is np.float_) else True
 
         indices = [i for i in indices if all([check_not_nan(self[i[0]][key])
                                               for key in extract_this_catalog]
@@ -1415,75 +1528,9 @@ class catalog(object):
         return [output_this_catalog, output_other_catalog]
 
 
-# Test Routines
+# test Gaia
+cat = catalog('GAIA')
+print(cat.download_catalog(294.99525, 0.065194, 0.5, 10000),
+      'sources grabbed from ', cat.catalogname)
 
-# LDAC routines
-
-# test = catalog('ldac test')
-# read = test.read_fits('testdata/test.ldac', maxflag=0)
-# print '%d sources and %d columns read from ldac file' % \
-#     (read[0], read[1])
-
-# print test.write_ascii('testdata/test.ldac.dat'), \
-#     'sources sucessfully written to ascii file'
-
-# print test.write_fits('testdata/test_written.ldac'), \
-#     'sources successfully written to fits file'
-
-# print test.write_database('testdata/test.ldac.db')
-
-
-# catalog download and manipulation
-
-# cat1 = catalog('APASS9')
-# print(cat1.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat1.catalogname)
-# print(cat1.fields)
-# print(cat1[0])
-
-# cat2 = catalog('2MASS')
-# print cat2.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat2.catalogname
-# print cat2[305]
-# print cat2.fields
-
-# cat3 = catalog('SDSS-R9')
-# print(cat3.download_catalog(329.50922672, -2.33703204, 0.001, 10000), 'sources grabbed from', cat3.catalogname)
-# print(cat3.data['imag'])
-
-
-# cat4 = catalog('USNO-B1')
-# print cat4.download_catalog(80, 0, 0.5, 10000), 'sources grabbed from', cat4.catalogname
-# print cat4[305]
-# print cat4.fields
-
-
-# print cat2.shape, cat2.history
-# print cat2.transform_filters('V'), 'sources transformed to V'      #2MASS to BVRI
-# print cat2.shape, cat2.history
-
-# print cat2.shape, cat2.history
-# print cat2.transform_filters('K_UKIRT'), 'sources transformed to K'      #2MASS to UKIRT
-# print cat2.shape, cat2.history
-
-# print cat3.shape, cat3.history
-# print cat3.transform_filters('Z_UKIRT'), 'sources transformed to Z'      #SDSS to UKIRT
-# print cat3.shape, cat3.history
-
-# print cat1.shape, cat1.history
-# print cat1.transform_filters('I'), 'sources transformed to I'      #SDSS to BVRI
-# print cat1.shape, cat1.history
-# for i in cat1:
-#    print i['_Imag'], i['rmag'], i['imag']
-
-
-# print test.write_database('test.db'), 'sources written to database file'
-
-# cat4 = catalog('')
-# print cat4.read_database('test.db'), 'sources read from database file'
-
-
-# ### test preliminary Gaia implementation
-# cat = catalog('SDSS-R9')
-# cat.download_gaiadr1(294.99525, 0.065194, 0.5, 10, max_mag=15, write_ldac=True)
-# #cat.download_gaiadr1(239.708791667, 6.10333333333, 0.211666666667, 100, max_mag=20, write_ldac=True)
-
-# print len(cat.data.columns)
+print(cat.transform_filters('g'), 'sources transformed to g')
