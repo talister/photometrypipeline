@@ -4,7 +4,6 @@ CATALOG - class structure for dealing with astronomical catalogs,
 
 version 0.9, 2016-01-27, michael.mommert@nau.edu
 """
-from __future__ import print_function, division
 
 # Photometry Pipeline
 # Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
@@ -260,7 +259,7 @@ class catalog(object):
 
         # --------------------------------------------------------------------
         # use astroquery TAP query for SkyMapper; this is experimental!
-        if self.catalogname == 'SkyMapper':
+        elif self.catalogname == 'SkyMapper':
             from astroquery.utils.tap.core import TapPlus
 
             skymap = TapPlus(url=("http://skymappertap.asvo.nci.org.au/"
@@ -642,6 +641,14 @@ class catalog(object):
             # make sure our RA/DEC errors have units
             self.data['e_ra.deg'] = self.data['e_ra.deg'] * u.arcsec
             self.data['e_dec.deg'] = self.data['e_dec.deg'] * u.arcsec
+
+        else:
+            if self.display:
+                print('catalog {:s} not available.'.format(
+                    self.catalogname))
+            logging.error('catalog {:s} not available.'.format(
+                self.catalogname))
+            return 0
 
         if self.display:
             print('{:d} sources retrieved.'.format(len(self.data)))
@@ -1285,6 +1292,8 @@ class catalog(object):
             e_r = self.data['e_rp1mag'].data
             i = self.data['ip1mag'].data
             e_i = self.data['e_ip1mag'].data
+            z = self.data['zp1mag'].data
+            e_z = self.data['e_zp1mag'].data
 
             g_sdss = (g + 0.013 + 0.145*(g-r) + 0.019*(g-r)**2)
             gerr_sdss = np.sqrt(e_g**2 + 0.008**2)
@@ -1381,11 +1390,11 @@ class catalog(object):
             bp = self.data['BPmag'].data
             rp = self.data['RPmag'].data
 
-            V = g - 0.0176 - 0.00686*(bp-rp) - 0.1732*(bp-rp)**2
+            V = g - (-0.0176 - 0.00686*(bp-rp) - 0.1732*(bp-rp)**2)
             e_V = np.sqrt(e_g**2 + 0.045858**2)
-            R = g - 0.003226 + 0.3833*(bp-rp) - 0.1345*(bp-rp)**2
+            R = g - (-0.003226 + 0.3833*(bp-rp) - 0.1345*(bp-rp)**2)
             e_R = np.sqrt(e_g**2 + 0.04840**2)
-            I = g - 0.02085 + 0.7419*(bp-rp) - 0.09531*(bp-rp)**2
+            I = g - (0.02085 + 0.7419*(bp-rp) - 0.09531*(bp-rp)**2)
             e_I = np.sqrt(e_g**2 + 0.04956**2)
 
             self.data.add_column(Column(data=V, name='_Vmag',
@@ -1425,7 +1434,7 @@ class catalog(object):
 
             if targetfilter == 'g':
                 colormask = ((self.data['BPmag']-self.data['RPmag'] > -0.5) &
-                             (self.data['BPmag']-self.data['RPmag'] < 2.75))
+                             (self.data['BPmag']-self.data['RPmag'] < 2.0))
             elif targetfilter == 'r':
                 colormask = ((self.data['BPmag']-self.data['RPmag'] > 0.2) &
                              (self.data['BPmag']-self.data['RPmag'] < 2.7))
@@ -1440,13 +1449,13 @@ class catalog(object):
             bp = self.data['BPmag'].data
             rp = self.data['RPmag'].data
 
-            g_sdss = (g + 0.13518 - 0.46245*(bp-rp) -
-                      0.25171*(bp-rp)**2 + 0.021349*(bp-rp)**3)
+            g_sdss = g - (0.13518 - 0.46245*(bp-rp) -
+                          0.25171*(bp-rp)**2 + 0.021349*(bp-rp)**3)
             e_g_sdss = np.sqrt(e_g**2 + 0.16497**2)
-            r_sdss = (g - 0.12879 + 0.24662*(bp-rp) -
-                      0.027464*(bp-rp)**2 - 0.049465*(bp-rp)**3)
+            r_sdss = g - (-0.12879 + 0.24662*(bp-rp) -
+                          0.027464*(bp-rp)**2 - 0.049465*(bp-rp)**3)
             e_r_sdss = np.sqrt(e_g**2 + 0.066739**2)
-            i_sdss = g - 0.29676 + 0.64728*(bp-rp) - 0.10141*(bp-rp)**2
+            i_sdss = g - (-0.29676 + 0.64728*(bp-rp) - 0.10141*(bp-rp)**2)
             e_i_sdss = np.sqrt(e_g**2 + 0.098957**2)
 
             self.data.add_column(Column(data=g_sdss, name='_gmag',
@@ -1552,11 +1561,3 @@ class catalog(object):
                                 for key in extract_other_catalog]
 
         return [output_this_catalog, output_other_catalog]
-
-
-# test Gaia
-cat = catalog('GAIA')
-print(cat.download_catalog(294.99525, 0.065194, 0.5, 10000),
-      'sources grabbed from', cat.catalogname)
-
-print(cat.transform_filters('g'), 'sources transformed to g')
