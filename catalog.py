@@ -2,11 +2,11 @@
 CATALOG - class structure for dealing with astronomical catalogs,
           FITS_LDAC files, and sqlite databases.
 
-version 0.9, 2016-01-27, michael.mommert@nau.edu
+version 0.9, 2016-01-27, mommermiscience@gmail.com
 """
 
 # Photometry Pipeline
-# Copyright (C) 2016  Michael Mommert, michael.mommert@nau.edu
+# Copyright (C) 2016-2018  Michael Mommert, mommermiscience@gmail.com
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
