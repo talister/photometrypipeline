@@ -292,8 +292,8 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
             refcatname = 'instrumental magnitudes'
         summary_message = "<FONT COLOR=\"green\">average zeropoint = " + \
             ("%5.2f+-%5.2f using %s</FONT>; " %
-             (numpy.average(zps),
-              numpy.average(zp_errs),
+             (np.average(zps),
+              np.average(zp_errs),
               refcatname))
     except TypeError:
         summary_message = "<FONT COLOR=\"red\">no phot. calibration</FONT>; "
@@ -309,13 +309,13 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
                                     None, None,
                                     display=True, diagnostics=True)
 
-    targets = numpy.array(list(distillate['targetnames'].keys()))
+    targets = np.array(list(distillate['targetnames'].keys()))
     try:
         target = targets[targets != 'control_star'][0]
         mags = [frame[7] for frame in distillate[target]]
         summary_message = ("average target brightness and std: " +
-                           "%5.2f+-%5.2f\n" % (numpy.average(mags),
-                                               numpy.std(mags)))
+                           "%5.2f+-%5.2f\n" % (np.average(mags),
+                                               np.std(mags)))
     except IndexError:
         summary_message = "no primary target extracted"
 

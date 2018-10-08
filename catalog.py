@@ -196,7 +196,8 @@ class catalog(object):
                    + 'a {:.2f} deg radius').format(self.catalogname,
                                                    ra_deg, dec_deg,
                                                    rad_deg),
-                  end=' ', flush=True)
+                  end=' ')
+           sys.stdout.flush() 
         logging.info(('query Vizier for {:s} at {:7.3f}/{:+.3f} in '
                       + 'a {:.2f} deg radius').format(self.catalogname,
                                                       ra_deg, dec_deg,
@@ -340,6 +341,7 @@ class catalog(object):
             self.data.rename_column('e_DE_ICRS', 'e_dec.deg')
             self.data['e_dec.deg'].convert_unit_to(u.deg)
             self.data.rename_column('Epoch', 'epoch_yr')
+            self.data['mag'] = self.data['Gmag']  # required for scamp
 
             # TBD:
             # - implement proper error ellipse handling
@@ -701,7 +703,10 @@ class catalog(object):
             if telescope_keyword in line:
                 telescope = line.split('\'')[1]
         self.catalogname = filename
-        self.origin = '{:s};{:s}'.format(telescope.strip(), fits_filename)
+        if fits_filename is not None:
+            self.origin = '{:s};{:s}'.format(telescope.strip(), fits_filename)
+        else:
+            self.origin = '{:s};'.format(telescope.strip())
         self.magsys = 'instrumental'
 
         # reject flagged sources (if requested)
