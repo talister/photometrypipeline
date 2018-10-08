@@ -1,9 +1,6 @@
 """ DIAGNOSTICS - diagnostic routines for photometry pipeline
     v1.0: 2016-02-25, mommermiscience@gmail.com
 """
-from __future__ import print_function
-from __future__ import division
-
 # Photometry Pipeline
 # Copyright (C) 2016-2018  Michael Mommert, mommermiscience@gmail.com
 
@@ -21,18 +18,19 @@ from __future__ import division
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-
-from past.utils import old_div
 import os
 import sys
-import numpy
+import numpy as np
 import logging
 import subprocess
+import datetime
+
 from astropy.io import fits
 from astropy import wcs
 from astropy.visualization import (astropy_mpl_style, ZScaleInterval,
                                    ImageNormalize, LogStretch, LinearStretch)
-import datetime
+from
+
 try:
     import matplotlib
     matplotlib.use('Agg')
@@ -45,20 +43,10 @@ except ImportError:
     sys.exit()
 
 try:
-    from scipy.misc import toimage
-    from scipy.misc import imresize
-    from scipy.misc import bytescale
+    from skimage import
 except ImportError:
-    print('Modules scipy or pillow not found. Please install with: pip '
-          'install scipy pillow')
+    print('Modules pillow not found. Please install with: pip install pillow')
     sys.exit()
-
-# only import if Python3 is used
-if sys.version_info > (3, 0):
-    from builtins import str
-    from builtins import zip
-    from builtins import range
-
 
 # pipeline-specific modules
 import _pp_conf
@@ -104,10 +92,10 @@ def create_website(filename, content=''):
 
 def append_website(filename, content, insert_at='</BODY>',
                    replace_below='X?!do not replace anything!?X'):
-    """ 
-    append content to an existing website: 
+    """
+    append content to an existing website:
     insert content before line that contains `insert_at`
-    replace lines between `replace_below` and `insert_at` (by 
+    replace lines between `replace_below` and `insert_at` (by
     default, nothing is replaced)
     """
     # read existing code
@@ -220,7 +208,7 @@ def create_index(filenames, directory, obsparam,
         # read out image binning mode
         binning = toolbox.get_binning(header, obsparam)
 
-        #framefilename = _pp_conf.diagroot + '/' + filename + '.png'
+        # framefilename = _pp_conf.diagroot + '/' + filename + '.png'
         framefilename = '.diagnostics/' + filename + '.png'
 
         try:
@@ -243,11 +231,11 @@ def create_index(filenames, directory, obsparam,
 
         # create frame image
         imgdat = hdulist[0].data
-        # clip extreme values to prevent crash of imresize
-        imgdat = numpy.clip(imgdat, numpy.percentile(imgdat, 1),
-                            numpy.percentile(imgdat, 99))
+        # clip extreme values
+        imgdat = np.clip(imgdat, np.percentile(imgdat, 1),
+                            np.percentile(imgdat, 99))
         imgdat = imresize(imgdat,
-                          min(1., 1000./numpy.max(imgdat.shape)),
+                          min(1., 1000./np.max(imgdat.shape)),
                           interp='nearest')
         # resize image larger than 1000px on one side
 
@@ -324,10 +312,10 @@ def add_registration(data, extraction_data, imagestretch='linear'):
                         '_astrometry.png'
         imgdat = fits.open(dat['fits_filename'],
                            ignore_missing_end=True)[0].data
-        resize_factor = min(1., 1000./numpy.max(imgdat.shape))
+        resize_factor = min(1., 1000./np.max(imgdat.shape))
         # clip extreme values to prevent crash of imresize
-        imgdat = numpy.clip(imgdat, numpy.percentile(imgdat, 1),
-                            numpy.percentile(imgdat, 99))
+        imgdat = np.clip(imgdat, np.percentile(imgdat, 1),
+                            np.percentile(imgdat, 99))
         imgdat = imresize(imgdat, resize_factor, interp='nearest')
         header = fits.open(dat['fits_filename'],
                            ignore_missing_end=True)[0].header
@@ -357,7 +345,7 @@ def add_registration(data, extraction_data, imagestretch='linear'):
         if refcat.shape[0] > 0:
             try:
                 w = wcs.WCS(header)
-                world_coo = numpy.array(list(zip(refcat['ra.deg'],
+                world_coo = np.array(list(zip(refcat['ra.deg'],
                                                  refcat['dec.deg'])))
                 img_coo = w.wcs_world2pix(world_coo, True)
                 img_coo = [c for c
@@ -449,9 +437,9 @@ def add_photometry(data, extraction):
 
     # plot fwhm as a function of time
     frame_midtimes = [frame['time'] for frame in extraction]
-    fwhm = [numpy.median(frame['catalog_data']['FWHM_IMAGE'])
+    fwhm = [np.median(frame['catalog_data']['FWHM_IMAGE'])
             for frame in extraction]
-    fwhm_sig = [numpy.std(frame['catalog_data']['FWHM_IMAGE'])
+    fwhm_sig = [np.std(frame['catalog_data']['FWHM_IMAGE'])
                 for frame in extraction]
 
     plt.subplot()
@@ -514,7 +502,7 @@ def add_calibration(data, imagestretch='linear'):
                        data['ref_cat'].catalogname))
         ax1.set_xlabel('Number of Reference Stars')
         ax1.set_ylabel('Magnitude Zeropoint', fontdict={'color': 'red'})
-        #ax1.ticklabel_format(style='sci', axis='y', scilimits=(-5,5))
+        # ax1.ticklabel_format(style='sci', axis='y', scilimits=(-5,5))
 
         zp_idx = data['zeropoints'][idx]['zp_idx']
         clipping_steps = data['zeropoints'][idx]['clipping_steps']
@@ -547,7 +535,7 @@ def add_calibration(data, imagestretch='linear'):
         residuals = match[1][0][clipping_steps[zp_idx][3]] \
             + clipping_steps[zp_idx][0] \
             - match[0][0][clipping_steps[zp_idx][3]]
-        residuals_sig = numpy.sqrt(match[1][1][clipping_steps[zp_idx][3]]**2
+        residuals_sig = np.sqrt(match[1][1][clipping_steps[zp_idx][3]]**2
                                    + clipping_steps[zp_idx][1]**2)
 
         ax3.errorbar(x, residuals, yerr=residuals_sig, color='black',
@@ -637,7 +625,7 @@ def add_calibration(data, imagestretch='linear'):
                  dat['match'][0][1][idx],
                  dat['match'][1][0][idx], dat['match'][1][1][idx],
                  dat['zp']+dat['match'][1][0][idx],
-                 numpy.sqrt(dat['zp_sig']**2 + dat['match'][1][1][idx]**2),
+                 np.sqrt(dat['zp_sig']**2 + dat['match'][1][1][idx]**2),
                  (dat['zp']+dat['match'][1][0][idx])-dat['match'][0][0][idx])
         html += "</TABLE><P>derived zeropoint: %7.4f+-%6.4f mag\n" % \
                 (dat['zp'], dat['zp_sig'])
@@ -647,10 +635,10 @@ def add_calibration(data, imagestretch='linear'):
         fits_filename = dat['filename'][:dat['filename'].find('.ldac')] + \
             '.fits'
         imgdat = fits.open(fits_filename, ignore_missing_end=True)[0].data
-        resize_factor = min(1., 1000./numpy.max(imgdat.shape))
+        resize_factor = min(1., 1000./np.max(imgdat.shape))
         # clip extreme values to prevent crash of imresize
-        imgdat = numpy.clip(imgdat, numpy.percentile(imgdat, 1),
-                            numpy.percentile(imgdat, 99))
+        imgdat = np.clip(imgdat, np.percentile(imgdat, 1),
+                            np.percentile(imgdat, 99))
         imgdat = imresize(imgdat, resize_factor, interp='nearest')
         header = fits.open(fits_filename, ignore_missing_end=True)[0].header
 
@@ -802,12 +790,12 @@ def add_results(data, imagestretch='linear'):
 
             w = wcs.WCS(hdulist[0].header)
             obj_x, obj_y = dat[11], dat[12]
-            image_coords = w.wcs_world2pix(numpy.array([[dat[1], dat[2]]]),
+            image_coords = w.wcs_world2pix(np.array([[dat[1], dat[2]]]),
                                            True)
             exp_x, exp_y = image_coords[0][0], image_coords[0][1]
 
             # create margin around image allowing for any cropping
-            composite = numpy.zeros((hdulist[0].data.shape[0]+2*boxsize,
+            composite = np.zeros((hdulist[0].data.shape[0]+2*boxsize,
                                      hdulist[0].data.shape[1]+2*boxsize))
 
             composite[boxsize:boxsize+hdulist[0].data.shape[0],
@@ -815,10 +803,10 @@ def add_results(data, imagestretch='linear'):
                 hdulist[0].data
 
             # extract thumbnail data accordingly
-            thumbdata = composite[int(boxsize+obj_y-old_div(boxsize, 2)):
-                                  int(boxsize+obj_y+old_div(boxsize, 2)),
-                                  int(boxsize+obj_x-old_div(boxsize, 2)):
-                                  int(boxsize+obj_x+old_div(boxsize, 2))]
+            thumbdata = composite[int(boxsize+obj_y-boxsize/2):
+                                  int(boxsize+obj_y+boxsize/2),
+                                  int(boxsize+obj_x-boxsize/2):
+                                  int(boxsize+obj_x+boxsize/2)]
 
             # run statistics over center of the frame around the target
             if thumbdata.shape[0] > 0 and thumbdata.shape[1] > 0:
@@ -855,15 +843,15 @@ def add_results(data, imagestretch='linear'):
                 plt.gca().add_patch(targetpos)
 
                 # place expected position (if within thumbnail)
-                if (abs(exp_x-obj_x) <= old_div(boxsize, 2.) and
-                        abs(exp_y-obj_y) <= old_div(boxsize, 2.)):
-                    plt.scatter(exp_x-obj_x+old_div(boxsize, 2.),
-                                exp_y-obj_y+old_div(boxsize, 2.),
+                if (abs(exp_x-obj_x) <= boxsize/2 and
+                        abs(exp_y-obj_y) <= boxsize/2):
+                    plt.scatter(exp_x-obj_x+boxsize/2),
+                                exp_y-obj_y+boxsize/2),
                                 marker='+', s=100, color='green')
 
-                thumbfilename = '.diagnostics/' + \
-                    target.translate(_pp_conf.target2filename) + '_' + \
-                    fitsfilename[:fitsfilename.find('.fit')] + \
+                thumbfilename='.diagnostics/' +
+                    target.translate(_pp_conf.target2filename) + '_' +
+                    fitsfilename[:fitsfilename.find('.fit')] +
                     '_thumb.png'
                 plt.savefig(thumbfilename, format='png',
                             bbox_inches='tight',
@@ -878,12 +866,12 @@ def add_results(data, imagestretch='linear'):
                 continue
 
         # create gif animation
-        gif_filename = ('%s.gif' % target.translate(_pp_conf.target2filename))
+        gif_filename=('%s.gif' % target.translate(_pp_conf.target2filename))
         logging.info('converting images to gif: %s' % gif_filename)
-        root = os.getcwd()
+        root=os.getcwd()
         os.chdir(_pp_conf.diagroot)
         try:
-            convert = subprocess.Popen(['convert', '-delay', '50',
+            convert=subprocess.Popen(['convert', '-delay', '50',
                                         ('%s*thumb.png' %
                                          (target.translate(_pp_conf.target2filename))),
                                         '-loop', '0',
