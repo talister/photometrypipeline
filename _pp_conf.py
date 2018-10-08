@@ -29,6 +29,10 @@ from toolbox import *
 # only import if Python3 is used
 if sys.version_info > (3, 0):
     from past.builtins import execfile
+else:
+    warnings.warn(('This is 2018. You should really be using Python 3 by now. '
+                   'PP now has only limited support for Python 2.7. Please '
+                   'install Python 3 (preferentially Anaconda 3).'))
 
 
 def setup_diagnostics():

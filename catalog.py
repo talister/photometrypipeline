@@ -196,8 +196,8 @@ class catalog(object):
                    + 'a {:.2f} deg radius').format(self.catalogname,
                                                    ra_deg, dec_deg,
                                                    rad_deg),
-                  end=' ')
-           sys.stdout.flush() 
+                  end=' ', flush=True)
+
         logging.info(('query Vizier for {:s} at {:7.3f}/{:+.3f} in '
                       + 'a {:.2f} deg radius').format(self.catalogname,
                                                       ra_deg, dec_deg,
