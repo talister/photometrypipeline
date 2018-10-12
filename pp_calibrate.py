@@ -112,6 +112,16 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                     (cat['_rmag']-cat['_imag']) < sol_ri-_pp_conf.solcol)
                 n_rejected += cat.reject_sources_with(
                     (cat['_rmag']-cat['_imag']) > sol_ri+_pp_conf.solcol)
+            elif 'GAIA' in cat.catalogname:
+                cat.transform_filters('g')  # derive Sloan gri
+                n_rejected += cat.reject_sources_with(
+                    (cat['_gmag']-cat['_rmag']) < sol_gr-_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['_gmag']-cat['_rmag']) > sol_gr+_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['_rmag']-cat['_imag']) < sol_ri-_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['_rmag']-cat['_imag']) > sol_ri+_pp_conf.solcol)
             else:
                 if display:
                     print('Warning: solar colors not supported for catalog',
@@ -137,7 +147,10 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             ('PANSTARRS' in catalogname and
              filtername not in {'gp1', 'rp1', 'ip1', 'zp1', 'yp1'}) or
             ('SkyMapper' in catalogname and
-             filtername not in {'g', 'r', 'i'})):
+             filtername not in {'g', 'r', 'i'}) or
+
+            ('GAIA' in catalogname and
+             filtername not in {'G', 'RP', 'BP'})):
 
             n_transformed = cat.transform_filters(filtername)
             if n_transformed == 0:
