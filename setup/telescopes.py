@@ -3189,6 +3189,71 @@ dfosc_param = {
     'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
+# Lowell Near-Earth Object Survey (LONEOS)
+loneos_param = {
+    'telescope_instrument': 'LONEOS',  # telescope/instrument name
+    'telescope_keyword': 'LONEOS',      # telescope/instrument keyword
+    'observatory_code': '699',         # MPC observatory code
+    'secpix': (2.53, 2.53),  # pixel size (arcsec)
+    # before binning
+    'ext_coeff': 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx': False,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': (1, 1),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'TELRA',  # telescope pointing, RA
+    'dec': 'TELDEC',  # telescope pointin, Dec
+    'radec_separator': ':',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'open': None},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 5,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 3,  # default aperture radius in px
+    'aprad_range': [1, 8],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/frost.sex',
+    'mask_file': {'1,1': rootpath+'/setup/mask_loneos.fits'},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/frost.scamp',
+    'reg_max_mag': 18,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
+                      'DATE-OBS,TIME-OBS,TELRA,TELDEC,SECPIX,AIRMASS,' +
+                      'TEL_KEYW'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file': rootpath+'/setup/frost.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
+}
+
 
 # access functions for telescope configurations
 
@@ -3207,7 +3272,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'LCOSBIGKB78', 'ARC35SPICAM', 'LCOSINFL03',
                           'LCOSINFL16', 'LCOSINFL11', 'LCOSINFA15',
                           'LCOSPECFS01', 'P60OPT', 'P60SEDM', 'GMOSN',
-                          'DFOSC']
+                          'DFOSC', 'LONEOS']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword
@@ -3264,8 +3329,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'P60': 'P60OPT',
                           'Rainbow Cam': 'P60SEDM',
                           'GMOS-N': 'GMOSN',
-                          'DFOSC_FASU': 'DFOSC'
-                          }
+                          'DFOSC_FASU': 'DFOSC',
+                          'loneos': 'LONEOS', }
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
@@ -3314,7 +3379,8 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'P60OPT': p60opt_param,
                         'P60SEDM': p60sedm_param,
                         'GMOSN': gmosn_param,
-                        'DFOSC': dfosc_param}
+                        'DFOSC': dfosc_param,
+                        'LONEOS': loneos_param, }
 
 
 # append mytelescopes.py, if available
