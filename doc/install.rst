@@ -25,9 +25,8 @@ Package Index`_ through `pip`_):
 * `numpy`_
 * `scipy`_
 * `astropy`_
-* `astroquery`_
+* `astroquery`_ (version >= 0.3.9)
 * `matplotlib`_
-* `callhorizons`_
 * `future`_    
 * `skimage`_
     
@@ -81,7 +80,7 @@ Unpack SCAMP and install using::
 
 Install Python modules::
 
-  pip install numpy scipy astropy astroquery matplotlib matplotlib callhorizons 
+  pip install --upgrade --user numpy scipy astropy astroquery matplotlib
 
 Add these lines to the ``.bashrc`` file in your home directory and
 replace ``<path>`` with the actual path to the PP directory::
@@ -120,7 +119,7 @@ Update pip::
 
 Install extra python modules in Anaconda::
 
-  pip install –-user numpy scipy matplotlib callhorizons future astroquery Pillow==2.6.1
+  pip install --upgrade –-user numpy scipy astropy astroquery matplotlib
   pip install astropy
   conda update astropy
 
@@ -249,7 +248,6 @@ and I will take care of implementing your telescope.
 .. _astropy: http://www.astropy.org/
 .. _astroquery: https://github.com/astropy/astroquery
 .. _matplotlib: http://matplotlib.org/
-.. _callhorizons: https://pypi.python.org/pypi/CALLHORIZONS
 .. _future: http://python-future.org/
 .. _skimage: https://scikit-image.org/
 .. _imagemagick: http://www.imagemagick.org/

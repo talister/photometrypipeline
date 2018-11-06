@@ -23,9 +23,8 @@ Python modules:
   * `numpy`_
   * `scipy`_
   * `astropy`_
-  * `astroquery`_
+  * `astroquery`_ (version >= 0.3.9)
   * `matplotlib`_
-  * `callhorizons`_
   * `future`_
   * `skimage`_
     
@@ -81,7 +80,6 @@ Feel free to contact me in case of questions or suggestions: mommermiscience (at
 .. _astropy: http://www.astropy.org/
 .. _astroquery: http://github.com/astropy/astroquery
 .. _matplotlib: http://matplotlib.org/
-.. _callhorizons: http://pypi.python.org/pypi/CALLHORIZONS
 .. _future: http://python-future.org/
 .. _skimage: https://scikit-image.org/
 .. _Source Extractor: http://www.astromatic.net/software/sextractor

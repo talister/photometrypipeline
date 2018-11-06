@@ -4,9 +4,6 @@
                  of select moving or fixed sources
     v1.0: 2016-01-24, mommermiscience@gmail.com
 """
-from __future__ import print_function
-from __future__ import division
-
 # Photometry Pipeline
 # Copyright (C) 2016-2018  Michael Mommert, mommermiscience@gmail.com
 
@@ -25,23 +22,14 @@ from __future__ import division
 # <http://www.gnu.org/licenses/>.
 
 
-from past.utils import old_div
 import numpy
 import os
 import sys
 import logging
 import argparse
-import time
 import sqlite3
-from astropy.io import fits
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pylab as plt
-from scipy.optimize import minimize
-import callhorizons
-from astropy.table import Table
-from astropy.io import ascii
-import scipy.ndimage.interpolation
+from astroquery.jplhorizons import Horizons
+
 try:
     from astroquery.vizier import Vizier
 except ImportError:
@@ -88,7 +76,7 @@ def manual_positions(posfile, catalogs, display=True):
                                                 display=False))
 
         if display:
-            print(old_div(len(objects), len(catalogs)), 'object(s) found')
+            print(len(objects)/len(catalogs), 'object(s) found')
 
         return (list(numpy.hstack(objects)))
 
@@ -129,7 +117,7 @@ def manual_positions(posfile, catalogs, display=True):
                             'dec.deg':  positions[cat_idx]['dec']})
 
     if display:
-        print(old_div(len(objects), len(catalogs)), 'object(s) found')
+        print(len(objects)/len(catalogs), 'object(s) found')
 
     return objects
 
@@ -151,7 +139,7 @@ def pick_controlstar(catalogs, display=True):
                                        'ra.deg', 'dec.deg', 'FLAGS'],
                                    extract_other_catalog=[
                                        'ra.deg', 'dec.deg', 'FLAGS', 'MAG_APER'],
-                                   tolerance=old_div(1., 3600.))
+                                   tolerance=1/3600)
 
     objects = []
     if len(match[0][0]) > 0:
@@ -199,17 +187,19 @@ def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None,
         if man_targetname is not None:
             targetname = man_targetname.replace('_', ' ')
         for smallbody in [True, False]:
-            eph = callhorizons.query(targetname.replace('_', ' '),
-                                     smallbody=smallbody)
-            #eph = callhorizons.query(targetname, smallbody=False)
-            eph.set_discreteepochs(cat.obstime[0])
+            obj = Horizons(targetname.replace('_', ' '),
+                           id_type={True: 'smallbody',
+                                    False: 'majorbody'}[smallbody],
+                           epochs=cat.obstime[0],
+                           location=obsparam['observatory_code'])
             n = 0
             try:
-                n = eph.get_ephemerides(obsparam['observatory_code'])
+                eph = obj.ephemerides()
+                n = len(eph)
             except ValueError:
                 if display and smallbody is True:
-                    print("'%s' is not an asteroid" % targetname)
-                    logging.warning("'%s' is not an asteroid" %
+                    print("'%s' is not a small body" % targetname)
+                    logging.warning("'%s' is not a small body" %
                                     targetname)
                 if display and smallbody is False:
                     print("'%s' is not a Solar System object" % targetname)
@@ -232,13 +222,14 @@ def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None,
         if man_targetname is not None:
             targetname = man_targetname.replace('_', ' ')
             cat.obj = targetname
-        eph = callhorizons.query(targetname.replace('_', ' '),
-                                 smallbody=is_asteroid)
-        #eph = callhorizons.query(targetname, smallbody=False)
-        eph.set_discreteepochs(cat.obstime[0])
-
+        obj = Horizons(targetname.replace('_', ' '),
+                       id_type={True: 'smallbody',
+                                False: 'majorbody'}[is_asteroid],
+                       epochs=cat.obstime[0],
+                       location=obsparam['observatory_code'])
         try:
-            n = eph.get_ephemerides(obsparam['observatory_code'])
+            eph = obj.ephemerides()
+            n = len(eph)
         except ValueError:
             # if is_asteroid:
             #     if display and not message_shown:
@@ -257,7 +248,7 @@ def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None,
         if n is None or n == 0:
             logging.warning('WARNING: No position from Horizons! ' +
                             'Name (%s) correct?' % cat.obj.replace('_', ' '))
-            logging.warning('HORIZONS call: %s' % eph.url)
+            logging.warning('HORIZONS call: %s' % obj.uri)
             if display and not message_shown:
                 print('  no Horizons data for %s ' % cat.obj.replace('_', ' '))
                 message_shown = True
@@ -266,11 +257,11 @@ def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None,
             objects.append({'ident': eph[0]['targetname'].replace(" ", "_"),
                             'obsdate.jd': cat.obstime[0],
                             'cat_idx': cat_idx,
-                            'ra.deg': eph[0]['RA']-old_div(offset[0], 3600.),
-                            'dec.deg': eph[0]['DEC']-old_div(offset[1], 3600.)})
+                            'ra.deg': eph[0]['RA']-offset[0]/3600,
+                            'dec.deg': eph[0]['DEC']-offset[1]/3600})
             logging.info('Successfully grabbed Horizons position for %s ' %
                          cat.obj.replace('_', ' '))
-            logging.info('HORIZONS call: %s' % eph.url)
+            logging.info('HORIZONS call: %s' % obj.uri)
             if display and not message_shown:
                 print(cat.obj.replace('_', ' '), "identified")
                 message_shown = True
@@ -305,7 +296,7 @@ def fixed_targets(fixed_targets_file, catalogs, display=True):
                             'dec.deg': obj['dec']})
 
     if display:
-        print(old_div(len(objects), len(catalogs)), 'targets read')
+        print(len(objects)/len(catalogs), 'targets read')
 
     return objects
 
@@ -361,7 +352,7 @@ def serendipitous_variablestars(catalogs, display=True):
                             'dec.deg': star['DEJ2000']})
 
     if display:
-        print(old_div(len(objects), len(catalogs)), 'variable stars found')
+        print(len(objects)/len(catalogs), 'variable stars found')
 
     return objects
 
@@ -446,7 +437,7 @@ def serendipitous_asteroids(catalogs, display=True):
                       'target pool').format(obj['name']))
 
     if display:
-        print(old_div(len(objects), len(catalogs)), 'asteroids found')
+        print(len(objects)/len(catalogs), 'asteroids found')
 
     return objects
 
@@ -522,7 +513,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
         print('#-----------------------')
 
     if display:
-        print(old_div(len(objects), len(catalogs)),
+        print(len(objects)/len(catalogs),
               'potential target(s) per frame identified.')
 
     # extract source data for identified targets

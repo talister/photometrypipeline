@@ -23,6 +23,14 @@ except ImportError:
     print('Module numpy not found. Please install with: pip install numpy')
     sys.exit()
 
+try:
+    from astroquery.jplhorizons import Horizons
+except ImportError:
+    print('Module astroquery not found. Please install with: pip install '
+          'astroquery')
+    sys.exit()
+
+
 # import pipeline-specific modules
 from toolbox import *
 
@@ -30,9 +38,10 @@ from toolbox import *
 if sys.version_info > (3, 0):
     from past.builtins import execfile
 else:
-    warnings.warn(('This is 2018. You should really be using Python 3 by now. '
-                   'PP now has only limited support for Python 2.7. Please '
-                   'install Python 3 (preferentially Anaconda 3).'))
+    raise RuntimeError(
+        'This is 2018. You should really be using Python 3 by now. '
+        'PP now has only limited support for Python 2.7. Please '
+        'install Python 3 (preferentially Anaconda 3).')
 
 
 def setup_diagnostics():
