@@ -317,8 +317,10 @@ def curve_of_growth_analysis(filenames, parameters,
 
     # diagnostics
     if diagnostics:
+        if display:
+            print('creating diagnostic output')
+        logging.info(' ~~~~~~~~~ creating diagnostic output')
         diag.add_photometry(output, extraction)
-        pass
 
     # update image headers
     for filename in filenames:

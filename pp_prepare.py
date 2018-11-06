@@ -482,6 +482,9 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
 
     # create diagnostics
     if diagnostics:
+        if display:
+            print('creating diagnostic output')
+        logging.info(' ~~~~~~~~~ creating diagnostic output')
         diag.create_index(filenames, os.getcwd(), obsparam, display)
 
     logging.info('Done! -----------------------------------------------------')

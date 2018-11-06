@@ -551,7 +551,11 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         ###
 
         # update diagnostics website
-        diag.add_calibration_instrumental(output)
+        if diagnostics:
+            if display:
+                print('creating diagnostic output')
+            logging.info(' ~~~~~~~~~ creating diagnostic output')
+            diag.add_calibration_instrumental(output)
 
         return output
 

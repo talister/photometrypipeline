@@ -354,6 +354,9 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
 
     # create diagnostics
     if diagnostics:
+        if display:
+            print('creating diagnostic output')
+        logging.info(' ~~~~~~~~~ creating diagnostic output')
         diag.add_registration(output, extraction)
 
     logging.info('Done! -----------------------------------------------------')

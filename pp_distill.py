@@ -704,6 +704,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
     if diagnostics:
         if display:
             print('extracting thumbnail images')
+        logging.info(' ~~~~~~~~~ creating diagnostic output')
         diag.add_results(output)
 
     return output
