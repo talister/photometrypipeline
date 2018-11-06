@@ -1,7 +1,7 @@
 Photometry Pipeline 
 ===================
 
-The Photometry Pipeline (PP) is a Python software package for
+The Photometry Pipeline (PP) is a Python 3 software package for
 automated photometric analysis of imaging data from small to
 medium-sized observatories. It uses `Source Extractor`_ and `SCAMP`_ to
 register and photometrically calibrate images based on catalogs that
@@ -27,7 +27,7 @@ Python modules:
   * `matplotlib`_
   * `callhorizons`_
   * `future`_
-  * `pillow`_
+  * `skimage`_
     
 and some freely available software:
 
@@ -83,7 +83,7 @@ Feel free to contact me in case of questions or suggestions: mommermiscience (at
 .. _matplotlib: http://matplotlib.org/
 .. _callhorizons: http://pypi.python.org/pypi/CALLHORIZONS
 .. _future: http://python-future.org/
-.. _pillow: http://python-pillow.org/
+.. _skimage: https://scikit-image.org/
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp
 .. _documentation: http://photometrypipeline.readthedocs.io/en/latest/

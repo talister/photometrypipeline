@@ -18,8 +18,8 @@ directory.
 Software Requirements
 .....................
 
-PP requires `git`_ for the installation, a number of non-standard
-Python modules (either Python2 or Python3; available from the `Python
+PP only runs on Python 3. It furthermore requires requires `git`_, a
+number of non-standard Python modules (available from the `Python
 Package Index`_ through `pip`_):
 
 * `numpy`_
@@ -28,9 +28,9 @@ Package Index`_ through `pip`_):
 * `astroquery`_
 * `matplotlib`_
 * `callhorizons`_
-* `future`_ 
-* `pillow`_
-  
+* `future`_    
+* `skimage`_
+    
 and some freely available software:
 
 * `imagemagick`_
@@ -81,7 +81,7 @@ Unpack SCAMP and install using::
 
 Install Python modules::
 
-  pip install numpy scipy astropy astroquery matplotlib matplotlib callhorizons future pillow
+  pip install numpy scipy astropy astroquery matplotlib matplotlib callhorizons 
 
 Add these lines to the ``.bashrc`` file in your home directory and
 replace ``<path>`` with the actual path to the PP directory::
@@ -251,7 +251,7 @@ and I will take care of implementing your telescope.
 .. _matplotlib: http://matplotlib.org/
 .. _callhorizons: https://pypi.python.org/pypi/CALLHORIZONS
 .. _future: http://python-future.org/
-.. _pillow: http://python-pillow.org/
+.. _skimage: https://scikit-image.org/
 .. _imagemagick: http://www.imagemagick.org/
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp
