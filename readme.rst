@@ -51,6 +51,13 @@ Documentation
 See the documentation for more information: `documentation`_
 
 
+User Group
+----------
+
+If you want to stay up-to-date on PP changes, feel free to sign up for the `photometrypipeline users' group`_.
+
+
+
 Acknowledgments
 ---------------
 
@@ -88,3 +95,4 @@ Feel free to contact me in case of questions or suggestions: mommermiscience (at
 .. _this document: http://photometrypipeline.readthedocs.io/en/latest/supported.html
 .. _Astronomy & Computing: http://www.sciencedirect.com/science/article/pii/S2213133716300816
 .. _MANOS: http://manosobs.wordpress.com/
+.. _photometrypipeline users' group: https://groups.google.com/d/forum/photometrypipeline_users
