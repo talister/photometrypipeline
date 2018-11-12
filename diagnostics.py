@@ -233,6 +233,13 @@ def create_index(filenames, directory, obsparam,
         # clip extreme values
         imgdat = np.clip(imgdat, np.percentile(imgdat, 1),
                          np.percentile(imgdat, 99))
+
+        # normalize imgdat to pixel values 0 < px < 1
+        if np.min(imgdat) < 0:
+            imgdat = imgdat + np.min(imgdat)
+        if np.max(imgdat) > 1:
+            imgdat = imgdat / np.max(imgdat)
+
         imgdat = resize(imgdat,
                         (min(imgdat.shape[0], 1000),
                          min(imgdat.shape[1], 1000)))
@@ -312,6 +319,13 @@ def add_registration(data, extraction_data, imagestretch='linear'):
         imgdat = fits.open(dat['fits_filename'],
                            ignore_missing_end=True)[0].data
         resize_factor = min(1., 1000./np.max(imgdat.shape))
+
+        # normalize imgdat to pixel values 0 < px < 1
+        if np.min(imgdat) < 0:
+            imgdat = imgdat + np.min(imgdat)
+        if np.max(imgdat) > 1:
+            imgdat = imgdat / np.max(imgdat)
+
         imgdat = resize(imgdat,
                         (min(imgdat.shape[0], 1000),
                          min(imgdat.shape[1], 1000)))
@@ -634,6 +648,13 @@ def add_calibration(data, imagestretch='linear'):
             '.fits'
         imgdat = fits.open(fits_filename, ignore_missing_end=True)[0].data
         resize_factor = min(1., 1000./np.max(imgdat.shape))
+
+        # normalize imgdat to pixel values 0 < px < 1
+        if np.min(imgdat) < 0:
+            imgdat = imgdat + np.min(imgdat)
+        if np.max(imgdat) > 1:
+            imgdat = imgdat / np.max(imgdat)
+
         imgdat = resize(imgdat,
                         (min(imgdat.shape[0], 1000),
                          min(imgdat.shape[1], 1000)))

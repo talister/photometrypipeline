@@ -161,7 +161,7 @@ def combine(filenames, obsparam, comoving, targetname,
                     logging.info('ephemerides for %s pulled from Horizons' %
                                  targetname)
                     logging.info('Horizons call: %s' %
-                                 eph.query)
+                                 obj.uri)
 
                     target_ra, target_dec = eph[0]['RA'], eph[0]['DEC']
 
