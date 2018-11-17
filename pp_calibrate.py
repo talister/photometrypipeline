@@ -31,6 +31,8 @@ import logging
 from astropy.io import fits
 import matplotlib
 matplotlib.use('Agg')
+from scipy.optimize import minimize
+from astropy.table import join
 
 # only import if Python3 is used
 if sys.version_info > (3, 0):
