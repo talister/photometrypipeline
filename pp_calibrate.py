@@ -412,19 +412,10 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
             cat.data = join(cat.data, db_ref_cat.data,
                             keys='idx',
                             join_type='left')
-            # cal_id = ['' for i in range(cat.shape[0])]
-            # print(ref_cat.fields)
-            # cal_coo = np.zeros((cat.shape[0], 2))
-            # for i in range(len(match[0][0])):
-            #     cal_id[match[1][2][i]] = ref_cat[match[0][5][i]]['ident']
-            #     cal_coo[match[1][2][i][0]] = ref_cat['ra_deg',
-            #                                          'dec_deg'][match[0][5][i]]
-
-            #     # ra[match[1][2][i]] = ref_cat[match[0][5][i]]['ra_deg']
-            #     # cal_dec[match[1][2][i]] = ref_cat[match[0][5][i]]['dec_deg']
-            # cat.add_fields(['cal_ident', 'cal_ra_deg', 'cal_dec_deg'],
-            #                [cal_id, cal_ra, cal_dec],
-            #                [np.string_, np.float, np.float])
+            # remove unnecessary fields
+            cat.data.remove_columns(['idx', 'ra_deg_2', 'dec_deg_2'])
+            cat.data.rename_column('ra_deg_1', 'ra_deg')
+            cat.data.rename_column('dec_deg_1', 'dec_deg')
 
         if filterkey not in cat.fields:
             cat.add_fields([filterkey, efilterkey],

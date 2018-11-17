@@ -27,7 +27,6 @@ import os
 import sys
 import logging
 
-from copy import deepcopy
 import numpy as np
 import sqlite3 as sql
 import astropy.units as u
@@ -857,13 +856,9 @@ class catalog(object):
         header.to_pandas().to_sql('header', db_conn,
                                   if_exists='replace', index=False)
 
-        # modify data and write to database
-        data = deepcopy(self.data)
-        data.remove_columns(['idx', 'ra_deg_2', 'dec_deg_2'])
-        data.rename_column('ra_deg_1', 'ra_deg')
-        data.rename_column('dec_deg_1', 'dec_deg')
-        data.to_pandas().to_sql('data', db_conn,
-                                if_exists='replace', index=False)
+        # write data to database
+        self.data.to_pandas().to_sql('data', db_conn,
+                                     if_exists='replace', index=False)
 
         db_conn.commit()
 
