@@ -358,8 +358,8 @@ def add_registration(data, extraction_data, imagestretch='linear'):
         if refcat.shape[0] > 0:
             try:
                 w = wcs.WCS(header)
-                world_coo = np.array(list(zip(refcat['ra.deg'],
-                                              refcat['dec.deg'])))
+                world_coo = np.array(list(zip(refcat['ra_deg'],
+                                              refcat['dec_deg'])))
                 img_coo = w.wcs_world2pix(world_coo, True)
                 img_coo = [c for c
                            in img_coo if (c[0] > 0 and c[1] > 0 and
