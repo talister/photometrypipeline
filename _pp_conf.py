@@ -30,6 +30,13 @@ except ImportError:
           'astroquery')
     sys.exit()
 
+try:
+    from pandas import read_sql
+except ImportError:
+    print('Module pandas not found. Please install with: pip install '
+          'pandas')
+    sys.exit()
+
 
 # import pipeline-specific modules
 from toolbox import *
@@ -41,7 +48,7 @@ else:
     raise RuntimeError(
         'This is 2018. You should really be using Python 3 by now. '
         'PP now has only limited support for Python 2.7. Please '
-        'install Python 3 (preferentially Anaconda 3).')
+        'install Python 3 (preferentially through Anaconda).')
 
 
 def setup_diagnostics():

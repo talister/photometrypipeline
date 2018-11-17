@@ -4,8 +4,6 @@
                    and derive magnitude zeropoint
     v1.0: 2016-01-15, mommermiscience@gmail.com
 """
-from __future__ import print_function
-from __future__ import division
 
 # Photometry Pipeline
 # Copyright (C) 2016-2018  Michael Mommert, mommermiscience@gmail.com
@@ -25,18 +23,14 @@ from __future__ import division
 # <http://www.gnu.org/licenses/>.
 
 
-from past.utils import old_div
+from copy import deepcopy
 import sys
-import numpy
-import subprocess
+import numpy as np
 import argparse
 import logging
-import time
 from astropy.io import fits
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pylab as plt
-from scipy.optimize import minimize
 
 # only import if Python3 is used
 if sys.version_info > (3, 0):
@@ -45,6 +39,7 @@ if sys.version_info > (3, 0):
 
 # pipeline-specific modules
 import _pp_conf
+from pp_setup import confcalibrate as conf
 import diagnostics as diag
 from catalog import *
 from toolbox import *
@@ -173,7 +168,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             logging.info('rejecting sources with no magnitude information')
 
             n_sources = n_sources - cat.reject_sources_with(
-                numpy.isnan(cat[filtername+'mag'])) \
+                np.isnan(cat[filtername+'mag'])) \
                 - cat.reject_sources_with(
                 cat['e_'+filtername+'mag'] > mag_accuracy)
 
@@ -238,28 +233,41 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         cat.reject_sources_other_than(cat.data['MAG_'+_pp_conf.photmode] != 99)
         cat.reject_sources_other_than(cat.data['MAGERR_'
                                                + _pp_conf.photmode] != 99)
-        cat.reject_sources_with(numpy.isnan(
+        cat.reject_sources_with(np.isnan(
             cat.data['MAG_'+_pp_conf.photmode]))
-        cat.reject_sources_with(numpy.isnan(cat.data['MAGERR_' +
-                                                     _pp_conf.photmode]))
+        cat.reject_sources_with(np.isnan(cat.data['MAGERR_' +
+                                                  _pp_conf.photmode]))
+
+        # add idx columns to both catalogs
+        if 'idx' not in ref_cat.fields:
+            ref_cat.add_field('idx',
+                              list(range(ref_cat.shape[0])),
+                              field_type=np.int)
+        if 'idx' not in cat.fields:
+            cat.add_field('idx', list(range(cat.shape[0])),
+                          field_type=np.int)
 
         match = ref_cat.match_with(cat,
                                    match_keys_this_catalog=[
-                                       'ra.deg', 'dec.deg'],
+                                       'ra_deg', 'dec_deg'],
                                    match_keys_other_catalog=[
-                                       'ra.deg', 'dec.deg'],
+                                       'ra_deg', 'dec_deg'],
                                    extract_this_catalog=[filterkey,
                                                          efilterkey,
                                                          'ident',
-                                                         'ra.deg',
-                                                         'dec.deg'],
+                                                         'ra_deg',
+                                                         'dec_deg',
+                                                         'idx'],
                                    extract_other_catalog=['MAG_'+_pp_conf.photmode,
                                                           'MAGERR_' +
-                                                          _pp_conf.photmode],
-                                   tolerance=old_div(_pp_conf.pos_epsilon, 3600.))
+                                                          _pp_conf.photmode,
+                                                          'idx'],
+                                   tolerance=_pp_conf.pos_epsilon/3600.)
+        logging.info('{:d} sources matched within {:.2f} arcsec'.format(
+            len(match[0][0]), _pp_conf.pos_epsilon))
 
         # artificially blow up incredibly small ref_cat uncertainties
-        for i in numpy.where(match[0][1] < 0.01):
+        for i in np.where(match[0][1] < 0.01):
             match[0][1][i] = 0.01
 
         residuals = match[0][0]-match[1][0]  # ref - instr
@@ -280,14 +288,14 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                 clipping_steps = [[0, 0, 1e-10, [], [[], []]]]
 
                 output['zeropoints'].append({'filename': cat.catalogname,
-                                             'zp': numpy.nan,
-                                             'zp_sig': numpy.nan,
+                                             'zp': np.nan,
+                                             'zp_sig': np.nan,
                                              'zp_nstars': 0,
                                              'zp_usedstars': 0,
                                              'obstime': cat.obstime,
                                              'match': [[], []],
                                              'clipping_steps': clipping_steps,
-                                             'zp_idx': numpy.nan,
+                                             'zp_idx': np.nan,
                                              'success': False})
                 continue
 
@@ -303,40 +311,41 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
 
         # perform clipping to reject one outlier at a time
         zeropoint = 25  # initialize zeropoint
+        popped_idc = []  # list of 'match' indices of rejected stars
         while len(residuals) >= 3:
-            def fchi2(zp): return numpy.sum(
-                [old_div((zp-residuals)**2, residuals_sig)])
-            # fchi2 = lambda zp: numpy.sum((zp-residuals)**2) # unweighted
+            def fchi2(zp): return np.sum([(zp-residuals)**2/residuals_sig])
+            # fchi2 = lambda zp: np.sum((zp-residuals)**2) # unweighted
 
             minchi2 = minimize(fchi2, zeropoint, method='Nelder-Mead')
-            red_chi2 = old_div(minchi2.fun, (len(residuals)-2))
+            red_chi2 = minchi2.fun/(len(residuals)-2)
             # reduced chi2: chi2/(N-observations-N_fit_variables-1)
             zeropoint = minchi2.x[0]
 
             # derive weighted standard deviation
-            var = numpy.average((residuals-zeropoint)**2,
-                                weights=old_div(1., residuals_sig))
-            # sigma = numpy.sqrt(var/(len(residuals)-1)) # weighted std of mean
+            var = np.average((residuals-zeropoint)**2,
+                             weights=1/residuals_sig)
+            # sigma = np.sqrt(var/(len(residuals)-1)) # weighted std of mean
             # weighted std + rms of individual sigmas
             # residuals_sig is already squared!
-            sigma = numpy.sqrt(var + numpy.mean(residuals_sig))
-            #sigma = numpy.std(residuals-zeropoint)
+            sigma = np.sqrt(var + np.mean(residuals_sig))
+            # sigma = np.std(residuals-zeropoint)
 
             clipping_steps.append([zeropoint, sigma, red_chi2, m_idc,
                                    match])
 
             # identify most significant outliers (not weighted) and remove them
             for repeat in range(max([1, int(len(residuals)/50)])):
-                popidx = numpy.argmax(numpy.absolute(residuals
-                                                     - zeropoint))
-                residuals = numpy.delete(residuals, popidx)
-                residuals_sig = numpy.delete(residuals_sig, popidx)
-                m_idc = numpy.delete(m_idc, popidx)
+                popidx = np.argmax(np.absolute(residuals
+                                               - zeropoint))
+                residuals = np.delete(residuals, popidx)
+                residuals_sig = np.delete(residuals_sig, popidx)
+                popped_idc.append(m_idc[popidx])
+                m_idc = np.delete(m_idc, popidx)
 
         # select best-fit zeropoint based on minimum chi2
-        idx = numpy.nanargmin([step[2] for step in clipping_steps])
+        idx = np.nanargmin([step[2] for step in clipping_steps])
         # # select best-fit zeropoint based on minimum sigma
-        #idx = numpy.nanargmin([step[1] for step in clipping_steps])
+        # idx = np.nanargmin([step[1] for step in clipping_steps])
 
         # reduce/increase idx to increase the number of sources until
         # minstars is met
@@ -358,20 +367,69 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                      'zp_idx': idx,
                                      'success': True})
 
-        print('%6.3f+-%.3f (%d/%d reference stars)' %
-              (clipping_steps[idx][0], clipping_steps[idx][1],
-               len(clipping_steps[idx][3]), len(clipping_steps[0][3])))
+        if display:
+            print('%6.3f+-%.3f (%d/%d reference stars)' %
+                  (clipping_steps[idx][0], clipping_steps[idx][1],
+                   len(clipping_steps[idx][3]), len(clipping_steps[0][3])))
+
+        # write calibration catalog to file
+        if conf.save_caldata:
+            caldata_filename = cat.catalogname[:-5]+conf.save_caldata_suffix
+            matched_ref_cat = ref_cat[match[0][5].data]
+            # build `fit` column that indicates whether star is used in fit
+            used_in_fit = np.zeros(len(matched_ref_cat), dtype=np.int)
+            used_in_fit[clipping_steps[idx][3]] = 1
+            matched_ref_cat.add_column(Column(used_in_fit, 'fit'))
+            matched_ref_cat.remove_column('idx')
+            # add instrumental magnitudes
+            matched_ref_cat.add_column(
+                cat['MAG_'+_pp_conf.photmode][match[1][2]])
+            matched_ref_cat.add_column(
+                cat['MAGERR_'+_pp_conf.photmode][match[1][2]])
+
+            if conf.save_caldata_usedonly:
+                matched_ref_cat = matched_ref_cat[used_in_fit == 1]
+            matched_ref_cat.write(caldata_filename,
+                                  format=conf.save_caldata_format,
+                                  overwrite=True)
 
         # append calibrated magnitudes to catalog
         if filterkey[0] != '_':
             filterkey = '_' + filterkey
             efilterkey = '_' + efilterkey
 
-        cat.add_fields([filterkey, efilterkey],
-                       [cat['MAG_'+_pp_conf.photmode] + clipping_steps[idx][0],
-                        numpy.sqrt(cat['MAGERR_'+_pp_conf.photmode]**2 +
-                                   clipping_steps[idx][1]**2)],
-                       ['F', 'F'])
+        # add calibration data to catalog, so that it ends up in database
+        if conf.caldata_in_db:
+            db_ref_cat = deepcopy(ref_cat)
+            # replace `idx` column in ref_cat with one that points to cat
+            db_ref_cat.data.remove_column('idx')
+            cat_idc = np.ones(ref_cat.shape[0], dtype=int)*-1
+            for i in range(len(match[0][0])):
+                cat_idc[match[0][5][i]] = match[1][2][i]
+            db_ref_cat.add_field('idx', cat_idc)
+            cat.data = join(cat.data, db_ref_cat.data,
+                            keys='idx',
+                            join_type='left')
+            # cal_id = ['' for i in range(cat.shape[0])]
+            # print(ref_cat.fields)
+            # cal_coo = np.zeros((cat.shape[0], 2))
+            # for i in range(len(match[0][0])):
+            #     cal_id[match[1][2][i]] = ref_cat[match[0][5][i]]['ident']
+            #     cal_coo[match[1][2][i][0]] = ref_cat['ra_deg',
+            #                                          'dec_deg'][match[0][5][i]]
+
+            #     # ra[match[1][2][i]] = ref_cat[match[0][5][i]]['ra_deg']
+            #     # cal_dec[match[1][2][i]] = ref_cat[match[0][5][i]]['dec_deg']
+            # cat.add_fields(['cal_ident', 'cal_ra_deg', 'cal_dec_deg'],
+            #                [cal_id, cal_ra, cal_dec],
+            #                [np.string_, np.float, np.float])
+
+        if filterkey not in cat.fields:
+            cat.add_fields([filterkey, efilterkey],
+                           [cat['MAG_'+_pp_conf.photmode] + clipping_steps[idx][0],
+                            np.sqrt(cat['MAGERR_'+_pp_conf.photmode]**2 +
+                                    clipping_steps[idx][1]**2)],
+                           ['F', 'F'])
 
         # add ref_cat identifier to catalog
         cat.origin = cat.origin.strip() + ";" + ref_cat.catalogname + ";"\
@@ -500,8 +558,8 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
             for cat in catalogs:
                 cat.add_fields([filterkey, efilterkey],
                                [cat['MAG_'+_pp_conf.photmode] + magzp[0],
-                                numpy.sqrt(cat['MAGERR_'+_pp_conf.photmode]**2 +
-                                           magzp[1]**2)],
+                                np.sqrt(cat['MAGERR_'+_pp_conf.photmode]**2 +
+                                        magzp[1]**2)],
                                ['F', 'F'])
                 cat.origin = (cat.origin.strip() +
                               ';'+filtername+'_manual_zp;')
@@ -539,7 +597,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         #                        'zp'       : derived zeropoint,
         #                        'zp_sig'   : uncertainty,
         #                        'zp_nstars': number of reference stars available,
-        #                        'zp_usedstars': numer used stars,
+        #                        'zp_usedstars': number of used stars,
         #                        'obstime'  : observation midtime (JD),
         #                        'match'    : match array (see above),
         #                        'clipping_steps'  : clipping_steps (see above),
@@ -647,4 +705,4 @@ if __name__ == '__main__':
     calibration = calibrate(filenames, minstars, manfilter,
                             manualcatalog, obsparam, maxflag=maxflag,
                             magzp=man_magzp, solar=solar,
-                            display=True, diagnostics=True)
+                            display=True, diagnostics=conf.diagnostics)

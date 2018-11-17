@@ -27,7 +27,8 @@ Python modules:
   * `matplotlib`_
   * `future`_
   * `skimage`_
-    
+  * `pandas`_
+  
 and some freely available software:
 
   * `Source Extractor`_
@@ -89,6 +90,7 @@ Feel free to contact me in case of questions or suggestions: mommermiscience (at
 .. _matplotlib: http://matplotlib.org/
 .. _future: http://python-future.org/
 .. _skimage: https://scikit-image.org/
+.. _pandas: http://pandas.pydata.org/
 .. _Source Extractor: http://www.astromatic.net/software/sextractor
 .. _SCAMP: http://www.astromatic.net/software/scamp
 .. _documentation: http://photometrypipeline.readthedocs.io/en/latest/

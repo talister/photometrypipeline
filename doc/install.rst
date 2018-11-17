@@ -29,7 +29,8 @@ Package Index`_ through `pip`_):
 * `matplotlib`_
 * `future`_    
 * `skimage`_
-    
+* `pandas`_
+  
 and some freely available software:
 
 * `imagemagick`_
@@ -80,7 +81,7 @@ Unpack SCAMP and install using::
 
 Install Python modules::
 
-  pip install --upgrade --user numpy scipy astropy astroquery matplotlib
+  pip install --upgrade --user numpy scipy astropy astroquery matplotlib pandas
 
 Add these lines to the ``.bashrc`` file in your home directory and
 replace ``<path>`` with the actual path to the PP directory::
@@ -120,7 +121,7 @@ Update pip::
 Install extra python modules in Anaconda::
 
   pip install --upgrade –-user numpy scipy astropy astroquery matplotlib
-  pip install astropy
+  pip install astropy pandas
   conda update astropy
 
 Install SExtractor::
@@ -256,3 +257,4 @@ and I will take care of implementing your telescope.
 .. _latest development version: http://www.astromatic.net/wsvn/public/dl.php?repname=public+software.scamp&path=%2Ftrunk%2F&rev=0&isdir=1
 .. _towicode: https://github.com/towicode
 .. _mytelescopes.py: http://134.114.60.45/photometrypipeline/mytelescopes.py
+.. _pandas: http://pandas.pydata.org/

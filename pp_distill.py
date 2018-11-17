@@ -107,14 +107,14 @@ def manual_positions(posfile, catalogs, display=True):
             objects.append({'ident': positions[cat_idx]['name'].decode('utf-8'),
                             'obsdate.jd':  cat.obstime,
                             'cat_idx':  cat_idx,
-                            'ra.deg':  positions[cat_idx]['ra'],
-                            'dec.deg':  positions[cat_idx]['dec']})
+                            'ra_deg':  positions[cat_idx]['ra'],
+                            'dec_deg':  positions[cat_idx]['dec']})
         except:
             objects.append({'ident': 'manual_target',
                             'obsdate.jd':  cat.obstime,
                             'cat_idx':  cat_idx,
-                            'ra.deg':  positions[cat_idx]['ra'],
-                            'dec.deg':  positions[cat_idx]['dec']})
+                            'ra_deg':  positions[cat_idx]['ra'],
+                            'dec_deg':  positions[cat_idx]['dec']})
 
     if display:
         print(len(objects)/len(catalogs), 'object(s) found')
@@ -132,13 +132,13 @@ def pick_controlstar(catalogs, display=True):
 
     match = catalogs[0].match_with(catalogs[-1],
                                    match_keys_this_catalog=[
-                                       'ra.deg', 'dec.deg'],
+                                       'ra_deg', 'dec_deg'],
                                    match_keys_other_catalog=[
-                                       'ra.deg', 'dec.deg'],
+                                       'ra_deg', 'dec_deg'],
                                    extract_this_catalog=[
-                                       'ra.deg', 'dec.deg', 'FLAGS'],
+                                       'ra_deg', 'dec_deg', 'FLAGS'],
                                    extract_other_catalog=[
-                                       'ra.deg', 'dec.deg', 'FLAGS', 'MAG_APER'],
+                                       'ra_deg', 'dec_deg', 'FLAGS', 'MAG_APER'],
                                    tolerance=1/3600)
 
     objects = []
@@ -150,8 +150,8 @@ def pick_controlstar(catalogs, display=True):
             objects.append({'ident': 'control_star',
                             'obsdate.jd':  cat.obstime[0],
                             'cat_idx':  cat_idx,
-                            'ra.deg':  match[1][0][ctlstar_idx],
-                            'dec.deg':  match[1][1][ctlstar_idx]})
+                            'ra_deg':  match[1][0][ctlstar_idx],
+                            'dec_deg':  match[1][1][ctlstar_idx]})
     else:
         print('  no common control star found in first and last frame')
         logging.info('no common control star found in first and last frame')
@@ -257,8 +257,8 @@ def moving_primary_target(catalogs, man_targetname, offset, is_asteroid=None,
             objects.append({'ident': eph[0]['targetname'].replace(" ", "_"),
                             'obsdate.jd': cat.obstime[0],
                             'cat_idx': cat_idx,
-                            'ra.deg': eph[0]['RA']-offset[0]/3600,
-                            'dec.deg': eph[0]['DEC']-offset[1]/3600})
+                            'ra_deg': eph[0]['RA']-offset[0]/3600,
+                            'dec_deg': eph[0]['DEC']-offset[1]/3600})
             logging.info('Successfully grabbed Horizons position for %s ' %
                          cat.obj.replace('_', ' '))
             logging.info('HORIZONS call: %s' % obj.uri)
@@ -292,8 +292,8 @@ def fixed_targets(fixed_targets_file, catalogs, display=True):
             objects.append({'ident': obj['name'].decode('utf-8'),
                             'obsdate.jd': cat.obstime[0],
                             'cat_idx': cat_idx,
-                            'ra.deg': obj['ra'],
-                            'dec.deg': obj['dec']})
+                            'ra_deg': obj['ra'],
+                            'dec_deg': obj['dec']})
 
     if display:
         print(len(objects)/len(catalogs), 'targets read')
@@ -328,7 +328,7 @@ def serendipitous_variablestars(catalogs, display=True):
                   + 'a %.2f deg radius') %
                  (ra_deg, dec_deg, rad_deg))
 
-    field = coord.SkyCoord(ra=ra_deg, dec=dec_deg, unit=(u.deg, u.deg),
+    field = coord.SkyCoord(ra=ra_deg, dec=dec_deg, unit=(u.dec, u.dec),
                            frame='icrs')
 
     vquery = Vizier(columns=['Name', 'RAJ2000', 'DEJ2000'])
@@ -348,8 +348,8 @@ def serendipitous_variablestars(catalogs, display=True):
             objects.append({'ident': star['Name'],
                             'obsdate.jd': cat.obstime[0],
                             'cat_idx': cat_idx,
-                            'ra.deg': star['RAJ2000'],
-                            'dec.deg': star['DEJ2000']})
+                            'ra_deg': star['RAJ2000'],
+                            'dec_deg': star['DEJ2000']})
 
     if display:
         print(len(objects)/len(catalogs), 'variable stars found')
@@ -525,17 +525,17 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
     for cat_idx, cat in enumerate(catalogs):
 
         # check for each target if it is within the image boundaries
-        min_ra = numpy.min(cat['ra.deg'])
-        max_ra = numpy.max(cat['ra.deg'])
-        min_dec = numpy.min(cat['dec.deg'])
-        max_dec = numpy.max(cat['dec.deg'])
+        min_ra = numpy.min(cat['ra_deg'])
+        max_ra = numpy.max(cat['ra_deg'])
+        min_dec = numpy.min(cat['dec_deg'])
+        max_dec = numpy.max(cat['dec_deg'])
         objects_thiscat = []
         for obj in objects:
             if obj['cat_idx'] != cat_idx:
                 continue
             # # not required since there is exactly one entry per catalog
-            # if (obj['ra.deg'] > max_ra or obj['ra.deg'] < min_ra or
-            #         obj['dec.deg'] > max_dec or obj['dec.deg'] < min_dec):
+            # if (obj['ra_deg'] > max_ra or obj['ra_deg'] < min_ra or
+            #         obj['dec_deg'] > max_dec or obj['dec_deg'] < min_dec):
             #     if display:
             #         print('\"%s\" not in image %s' % (obj['ident'],
             #                                           cat.catalogname))
@@ -551,10 +551,10 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
         # create a new catalog
         target_cat = catalog('targetlist:_'+cat.catalogname)
 
-        target_cat.add_fields(['ident', 'ra.deg', 'dec.deg'],
+        target_cat.add_fields(['ident', 'ra_deg', 'dec_deg'],
                               [[obj['ident'] for obj in objects_thiscat],
-                               [obj['ra.deg'] for obj in objects_thiscat],
-                               [obj['dec.deg'] for obj in objects_thiscat]],
+                               [obj['ra_deg'] for obj in objects_thiscat],
+                               [obj['dec_deg'] for obj in objects_thiscat]],
                               ['20A', 'D', 'D'])
 
         # identify magnitudes
@@ -565,7 +565,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
 
         # build field lists for observed catalogs
         match_keys_other_catalog, extract_other_catalog = [], []
-        for key in ['ra.deg', 'dec.deg', 'XWIN_IMAGE', 'YWIN_IMAGE',
+        for key in ['ra_deg', 'dec_deg', 'XWIN_IMAGE', 'YWIN_IMAGE',
                     'FLAGS', 'FWHM_WORLD']:
             if key in cat.fields:
                 match_keys_other_catalog.append(key)
@@ -573,10 +573,10 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
 
         match = target_cat.match_with(cat,
                                       match_keys_this_catalog=(
-                                          'ra.deg', 'dec.deg'),
+                                          'ra_deg', 'dec_deg'),
                                       match_keys_other_catalog=match_keys_other_catalog,
                                       extract_this_catalog=[
-                                          'ra.deg', 'dec.deg', 'ident'],
+                                          'ra_deg', 'dec_deg', 'ident'],
                                       extract_other_catalog=extract_other_catalog+mag_keys,
                                       tolerance=None)
 
