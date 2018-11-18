@@ -239,7 +239,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     else:
         aprad = fixed_aprad  # skip curve_of_growth analysis
 
-    print('\n----- derive optimium photometry aperture\n')
+    print('\n----- derive optimum photometry aperture\n')
     phot = pp_photometry.photometry(filenames, snr, source_minarea, aprad,
                                     man_targetname, background_only,
                                     target_only,
