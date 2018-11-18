@@ -79,7 +79,16 @@ class ConfDistill(Conf):
 
 class ConfDiagnostics(Conf):
     """configuration setup for diagnostics"""
-    pass
+
+    # general settings
+    image_stretch = 'linear'  # could be 'linear', 'log', 'power'
+
+    # presentation of calibration data
+    show_individual_frame_data = True  # present individual frame data
+    # next 3 parameters are ignored if the previous is `False`
+    show_curve_of_growth = True  # present individual curve of growth results
+    show_calibration_star_map = True  # present map of calibration stars
+    show_calibration_star_table = True  # present table of calibration stars
 
 
 class ConfCombine(Conf):
@@ -95,3 +104,4 @@ class ConfMPCReport(Conf):
 confprepare = ConfPrepare()
 confcalibrate = ConfCalibrate()
 confdistill = ConfDistill()
+confdiagnostics = ConfDiagnostics()

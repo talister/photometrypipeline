@@ -29,8 +29,6 @@ import numpy as np
 import argparse
 import logging
 from astropy.io import fits
-import matplotlib
-matplotlib.use('Agg')
 from scipy.optimize import minimize
 from astropy.table import join
 
@@ -53,6 +51,8 @@ logging.basicConfig(filename=_pp_conf.log_filename,
                     datefmt=_pp_conf.log_datefmt)
 
 # photometric fitting routines
+
+from diagnostics import calibration as diag
 
 
 def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
@@ -252,22 +252,24 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
             cat.add_field('idx', list(range(cat.shape[0])),
                           field_type=np.int)
 
-        match = ref_cat.match_with(cat,
-                                   match_keys_this_catalog=[
-                                       'ra_deg', 'dec_deg'],
-                                   match_keys_other_catalog=[
-                                       'ra_deg', 'dec_deg'],
-                                   extract_this_catalog=[filterkey,
-                                                         efilterkey,
-                                                         'ident',
-                                                         'ra_deg',
-                                                         'dec_deg',
-                                                         'idx'],
-                                   extract_other_catalog=['MAG_'+_pp_conf.photmode,
-                                                          'MAGERR_' +
-                                                          _pp_conf.photmode,
-                                                          'idx'],
-                                   tolerance=_pp_conf.pos_epsilon/3600.)
+        match = ref_cat.match_with(
+            cat,
+            match_keys_this_catalog=[
+                'ra_deg', 'dec_deg'],
+            match_keys_other_catalog=[
+                'ra_deg', 'dec_deg'],
+            extract_this_catalog=[filterkey,
+                                  efilterkey,
+                                  'ident',
+                                  'ra_deg',
+                                  'dec_deg',
+                                  'idx'],
+            extract_other_catalog=['MAG_'+_pp_conf.photmode,
+                                   'MAGERR_' +
+                                   _pp_conf.photmode,
+                                   'idx'],
+            tolerance=_pp_conf.pos_epsilon/3600.)
+
         logging.info('{:d} sources matched within {:.2f} arcsec'.format(
             len(match[0][0]), _pp_conf.pos_epsilon))
 

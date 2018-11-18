@@ -67,103 +67,93 @@ logging.basicConfig(filename=_pp_conf.log_filename,
 #   each directory with data; summary.html links to other directories
 ###
 
-def create_website(filename, content=''):
-    """
-    create empty website for diagnostics output
-    """
+class Diagnostics_Html():
 
-    html = "<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'>\n"
-    html += "<HTML>\n"
-    html += "<HEAD>\n"
-    html += "<TITLE>Photometry Pipeline - Diagnostics</TITLE>\n"
-    html += "</HEAD>\n"
-    html += "<BODY>\n"
-    html += content
-    html += "</BODY>\n"
-    html += "</HTML>\n"
+    from pp_setup import confdiagnostics as conf
 
-    outf = open(filename, 'w')
-    outf.writelines(html)
-    outf.close()
+    def create_website(self, filename, content=''):
+        """
+        create empty website for diagnostics output
+        """
 
-    return None
+        html = "<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'>\n"
+        html += "<HTML>\n"
+        html += "<HEAD>\n"
+        html += "<TITLE>Photometry Pipeline - Diagnostics</TITLE>\n"
+        html += "</HEAD>\n"
+        html += "<BODY>\n"
+        html += content
+        html += "</BODY>\n"
+        html += "</HTML>\n"
 
+        outf = open(filename, 'w')
+        outf.writelines(html)
+        outf.close()
 
-def append_website(filename, content, insert_at='</BODY>',
-                   replace_below='X?!do not replace anything!?X'):
-    """
-    append content to an existing website:
-    insert content before line that contains `insert_at`
-    replace lines between `replace_below` and `insert_at` (by
-    default, nothing is replaced)
-    """
-    # read existing code
-    existing_html = open(filename, 'r').readlines()
+        return None
 
-    # insert content into existing html
-    outf = open(filename, 'w')
-    delete = False
-    for line in existing_html:
-        if replace_below in line:
-            delete = True
-            continue
-        if insert_at in line:
-            outf.writelines(content)
-            delete = False
-        if delete:
-            continue
-        outf.writelines(line)
-    outf.close()
+    def append_website(self, filename, content, insert_at='</BODY>',
+                       replace_below='X?!do not replace anything!?X'):
+        """
+        append content to an existing website:
+        insert content before line that contains `insert_at`
+        replace lines between `replace_below` and `insert_at` (by
+        default, nothing is replaced)
+        """
+        # read existing code
+        existing_html = open(filename, 'r').readlines()
 
-    return None
+        # insert content into existing html
+        outf = open(filename, 'w')
+        delete = False
+        for line in existing_html:
+            if replace_below in line:
+                delete = True
+                continue
+            if insert_at in line:
+                outf.writelines(content)
+                delete = False
+            if delete:
+                continue
+            outf.writelines(line)
+        outf.close()
 
-###########
+        return None
 
-# pipeline summary websites
+    # # pipeline summary website
 
+    # def create_summary(self):
+    #     """
+    #     create a summary page with all available datasets
+    #     """
+    #     html = "<H1>Photometry Pipeline Analysis ({:s})</H1>\n".format(
+    #         datetime.datetime.now().strftime("%Y-%m-%y %H:%M"))
+    #     self.create_website(_pp_conf.diagnostics_summary, html)
 
-def create_summary():
-    """
-    create a summary page with all available datasets
-    """
+    # def add_to_summary(self, targetname, filtername, n_frames):
+    #     """
+    #     add data set to summary website
+    #     """
+    #     html = "<P><A HREF=\"{:s}\">{:s}, {:s}, {:d} frames</A>\n".format(
+    #         _pp_conf.index_filename, targetname, filtername, n_frames)
+    #     html += "\n<!-- pp_process_idx={:d} -->\n".format(
+    #             _pp_conf.pp_process_idx)
+    #     self.append_website(_pp_conf.diagnostics_summary, html)
 
-    html = ("<H1>Photometry Pipeline Analysis (%s)</H1>\n") % \
-        (datetime.datetime.now().strftime("%Y-%m-%y %H:%M"))
-
-    create_website(_pp_conf.diagnostics_summary, html)
-
-    return None
-
-
-def add_to_summary(targetname, filtername, n_frames):
-    """
-    add data set to summary website
-    """
-
-    html = "<P><A HREF=\"%s\">%s, %s, %d frames</A>\n" % \
-        (_pp_conf.index_filename, targetname, filtername, n_frames)
-    html += "\n<!-- pp_process_idx=%d -->\n" % _pp_conf.pp_process_idx
-
-    append_website(_pp_conf.diagnostics_summary, html)
-
-    return None
-
-
-def insert_into_summary(text):
-    """
-    insert result information into summary website
-    """
-    append_website(_pp_conf.diagnostics_summary, text+'\n',
-                   insert_at=("<!-- pp_process_idx=%d -->\n" %
-                              _pp_conf.pp_process_idx))
-
-    return None
+    # def insert_into_summary(self, text):
+    #     """
+    #     insert result information into summary website
+    #     """
+    #     self.append_website(_pp_conf.diagnostics_summary, text+'\n',
+    #                         insert_at=("<!-- pp_process_idx=%d -->\n" %
+    #                                    _pp_conf.pp_process_idx))
 
 
-# individual pipeline process diagnostic websites
+class Prepare_Diagnostics():
+    """diagnostics run as part of pp_prepare"""
 
-def create_index(filenames, directory, obsparam,
-                 display=False, imagestretch='linear'):
+    def create_index(filenames, directory, obsparam,
+                     display=False, imagestretch='linear'):
     """
     create index.html
     diagnostic root website for one pipeline process
@@ -315,7 +305,7 @@ def add_registration(data, extraction_data, imagestretch='linear'):
     # create frame images
     for dat in extraction_data:
         framefilename = '.diagnostics/' + dat['fits_filename'] + \
-                        '_astrometry.png'
+            '_astrometry.png'
         imgdat = fits.open(dat['fits_filename'],
                            ignore_missing_end=True)[0].data
         resize_factor = min(1., 1000./np.max(imgdat.shape))
@@ -500,228 +490,295 @@ def add_photometry(data, extraction):
     return None
 
 
-def add_calibration(data, imagestretch='linear'):
-    """
-    add calibration results to website
-    """
+class Calibration_Diagnostics(Diagnostics_Html):
 
-    # produce calibration plot for each frame
-    for idx, cat in enumerate(data['catalogs']):
-        if not data['zeropoints'][idx]['success']:
-            continue
-        ax1 = plt.subplot(211)
-        ax1.set_title('%s: %s-band from %s' %
-                      (cat.catalogname, data['filtername'],
-                       data['ref_cat'].catalogname))
-        ax1.set_xlabel('Number of Reference Stars')
-        ax1.set_ylabel('Magnitude Zeropoint', fontdict={'color': 'red'})
-        # ax1.ticklabel_format(style='sci', axis='y', scilimits=(-5,5))
+    def curve_of_growth_plots(self, data):
+        """produce curve-of-growth plot for each frame"""
+        for idx, cat in enumerate(data['catalogs']):
+            if not data['zeropoints'][idx]['success']:
+                continue
+            f, (ax1, ax3) = plt.subplots(2)
+            # ax1 = plt.subplot(211)
+            ax1.set_title('%s: %s-band from %s' %
+                          (cat.catalogname, data['filtername'],
+                           data['ref_cat'].catalogname))
+            ax1.set_xlabel('Number of Reference Stars')
+            ax1.set_ylabel('Magnitude Zeropoint', fontdict={'color': 'red'})
 
-        zp_idx = data['zeropoints'][idx]['zp_idx']
-        clipping_steps = data['zeropoints'][idx]['clipping_steps']
+            zp_idx = data['zeropoints'][idx]['zp_idx']
+            clipping_steps = data['zeropoints'][idx]['clipping_steps']
 
-        x = [len(clipping_steps[i][3]) for i in range(len(clipping_steps))]
+            x = [len(clipping_steps[i][3]) for i
+                 in range(len(clipping_steps))]
 
-        ax1.errorbar(x, [clipping_steps[i][0] for i
+            ax1.errorbar(x, [clipping_steps[i][0] for i
+                             in range(len(clipping_steps))],
+                         yerr=[clipping_steps[i][1] for i
+                               in range(len(clipping_steps))], color='red')
+            ax1.set_ylim(ax1.get_ylim()[::-1])  # reverse y axis
+            ax1.plot([len(clipping_steps[zp_idx][3]),
+                      len(clipping_steps[zp_idx][3])],
+                     ax1.get_ylim(), color='black')
+
+            ax2 = ax1.twinx()
+            ax2.plot(x, [clipping_steps[i][2] for i
                          in range(len(clipping_steps))],
-                     yerr=[clipping_steps[i][1] for i
-                           in range(len(clipping_steps))], color='red')
-        ax1.set_ylim(ax1.get_ylim()[::-1])  # reverse y axis
-        ax1.plot([len(clipping_steps[zp_idx][3]),
-                  len(clipping_steps[zp_idx][3])],
-                 ax1.get_ylim(), color='black')
+                     color='blue')
+            ax2.set_ylabel(r'reduced $\chi^2$', fontdict={'color': 'blue'})
+            ax2.set_yscale('log')
 
-        ax2 = ax1.twinx()
-        ax2.plot(x, [clipping_steps[i][2] for i
-                     in range(len(clipping_steps))],
-                 color='blue')
-        ax2.set_ylabel(r'reduced $\chi^2$', fontdict={'color': 'blue'})
-        ax2.set_yscale('log')
+            # residual plot
+            # ax3 = plt.subplot(212)
+            ax3.set_xlabel('Reference Star Magnitude')
+            ax3.set_ylabel('Calibration-Reference (mag)')
 
-        # residual plot
-        ax3 = plt.subplot(212)
-        ax3.set_xlabel('Reference Star Magnitude')
-        ax3.set_ylabel('Calibration-Reference (mag)')
+            match = data['zeropoints'][idx]['match']
+            x = match[0][0][clipping_steps[zp_idx][3]]
+            residuals = (match[1][0][clipping_steps[zp_idx][3]]
+                         + clipping_steps[zp_idx][0]
+                         - match[0][0][clipping_steps[zp_idx][3]])
+            residuals_sig = np.sqrt(match[1][1][clipping_steps[zp_idx][3]]**2
+                                    + clipping_steps[zp_idx][1]**2)
 
-        match = data['zeropoints'][idx]['match']
-        x = match[0][0][clipping_steps[zp_idx][3]]
-        residuals = match[1][0][clipping_steps[zp_idx][3]] \
-            + clipping_steps[zp_idx][0] \
-            - match[0][0][clipping_steps[zp_idx][3]]
-        residuals_sig = np.sqrt(match[1][1][clipping_steps[zp_idx][3]]**2
-                                + clipping_steps[zp_idx][1]**2)
+            ax3.errorbar(x, residuals, yerr=residuals_sig, color='black',
+                         linestyle='')
+            ax3.plot(ax3.get_xlim(), [0, 0], color='black', linestyle='--')
+            ax3.set_ylim(ax3.get_ylim()[::-1])  # reverse y axis
 
-        ax3.errorbar(x, residuals, yerr=residuals_sig, color='black',
-                     linestyle='')
-        ax3.plot(ax3.get_xlim(), [0, 0], color='black', linestyle='--')
-        ax3.set_ylim(ax3.get_ylim()[::-1])  # reverse y axis
+            plt.grid()
 
+            plotfilename = '.diagnostics/{:s}_photcal.png'.format(
+                cat.catalogname)
+            plt.savefig(plotfilename, format='png')
+            data['zeropoints'][idx]['plotfilename'] = plotfilename
+
+    def zeropoint_overview_plot(self, data):
+        """produce a plot of magnitude zeropoint as a function of time"""
+
+        times = [dat['obstime'][0] for dat in data['zeropoints']]
+        zp = [dat['zp'] for dat in data['zeropoints']]
+        zperr = [dat['zp_sig'] for dat in data['zeropoints']]
+
+        plt.subplot()
+        plt.errorbar(times, zp, yerr=zperr, linestyle='')
+        plt.xlabel('Observation Midtime (JD)')
+        plt.ylabel('Magnitude Zeropoints (mag)')
+        plt.show()
+        plt.ylim([plt.ylim()[1], plt.ylim()[0]])
         plt.grid()
-        plt.savefig(('.diagnostics/%s_photcal.png') % cat.catalogname,
-                    format='png')
-        data['zeropoints'][idx]['plotfilename'] = ('.diagnostics/%s_photcal.png') % \
-            cat.catalogname
+        plt.savefig('.diagnostics/zeropoints.png', format='png')
         plt.close()
+        data['zpplot'] = 'zeropoints.png'
 
-    # create zeropoint overview plot
-    times = [dat['obstime'][0] for dat in data['zeropoints']]
-    zp = [dat['zp'] for dat in data['zeropoints']]
-    zperr = [dat['zp_sig'] for dat in data['zeropoints']]
+    def calibration_raw_data_tables(self, data):
+        """create separate websites for calibration raw data tables"""
 
-    plt.subplot()
-    plt.errorbar(times, zp, yerr=zperr, linestyle='')
-    plt.xlabel('Observation Midtime (JD)')
-    plt.ylabel('Magnitude Zeropoints (mag)')
-    plt.show()
-    plt.ylim([plt.ylim()[1], plt.ylim()[0]])
-    plt.grid()
-    plt.savefig('.diagnostics/zeropoints.png', format='png')
-    plt.close()
-    data['zpplot'] = 'zeropoints.png'
+        for dat in data['zeropoints']:
+            if not dat['success']:
+                continue
+            html = "<TD><TABLE BORDER=\"1\">\n<TR>\n"
+            html += ("<TH>Idx</TH><TH>Name</TH><TH>RA</TH><TH>Dec</TH>"
+                     "<TH>Catalog (mag)</TH>"
+                     "<TH>Instrumental (mag)</TH><TH>Calibrated (mag)</TH>"
+                     "<TH>Residual (mag</TH>\n</TR>\n")
+            for i, idx in enumerate(dat['zp_usedstars']):
+                name = str(dat['match'][0][2][idx])
+                if isinstance(name, bytes):
+                    name = name.decode('utf8')
+                html += ("<TR><TD>{:d}</TD><TD>{:s}</TD><TD>{:12.8f}</TD>"
+                         "<TD>{:12.8f}</TD><TD>{:.3f}+-{:.3f}</TD>"
+                         "<TD>{:.3f}+-{:.3f}</TD>"
+                         "<TD>{:.3f}+-{:.3f}</TD><TD>{:.3f}</TD>"
+                         "</TR>").format(
+                             i+1, name,
+                             dat['match'][0][3][idx],
+                             dat['match'][0][4][idx],
+                             dat['match'][0][0][idx],
+                             dat['match'][0][1][idx],
+                             dat['match'][1][0][idx],
+                             dat['match'][1][1][idx],
+                             dat['zp']+dat['match'][1][0][idx],
+                             np.sqrt(dat['zp_sig']**2 +
+                                     dat['match'][1][1][idx]**2),
+                             (dat['zp']+dat['match'][1][0][idx]) -
+                             dat['match'][0][0][idx])
+                html += ("</TABLE><P>derived zeropoint: "
+                         "{:7.4f}+-{:6.4f} mag\n").format(
+                             dat['zp'], dat['zp_sig'])
+            html += "</TR></TD></TR></TABLE>\n"
 
-    # create calibration website
-    html = "<H2>Calibration Results</H2>\n"
-    html += ("<P>Calibration input: minimum number/fraction of reference "
-             + "stars %.2f, reference catalog: %s, filter name: %s\n") % \
-        (data['minstars'], data['ref_cat'].catalogname, data['filtername'])
-    html += "<TABLE BORDER=\"1\">\n<TR>\n"
-    html += "<TH>Filename</TH><TH>Zeropoint (mag)</TH><TH>ZP_sigma (mag)</TH>" \
-            + "<TH>N_stars</TH><TH>N_matched</TH>\n</TR>\n"
-    for dat in data['zeropoints']:
-        if 'plotfilename' in list(dat.keys()):
-            html += ("<TR><TD><A HREF=\"#%s\">%s</A></TD>"
-                     + "<TD>%7.4f</TD><TD>%7.4f</TD><TD>%d</TD>"
-                     + "<TD>%d</TD>\n</TR>") % \
-                (dat['plotfilename'].split('.diagnostics/')[1],
-                 dat['filename'], dat['zp'],
-                 dat['zp_sig'], dat['zp_nstars'],
-                 len(dat['match'][0][0]))
-    html += "</TABLE>\n"
-    html += "<P><IMG SRC=\"%s\">" % data['zpplot']
-    for dat in data['zeropoints']:
-        if not dat['success']:
-            continue
-        catframe = '.diagnostics/' + \
-                   dat['filename'][:dat['filename'].find('.ldac')] + \
-                   '.fits_reference_stars.png'
-        html += ("<H3>%s</H3>"
-                 + "<TABLE BORDER=\"0\">\n"
-                 + "<TR><TD><A HREF=\"%s\">"
-                 + "<IMG ID=\"%s\" SRC=\"%s\" HEIGHT=300 WIDTH=400>"
-                 + "</A></TD><TD><A HREF=\"%s\">"
-                 + "<IMG ID=\"%s\" SRC=\"%s\" HEIGHT=400 WIDTH=400>"
-                 + "</A></TD>\n") % \
-                (dat['filename'],
-                 dat['plotfilename'].split('.diagnostics/')[1],
-                 dat['plotfilename'].split('.diagnostics/')[1],
-                 dat['plotfilename'].split('.diagnostics/')[1],
-                 catframe.split('.diagnostics/')[1],
-                 catframe.split('.diagnostics/')[1],
-                 catframe.split('.diagnostics/')[1])
-        html += "<TD><TABLE BORDER=\"1\">\n<TR>\n"
-        html += "<TH>Idx</TH><TH>Name</TH><TH>RA</TH><TH>Dec</TH>" \
-                + "<TH>Catalog (mag)</TH>" \
-                + "<TH>Instrumental (mag)</TH><TH>Calibrated (mag)</TH>" \
-                + "<TH>Residual (mag</TH>\n</TR>\n"
-        for i, idx in enumerate(dat['zp_usedstars']):
-            name = dat['match'][0][2][idx]
-            if isinstance(name, bytes):
-                name = name.decode('utf8')
-            html += ("<TR><TD>%d</TD><TD>%s</TD><TD>%12.8f</TD>"
-                     + "<TD>%12.8f</TD><TD>%.3f+-%.3f</TD>"
-                     + "<TD>%.3f+-%.3f</TD>"
-                     + "<TD>%.3f+-%.3f</TD><TD>%.3f</TD></TR>") % \
-                (i+1, name,
-                 dat['match'][0][3][idx],
-                 dat['match'][0][4][idx], dat['match'][0][0][idx],
-                 dat['match'][0][1][idx],
-                 dat['match'][1][0][idx], dat['match'][1][1][idx],
-                 dat['zp']+dat['match'][1][0][idx],
-                 np.sqrt(dat['zp_sig']**2 + dat['match'][1][1][idx]**2),
-                 (dat['zp']+dat['match'][1][0][idx])-dat['match'][0][0][idx])
-            html += "</TABLE><P>derived zeropoint: %7.4f+-%6.4f mag\n" % \
-                (dat['zp'], dat['zp_sig'])
-        html += "</TR></TD></TR></TABLE>\n"
+            self.create_website(
+                _pp_conf.cal_filename+dat['filename']+'.html',
+                content=html)
 
-        # create catalog frame
-        fits_filename = dat['filename'][:dat['filename'].find('.ldac')] + \
-            '.fits'
-        imgdat = fits.open(fits_filename, ignore_missing_end=True)[0].data
-        resize_factor = min(1., 1000./np.max(imgdat.shape))
+    def calibration_star_maps(self, data):
+        """create thumbnail images with calibration stars marked"""
 
-        # normalize imgdat to pixel values 0 < px < 1
-        if np.min(imgdat) < 0:
-            imgdat = imgdat + np.min(imgdat)
-        if np.max(imgdat) > 1:
-            imgdat = imgdat / np.max(imgdat)
+        for dat in data['zeropoints']:
+            fits_filename = (dat['filename'][:dat['filename'].find('.ldac')]
+                             + '.fits')
+            imgdat = fits.open(fits_filename,
+                               ignore_missing_end=True)[0].data
+            resize_factor = min(1., 1000./np.max(imgdat.shape))
 
-        imgdat = resize(imgdat,
-                        (min(imgdat.shape[0], 1000),
-                         min(imgdat.shape[1], 1000)))
-        header = fits.open(fits_filename, ignore_missing_end=True)[0].header
+            # normalize imgdat to pixel values 0 < px < 1
+            if np.min(imgdat) < 0:
+                imgdat = imgdat + np.min(imgdat)
+            if np.max(imgdat) > 1:
+                imgdat = imgdat / np.max(imgdat)
 
-        norm = ImageNormalize(imgdat, interval=ZScaleInterval(),
-                              stretch={'linear': LinearStretch(),
-                                       'log': LogStretch()}[imagestretch])
+            imgdat = resize(imgdat,
+                            (min(imgdat.shape[0], 1000),
+                             min(imgdat.shape[1], 1000)))
+            header = fits.open(fits_filename,
+                               ignore_missing_end=True)[0].header
 
-        # turn relevant header keys into floats
-        # astropy.io.fits bug
-        for key, val in list(header.items()):
-            if 'CD1_' in key or 'CD2_' in key or \
-               'CRVAL' in key or 'CRPIX' in key or \
-               'EQUINOX' in key:
-                header[key] = float(val)
+            norm = ImageNormalize(
+                imgdat, interval=ZScaleInterval(),
+                stretch={'linear': LinearStretch(),
+                         'log': LogStretch()}[self.conf.image_stretch])
 
-        plt.figure(figsize=(5, 5))
-        img = plt.imshow(imgdat, cmap='gray', norm=norm,
-                         origin='lower')
+            # turn relevant header keys into floats
+            for key, val in list(header.items()):
+                if 'CD1_' in key or 'CD2_' in key or \
+                   'CRVAL' in key or 'CRPIX' in key or \
+                   'EQUINOX' in key:
+                    header[key] = float(val)
 
-        # remove axes
-        plt.axis('off')
-        img.axes.get_xaxis().set_visible(False)
-        img.axes.get_yaxis().set_visible(False)
+            plt.figure(figsize=(4, 4))
+            img = plt.imshow(imgdat, cmap='gray', norm=norm,
+                             origin='lower')
 
-        # plot reference sources
-        if len(dat['match'][0][3]) > 0 and len(dat['match'][0][4]) > 0:
-            try:
-                w = wcs.WCS(header)
-                world_coo = [[dat['match'][0][3][idx],
-                              dat['match'][0][4][idx]]
-                             for idx in dat['zp_usedstars']]
-                img_coo = w.wcs_world2pix(world_coo, True)
-                plt.scatter([c[0]*resize_factor for c in img_coo],
-                            [c[1]*resize_factor for c in img_coo],
-                            s=10, marker='o', edgecolors='red', linewidth=0.3,
-                            facecolor='none')
-                for i in range(len(dat['zp_usedstars'])):
-                    plt.annotate(str(i+1), xy=((img_coo[i][0]*resize_factor)+15,
-                                               img_coo[i][1]*resize_factor),
-                                 color='red', horizontalalignment='left',
-                                 verticalalignment='center')
-            except astropy.wcs._wcs.InvalidTransformError:
-                logging.error('could not plot reference sources due to '
-                              'astropy.wcs._wcs.InvalidTransformError; '
-                              'most likely unknown distortion parameters.')
+            # remove axes
+            plt.axis('off')
+            img.axes.get_xaxis().set_visible(False)
+            img.axes.get_yaxis().set_visible(False)
 
-        plt.savefig(catframe, format='png', bbox_inches='tight',
-                    pad_inches=0, dpi=200)
-        plt.close()
+            # plot reference sources
+            if len(dat['match'][0][3]) > 0 and len(dat['match'][0][4]) > 0:
+                try:
+                    w = wcs.WCS(header)
+                    world_coo = [[dat['match'][0][3][idx],
+                                  dat['match'][0][4][idx]]
+                                 for idx in dat['zp_usedstars']]
+                    img_coo = w.wcs_world2pix(world_coo, True)
+                    plt.scatter([c[0]*resize_factor for c in img_coo],
+                                [c[1]*resize_factor for c in img_coo],
+                                s=10, marker='o', edgecolors='red',
+                                linewidth=0.3,
+                                facecolor='none')
+                    for i in range(len(dat['zp_usedstars'])):
+                        plt.annotate(str(i+1),
+                                     xy=((img_coo[i][0]*resize_factor)+15,
+                                         img_coo[i][1]*resize_factor),
+                                     color='red',
+                                     horizontalalignment='left',
+                                     verticalalignment='center')
+                except astropy.wcs._wcs.InvalidTransformError:
+                    logging.error('could not plot reference sources due to '
+                                  'astropy.wcs._wcs.InvalidTransformError; '
+                                  'most likely unknown distortion '
+                                  'parameters.')
 
-    create_website(_pp_conf.cal_filename, content=html)
+            catframe = ('.diagnostics/{:s}.'
+                        'fits_reference_stars.png').format(
+                dat['filename'][:dat['filename'].find('.ldac')])
+            plt.savefig(catframe, format='png', bbox_inches='tight',
+                        pad_inches=0, dpi=200)
+            plt.close()
 
-    # update index.html
-    html = "<H2>Photometric Calibration - Zeropoints</H2>\n"
-    html += "match image data with %s (%s);\n" % \
-            (data['ref_cat'].catalogname, data['ref_cat'].history)
-    html += "see <A HREF=\"%s\">calibration</A> website for details\n" % \
-            _pp_conf.cal_filename
-    html += "<P><IMG SRC=\"%s\">\n" % ('.diagnostics/' + data['zpplot'])
+    def detailed_report(self, data):
+        """build a detailed report on the photometric calibration"""
 
-    append_website(_pp_conf.index_filename, html,
-                   replace_below=("<H2>Photometric Calibration "
-                                  "- Zeropoints</H2>\n"))
+        # build individual catalog data table websites
+        if self.conf.show_calibration_star_table:
+            self.calibration_raw_data_tables(data)
 
-    return None
+        # build individual curve of growth plots
+        if self.conf.show_curve_of_growth:
+            self.curve_of_growth_plots(data)
+
+        # build individual catalog maps
+        if self.conf.show_calibration_star_map:
+            self.calibration_star_maps(data)
+
+        html = "<H2>Calibration Results</H2>\n"
+        html += ("<P>Calibration input: minimum number/fraction of "
+                 "reference stars {:.2f}, reference catalog: {:s}, "
+                 "filter name: {:s}\n").format(
+                     data['minstars'],
+                     data['ref_cat'].catalogname,
+                     data['filtername'])
+        # build overview table
+        html += "<TABLE BORDER=\"1\">\n<TR>\n"
+        html += ("<TH>Filename</TH><TH>Zeropoint (mag)</TH>"
+                 "<TH>ZP_sigma (mag)</TH><TH>N_stars</TH>"
+                 "<TH>N_matched</TH>\n</TR>\n")
+        for dat in data['zeropoints']:
+            if 'plotfilename' in list(dat.keys()):
+                html += ("<TR><TD><A HREF=\"#{:s}\">{:s}</A></TD>"
+                         "<TD>{:7.4f}</TD><TD>{:7.4f}</TD><TD>{:d}</TD>"
+                         + "<TD>{:d}</TD>\n</TR>").format(
+                             dat['plotfilename'].split('.diagnostics/')[1],
+                             dat['filename'], dat['zp'],
+                             dat['zp_sig'], dat['zp_nstars'],
+                             len(dat['match'][0][0]))
+        html += "</TABLE>\n"
+        # overview zeropoint plot
+        html += "<P><IMG SRC=\"%s\">" % data['zpplot']
+
+        # provide data for individual frames
+        for dat in data['zeropoints']:
+            if not dat['success']:
+                continue
+            catframe = ('.diagnostics/{:s}.'
+                        'fits_reference_stars.png').format(
+                dat['filename'][:dat['filename'].find('.ldac')])
+            html += "<H3>{:s}</H3>".format(dat['filename'])
+            if self.conf.show_calibration_star_table:
+                html += "<BR>link to table goes here</BR>"
+            html += "<TABLE BORDER=\"0\">\n"
+            if self.conf.show_curve_of_growth:
+                html += ("<TR><TD><A HREF=\"{:s}\">"
+                         "<IMG ID=\"{:s}\" SRC=\"{:s}\" HEIGHT=400 "
+                         "WIDTH=533> </A></TD>").format(
+                             dat['plotfilename'].split('.diagnostics/')[1],
+                             dat['plotfilename'].split('.diagnostics/')[1],
+                             dat['plotfilename'].split('.diagnostics/')[1])
+            if self.conf.show_calibration_star_map:
+                html += ("<TD> <A HREF =\"{:s}\">"
+                         "<IMG ID=\"{:s}\" SRC=\"{:s}\" HEIGHT=400 "
+                         "WIDTH=400> </A></TD>\n").format(
+                             catframe.split('.diagnostics/')[1],
+                             catframe.split('.diagnostics/')[1],
+                             catframe.split('.diagnostics/')[1])
+            html += "</TR></TABLE>"
+
+        self.create_website(_pp_conf.cal_filename, content=html)
+
+    def add_calibration(self, data):
+        """
+        wrapper to add calibration results to diagnostics website
+        """
+
+        # create zeropoint overview plot
+        self.zeropoint_overview_plot(data)
+
+        # main diagnostics website content
+        html = ("<H2>Photometric Calibration - "
+                "Magnitude Zeropoints</H2>\n")
+        html += "Image sources matched against {:s} ({:s}).\n".format(
+            data['ref_cat'].catalogname, data['ref_cat'].history)
+        if self.conf.show_individual_frame_data:
+            html += ("See the <A HREF=\"{:s}\">calibration</A> report for "
+                     "details.\n").format(_pp_conf.cal_filename)
+            self.detailed_report(data)
+        html += "<P><IMG SRC=\"{:s}\" ALT=\"Zeropoints\">\n".format(
+            '.diagnostics/'+data['zpplot'])
+
+        self.append_website(_pp_conf.index_filename, html,
+                            replace_below=("<H2>Photometric Calibration "
+                                           "- Zeropoints</H2>\n"))
 
 
 def add_calibration_instrumental(data):
@@ -971,3 +1028,6 @@ def abort(where):
     append_website(_pp_conf.index_filename, html)
 
     return None
+
+
+calibration = Calibration_Diagnostics()
