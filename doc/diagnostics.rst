@@ -33,6 +33,8 @@ will also create a website named ``summary.html`` in the root
 directory from which is has been called, linking to all created
 ``diagnostics.html`` websites.
 
+**Please be aware that the diagnostics html output is currently undergoing a major overhaul. While the html format will be still be used in the future and partly extended, the design and information content might be subject to changes in the future.**
+
 
 LOG File
 ~~~~~~~~
@@ -215,11 +217,6 @@ position (green cross) and the actual aperture placement and size used
 contaminations of the photometry aperture. A `dedicated photometry page`_
 is featured for each target, allowing for a quick and easy
 identification of corrupted frames. 
-
-
-
-
-
 
 
 
