@@ -513,8 +513,8 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
         print('#-----------------------')
 
     if display:
-        print(len(objects)/len(catalogs),
-              'potential target(s) per frame identified.')
+        print('{:d} potential target(s) per frame identified.'.format(
+            int(len(objects)/len(catalogs))))
 
     # extract source data for identified targets
 
@@ -553,32 +553,35 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
 
         target_cat.add_fields(['ident', 'ra_deg', 'dec_deg'],
                               [[obj['ident'] for obj in objects_thiscat],
-                               [obj['ra_deg'] for obj in objects_thiscat],
-                               [obj['dec_deg'] for obj in objects_thiscat]],
-                              ['20A', 'D', 'D'])
+                               [obj['ra_deg']
+                                for obj in objects_thiscat],
+                               [obj['dec_deg'] for obj in objects_thiscat]])
+
+        # identify filtername
+        filtername = cat.filtername
 
         # identify magnitudes
         mag_keys = ['MAG_APER', 'MAGERR_APER']
         for key in cat.fields:
-            if 'mag' in key:
+            if filtername+'mag' in key:
                 mag_keys.append(key)
 
         # build field lists for observed catalogs
         match_keys_other_catalog, extract_other_catalog = [], []
+
         for key in ['ra_deg', 'dec_deg', 'XWIN_IMAGE', 'YWIN_IMAGE',
                     'FLAGS', 'FWHM_WORLD']:
             if key in cat.fields:
                 match_keys_other_catalog.append(key)
                 extract_other_catalog.append(key)
 
-        match = target_cat.match_with(cat,
-                                      match_keys_this_catalog=(
-                                          'ra_deg', 'dec_deg'),
-                                      match_keys_other_catalog=match_keys_other_catalog,
-                                      extract_this_catalog=[
-                                          'ra_deg', 'dec_deg', 'ident'],
-                                      extract_other_catalog=extract_other_catalog+mag_keys,
-                                      tolerance=None)
+        match = target_cat.match_with(
+            cat,
+            match_keys_this_catalog=('ra_deg', 'dec_deg'),
+            match_keys_other_catalog=match_keys_other_catalog,
+            extract_this_catalog=['ra_deg', 'dec_deg', 'ident'],
+            extract_other_catalog=extract_other_catalog+mag_keys,
+            tolerance=None)
 
         for i in range(len(match[0][0])):
             # derive calibrated magnitudes, if available

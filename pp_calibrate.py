@@ -417,12 +417,17 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
             cat.data.rename_column('ra_deg_1', 'ra_deg')
             cat.data.rename_column('dec_deg_1', 'dec_deg')
 
-        if filterkey not in cat.fields:
-            cat.add_fields([filterkey, efilterkey],
-                           [cat['MAG_'+_pp_conf.photmode] + clipping_steps[idx][0],
-                            np.sqrt(cat['MAGERR_'+_pp_conf.photmode]**2 +
-                                    clipping_steps[idx][1]**2)],
-                           ['F', 'F'])
+        # remove columns for filterkey for matched sources
+        if filterkey in cat.fields:
+            cat.data.remove_column(filterkey)
+            cat.data.remove_column(efilterkey)
+
+        cat.add_fields([filterkey, efilterkey],
+                       [cat['MAG_'+_pp_conf.photmode] +
+                        clipping_steps[idx][0],
+                        np.sqrt(cat['MAGERR_'+_pp_conf.photmode]**2 +
+                                clipping_steps[idx][1]**2)],
+                       ['F', 'F'])
 
         # add ref_cat identifier to catalog
         cat.origin = cat.origin.strip() + ";" + ref_cat.catalogname + ";"\
@@ -486,6 +491,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
             filternames[filtername] = [filename]
         ldac_filename = filename[:filename.find('.fit')]+'.ldac'
         cat = catalog(filename)
+        cat.filtername = filtername
         if display:
             print(cat.read_ldac(ldac_filename, filename, maxflag=maxflag,
                                 object_keyword=obsparam['object'],

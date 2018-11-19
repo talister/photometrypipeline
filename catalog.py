@@ -81,6 +81,7 @@ class catalog(object):
         self.history = ''  # catalog history
         self.magsys = ''  # [AB|Vega|instrumental]
         self.display = display
+        self.filtername = None
 
     # data access functions
 
@@ -150,22 +151,26 @@ class catalog(object):
         else:
             return self.data.add_column(Column(field_array, name=field_name))
 
-    def add_fields(self, field_names, field_arrays, field_types):
+    def add_fields(self, field_names, field_arrays, field_types=None):
         """
         add fields to self.data
         input: field_names, field_arrays, field_types
         output: number of added fields
         """
 
-        assert len(field_names) == len(field_arrays) == len(field_types)
+        assert len(field_names) == len(field_arrays)
 
         if self.data is None:
             self.data = Table()
 
         for i in range(len(field_names)):
-            self.data.add_column(Column(np.array(field_arrays[i]),
-                                        name=field_names[i],
-                                        format=field_types[i]))
+            if field_types is None:
+                self.data.add_column(Column(np.array(field_arrays[i]),
+                                            name=field_names[i]))
+            else:
+                self.data.add_column(Column(np.array(field_arrays[i]),
+                                            name=field_names[i],
+                                            format=field_types[i]))
 
         return len(field_arrays)
 
@@ -870,9 +875,10 @@ class catalog(object):
         # create header and write to database
         header = Table([[self.catalogname], [self.origin], [self.history],
                         [self.magsys], [self.obstime[0]], [self.obstime[1]],
-                        [self.obj]],
+                        [self.obj], [self.filtername]],
                        names=['name', 'origin', 'description',
-                              'magsys', 'obstime', 'exptime', 'obj'])
+                              'magsys', 'obstime', 'exptime', 'obj',
+                              'filtername'])
         header.to_pandas().to_sql('header', db_conn, index=False)
 
         # write data to database
@@ -921,10 +927,28 @@ class catalog(object):
         self.obstime[0] = header['obstime'][0]
         self.obstime[1] = header['exptime'][0]
         self.obj = header['obj'][0]
+        self.filtername = header['filtername'][0]
 
         # read in data table
         self.data = Table.from_pandas(read_sql('SELECT * FROM data',
                                                db_conn))
+
+        # rename Johnson filternames
+        for filtername in ['B', 'V', 'R', 'I']:
+            if '_'+filtername+'Johnsonmag' in list(self.data.columns):
+                self.data.rename_column(
+                    '_{:s}Johnsonmag'.format(filtername),
+                    '_{:s}mag'.format(filtername))
+                self.data.rename_column(
+                    '_e_{:s}Johnsonmag'.format(filtername),
+                    '_e_{:s}mag'.format(filtername))
+            elif filtername+'Johnsonmag' in list(self.data.columns):
+                self.data.rename_column(
+                    '{:s}Johnsonmag'.format(filtername),
+                    '{:s}mag'.format(filtername))
+                self.data.rename_column(
+                    'e_{:s}Johnsonmag'.format(filtername),
+                    'e_{:s}mag'.format(filtername))
 
         return self.shape[0]
 
