@@ -158,7 +158,6 @@ class Prepare_Diagnostics(Diagnostics_Html):
                  "<TH>Filename</TH>"
                  "<TH>Midtime (JD)</TH>"
                  "<TH>Objectname</TH>"
-                 "<TH>Filter</TH>"
                  "<TH>Airmass</TH>"
                  "<TH>Exptime (s)</TH>"
                  "<TH>FoV (arcmin)</TH></TR>\n")
@@ -183,7 +182,6 @@ class Prepare_Diagnostics(Diagnostics_Html):
                      "<TD>{:s}</TD>"
                      "<TD>{:16.8f}</TD>"
                      "<TD>{:s}</TD>"
-                     "<TD>{:s}</TD>"
                      "<TD>{:4.2f}</TD>"
                      "<TD>{:.1f}</TD>"
                      "<TD>{:.1f} x {:.1f}</TD>\n"
@@ -191,8 +189,6 @@ class Prepare_Diagnostics(Diagnostics_Html):
                          idx+1, framename,
                          header["MIDTIMJD"],
                          str(objectname),
-                         obsparam['filter_translations'][
-                             header[obsparam['filter']]],
                          float(header[obsparam['airmass']]),
                          float(header[obsparam['exptime']]),
                          float(header[obsparam['extent'][0]]) *
@@ -259,7 +255,8 @@ class Prepare_Diagnostics(Diagnostics_Html):
         # obtain filtername from first image file
         refheader = fits.open(filenames[0],
                               ignore_missing_end=True)[0].header
-        filtername = obsparam['filter_translations'][
+        raw_filtername = refheader[obsparam['filter']]
+        translated_filtername = obsparam['filter_translations'][
             refheader[obsparam['filter']]]
 
         html = ("<H2>Photometry Pipeline Diagnostic Output</H2>\n"
@@ -267,14 +264,17 @@ class Prepare_Diagnostics(Diagnostics_Html):
                 "  <TR><TH>Data Directory</TH><TD>{:s}</TD></TR>\n"
                 "  <TR><TH>N Frames</TH><TD>{:d}</TD></TR>\n"
                 "  <TR><TH>Telescope/Instrument</TH><TD>{:s}</TD></TR>\n"
-                "  <TR><TH>Filter</TH><TD>{:s}</TD></TR>\n"
+                "  <TR><TH>Raw Filter Identifier</TH><TD>{:s}</TD></TR>\n"
+                "  <TR><TH>Translated Filter Identifier</TH>"
+                "<TD>{:s}</TD></TR>\n"
                 "  <TR><TH>Log File</TH>"
                 "      <TD><A HREF=\"{:s}\">available</A></TD></TR>"
                 "</TABLE>\n").format(
                     directory,
                     len(filenames),
                     obsparam['telescope_instrument'],
-                    filtername,
+                    raw_filtername,
+                    translated_filtername,
                     ('.diagnostics/' +
                      _pp_conf.log_filename.split('.diagnostics/')[1]))
 
@@ -286,121 +286,140 @@ class Prepare_Diagnostics(Diagnostics_Html):
 
 # registration results website
 
-def add_registration(data, extraction_data, imagestretch='linear'):
-    """
-    add registration results to website
-    """
-    obsparam = extraction_data[0]['parameters']['obsparam']
+class Registration_Diagnostics(Diagnostics_Html):
 
-    # create registration website
-    html = "<H2>Registration Results</H2>\n"
-    html += "<TABLE BORDER=\"1\">\n<TR>\n"
-    html += "<TH>Filename</TH><TH>AS_CONTRAST</TH><TH>XY_CONTRAST</TH>" \
-            + "<TH>RA_sig (arcsec)</TH><TH>DEC_sig (arcsec)</TH>" \
-            + "<TH>Chi2_Reference</TH><TH>Chi2_Internal</TH>\n</TR>\n"
-    for dat in data['fitresults']:
-        html += ("<TR><TD><A HREF=\"%s\">%s</A></TD>"
-                 + "<TD>%4.1f</TD><TD>%4.1f</TD>"
-                 + "<TD>%5.3f</TD><TD>%5.3f</TD>"
-                 + "<TD>%e</TD><TD>%e</TD>\n</TR>\n") % \
-                (dat[0] + '_astrometry.png',
-                 dat[0], dat[1], dat[2], dat[3], dat[4], dat[5], dat[6])
-    html += "</TABLE>\n"
-    html += "<P>AS_CONTRAST: position angle/scale contrast " + \
-            "(>%.1f usually ok)\n" % _pp_conf.scamp_as_contrast_limit
-    html += "<BR>XY_CONTRAST: xy-shift contrast (>%.1f usually ok)\n" % \
-            _pp_conf.scamp_xy_contrast_limit
-    create_website(_pp_conf.reg_filename, content=html)
+    def registration_table(self, data, extraction_data, obsparam):
+        html = ("<TABLE CLASS=\"gridtable\">\n<TR>\n"
+                "<TH>Filename</TH><TH>AS_CONTRAST</TH>"
+                "<TH>XY_CONTRAST</TH>"
+                "<TH>RA_sig (arcsec)</TH>"
+                "<TH>DEC_sig (arcsec)</TH>"
+                "<TH>Chi2_Reference</TH>"
+                "<TH>Chi2_Internal</TH>\n</TR>\n")
 
-    # load reference catalog
-    refcat = catalog(data['catalog'])
-    for filename in os.listdir('.'):
-        if data['catalog'] in filename and '.cat' in filename:
-            refcat.read_ldac(filename)
-            break
+        for dat in data['fitresults']:
+            if self.conf.show_registration_star_map:
+                filename = '<A HREF=\"{:s}\">{:s}</A>'.format(
+                    dat[0] + '_astrometry.png', dat[0])
+            else:
+                filename = dat[0]
 
-    # create frame images
-    for dat in extraction_data:
-        framefilename = '.diagnostics/' + dat['fits_filename'] + \
-            '_astrometry.png'
-        imgdat = fits.open(dat['fits_filename'],
-                           ignore_missing_end=True)[0].data
-        resize_factor = min(1., 1000./np.max(imgdat.shape))
+            html += ("<TR><TD>{:s}</TD>"
+                     + "<TD>{:4.1f}</TD><TD>{:4.1f}</TD>"
+                     + "<TD>{:5.3f}</TD><TD>{:5.3f}</TD>"
+                     + "<TD>{:e}</TD><TD>{:e}</TD>\n</TR>\n").format(
+                         filename, dat[1], dat[2], dat[3],
+                         dat[4], dat[5], dat[6])
+        html += "</TABLE>\n"
+        html += ("<P>Legend: AS_CONTRAST: position angle/scale contrast "
+                 "(>{:.1f} usually ok); ").format(
+                     _pp_conf.scamp_as_contrast_limit)
+        html += ("XY_CONTRAST: xy-shift contrast "
+                 "(>%.1f usually ok)\n").format(
+            _pp_conf.scamp_xy_contrast_limit)
 
-        # normalize imgdat to pixel values 0 < px < 1
-        if np.min(imgdat) < 0:
-            imgdat = imgdat + np.min(imgdat)
-        if np.max(imgdat) > 1:
-            imgdat = imgdat / np.max(imgdat)
+        return html
 
-        imgdat = resize(imgdat,
-                        (min(imgdat.shape[0], 1000),
-                         min(imgdat.shape[1], 1000)))
+    def registration_maps(self, data, extraction_data, obsparam):
+        # load reference catalog
+        refcat = catalog(data['catalog'])
+        for filename in os.listdir('.'):
+            if data['catalog'] in filename and '.cat' in filename:
+                refcat.read_ldac(filename)
+                break
 
-        header = fits.open(dat['fits_filename'],
-                           ignore_missing_end=True)[0].header
+        # create frame images
+        for dat in extraction_data:
+            framefilename = ('.diagnostics/'+dat['fits_filename'] +
+                             '_astrometry.png')
+            imgdat = fits.open(dat['fits_filename'],
+                               ignore_missing_end=True)[0].data
+            resize_factor = min(1., 1000./np.max(imgdat.shape))
 
-        norm = ImageNormalize(imgdat, interval=ZScaleInterval(),
-                              stretch={'linear': LinearStretch(),
-                                       'log': LogStretch()}[imagestretch])
+            # normalize imgdat to pixel values 0 < px < 1
+            if np.min(imgdat) < 0:
+                imgdat = imgdat + np.min(imgdat)
+            if np.max(imgdat) > 1:
+                imgdat = imgdat / np.max(imgdat)
 
-        # turn relevant header keys into floats
-        # astropy.io.fits bug
-        for key, val in list(header.items()):
-            if 'CD1_' in key or 'CD2_' in key or \
-               'CRVAL' in key or 'CRPIX' in key or \
-               'EQUINOX' in key:
-                header[key] = float(val)
+            imgdat = resize(imgdat,
+                            (min(imgdat.shape[0], 1000),
+                             min(imgdat.shape[1], 1000)))
 
-        plt.figure(figsize=(5, 5))
-        img = plt.imshow(imgdat, cmap='gray', norm=norm,
-                         origin='lower')
+            header = fits.open(dat['fits_filename'],
+                               ignore_missing_end=True)[0].header
 
-        # remove axes
-        plt.axis('off')
-        img.axes.get_xaxis().set_visible(False)
-        img.axes.get_yaxis().set_visible(False)
+            norm = ImageNormalize(
+                imgdat, interval=ZScaleInterval(),
+                stretch={'linear': LinearStretch(),
+                         'log': LogStretch()}[self.conf.image_stretch])
 
-        # plot reference sources
-        if refcat.shape[0] > 0:
-            try:
-                w = wcs.WCS(header)
-                world_coo = np.array(list(zip(refcat['ra_deg'],
-                                              refcat['dec_deg'])))
-                img_coo = w.wcs_world2pix(world_coo, True)
-                img_coo = [c for c
-                           in img_coo if (c[0] > 0 and c[1] > 0 and
-                                          c[0] < header[obsparam['extent'][0]]
-                                          and
-                                          c[1] < header[obsparam['extent'][1]])]
-                plt.scatter([c[0]*resize_factor for c in img_coo],
-                            [c[1]*resize_factor for c in img_coo],
-                            s=5, marker='o', edgecolors='red', linewidth=0.3,
-                            facecolor='none')
-            except astropy.wcs._wcs.InvalidTransformError:
-                logging.error('could not plot reference sources due to '
-                              'astropy.wcs._wcs.InvalidTransformError; '
-                              'most likely unknown distortion parameters.')
+            # turn relevant header keys into floats
+            # astropy.io.fits bug
+            for key, val in list(header.items()):
+                if 'CD1_' in key or 'CD2_' in key or \
+                   'CRVAL' in key or 'CRPIX' in key or \
+                   'EQUINOX' in key:
+                    header[key] = float(val)
 
-        plt.savefig(framefilename, format='png', bbox_inches='tight',
-                    pad_inches=0, dpi=200)
-        plt.close()
+            plt.figure(figsize=(5, 5))
+            img = plt.imshow(imgdat, cmap='gray', norm=norm,
+                             origin='lower')
 
-    # update index.html
-    html = '<H2>Registration</H2>\n'
-    html += '%d/%d files have been registered successfully based on %s; ' % \
-            (len(data['goodfits']), len(data['goodfits']+data['badfits']),
-             data['catalog'])
-    if len(data['badfits']) > 0:
-        html += '<B>%d files could not be registered</B>;' % \
-                len(data['badfits'])
-    html += 'see <A HREF=\"%s\">registration website</A> for details\n' % \
-            _pp_conf.reg_filename
+            # remove axes
+            plt.axis('off')
+            img.axes.get_xaxis().set_visible(False)
+            img.axes.get_yaxis().set_visible(False)
 
-    append_website(_pp_conf.index_filename, html,
-                   replace_below="<H2>Registration Results</H2>\n")
+            # plot reference sources
+            if refcat.shape[0] > 0:
+                try:
+                    w = wcs.WCS(header)
+                    world_coo = np.array(list(zip(refcat['ra_deg'],
+                                                  refcat['dec_deg'])))
+                    img_coo = w.wcs_world2pix(world_coo, True)
+                    img_coo = [c for c in img_coo
+                               if (c[0] > 0 and c[1] > 0 and
+                                   c[0] < header[obsparam['extent'][0]] and
+                                   c[1] < header[obsparam['extent'][1]])]
+                    plt.scatter([c[0]*resize_factor for c in img_coo],
+                                [c[1]*resize_factor for c in img_coo],
+                                s=5, marker='o', edgecolors='red',
+                                linewidth=0.3, facecolor='none')
+                except astropy.wcs._wcs.InvalidTransformError:
+                    logging.error('could not plot reference sources due to '
+                                  'astropy.wcs._wcs.InvalidTransformError; '
+                                  'most likely unknown distortion '
+                                  'parameters.')
 
-    return None
+            plt.savefig(framefilename, format='png', bbox_inches='tight',
+                        pad_inches=0, dpi=200)
+            plt.close()
+
+    def add_registration(self, data, extraction_data):
+        """
+        add registration results to website
+        """
+        obsparam = extraction_data[0]['parameters']['obsparam']
+
+        # update index.html
+        html = ('<H2>Registration</H2>\n'
+                'Registration based on {:s} catalog: ').format(
+                    data['catalog'])
+        if len(data['badfits']) == 0:
+            html += ('<FONT COLOR="GREEN">All frames registered '
+                     'successfully</FONT>')
+        else:
+            html += ('<FONT COLOR="RED">{:d} files could not be '
+                     'registered</FONT>').format(len(data['badfits']))
+
+        if self.conf.show_registration_star_map:
+            self.registration_maps(data, extraction_data, obsparam)
+        if self.conf.show_registration_table:
+            html += self.registration_table(data, extraction_data, obsparam)
+
+        self.append_website(_pp_conf.index_filename, html,
+                            replace_below="<H2>Registration Results</H2>\n")
 
 
 def add_photometry(data, extraction):
@@ -1048,4 +1067,5 @@ def abort(where):
 
 
 preparation = Prepare_Diagnostics()
+registration = Registration_Diagnostics()
 calibration = Calibration_Diagnostics()

@@ -39,7 +39,7 @@ import _pp_conf
 from catalog import *
 import pp_extract
 import toolbox
-import diagnostics as diag
+from diagnostics import registration as diag
 
 # only import if Python3 is used
 if sys.version_info > (3, 0):

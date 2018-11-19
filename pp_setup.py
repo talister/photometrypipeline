@@ -86,6 +86,10 @@ class ConfDiagnostics(Conf):
     # presentation of data overview
     show_preview_image = False
 
+    # presentation of registration results
+    show_registration_table = True  # show table with registration results
+    show_registration_star_map = True  # registration catalog on images
+
     # presentation of calibration data
     show_individual_frame_data = True  # present individual frame data
     # next 3 parameters are ignored if the previous is `False`
