@@ -29,6 +29,7 @@ import logging
 import argparse
 import sqlite3
 from astroquery.jplhorizons import Horizons
+from astropy.io import ascii
 
 try:
     from astroquery.vizier import Vizier
