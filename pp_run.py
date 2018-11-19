@@ -67,7 +67,7 @@ logging.basicConfig(filename=_pp_conf.log_filename,
 
 
 def run_the_pipeline(filenames, man_targetname, man_filtername,
-                     fixed_aprad, source_tolerance, solar):
+                     fixed_aprad, source_tolerance, solar, rerun_registration):
     """
     wrapper to run the photometry pipeline
     """
@@ -190,24 +190,32 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     snr, source_minarea = obsparam['source_snr'], obsparam['source_minarea']
     aprad = obsparam['aprad_default']
 
-    print('\n----- run image registration\n')
-    registration = pp_register.register(filenames, telescope, snr,
-                                        source_minarea, aprad,
-                                        None, obsparam,
-                                        obsparam['source_tolerance'],
-                                        display=True,
-                                        diagnostics=True)
+    registration_run_number = 0
+    while True:
 
-    if len(registration['badfits']) == len(filenames):
-        summary_message = "<FONT COLOR=\"red\">registration failed</FONT>"
-    elif len(registration['goodfits']) == len(filenames):
-        summary_message = "<FONT COLOR=\"green\">all images registered" + \
-            "</FONT>; "
-    else:
-        summary_message = "<FONT COLOR=\"orange\">registration failed for " + \
-            ("%d/%d images</FONT>; " %
-             (len(registration['badfits']),
-              len(filenames)))
+        print('\n----- run image registration\n')
+        registration = pp_register.register(filenames, telescope, snr,
+                                            source_minarea, aprad,
+                                            None, obsparam,
+                                            obsparam['source_tolerance'],
+                                            display=True,
+                                            diagnostics=True)
+
+        if len(registration['badfits']) == len(filenames):
+            summary_message = "<FONT COLOR=\"red\">registration failed</FONT>"
+        elif len(registration['goodfits']) == len(filenames):
+            summary_message = "<FONT COLOR=\"green\">all images registered" + \
+                              "</FONT>; "
+            break
+        else:
+            summary_message = "<FONT COLOR=\"orange\">registration failed for " + \
+                              ("%d/%d images</FONT>; " %
+                               (len(registration['badfits']),
+                                len(filenames)))
+        # break from loop if maximum number of iterations (2) achieved
+        registration_run_number += 1
+        if registration_run_number == 2:
+            break
 
     # add information to summary website, if requested
     if _pp_conf.use_diagnostics_summary:
@@ -215,13 +223,6 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
 
     # in case not all image were registered successfully
     filenames = registration['goodfits']
-
-    # # stop here if filtername == None
-    # if filtername == None:
-    #     logging.info('Nothing else to do for this filter (%s)' %
-    #                  filtername)
-    #     print('Nothing else to do for this filter (%s)' % filtername)
-    #     return None
 
     # stop here if registration failed for all images
     if len(filenames) == 0:
@@ -348,6 +349,9 @@ if __name__ == '__main__':
     parser.add_argument('-solar',
                         help='restrict to solar-color stars',
                         action="store_true", default=False)
+    parser.add_argument('-rerun_registration',
+                        help='rerun registration step if not successful for all images',
+                        action="store_true", default=False)
     parser.add_argument('images', help='images to process or \'all\'',
                         nargs='+')
 
@@ -358,6 +362,7 @@ if __name__ == '__main__':
     fixed_aprad = float(args.fixed_aprad)
     source_tolerance = args.source_tolerance
     solar = args.solar
+    rerun_registration = args.rerun_registration
     filenames = sorted(args.images)
 
     # if filenames = ['all'], walk through directories and run pipeline
@@ -391,7 +396,7 @@ if __name__ == '__main__':
                 os.chdir(root)
 
                 run_the_pipeline(filenames, man_targetname, man_filtername,
-                                 fixed_aprad, source_tolerance, solar)
+                                 fixed_aprad, source_tolerance, solar, rerun_registration)
                 os.chdir(_masterroot_directory)
             else:
                 print('\n NOTHING TO DO IN %s' % root)
@@ -399,5 +404,5 @@ if __name__ == '__main__':
     else:
         # call run_the_pipeline only on filenames
         run_the_pipeline(filenames, man_targetname, man_filtername,
-                         fixed_aprad, source_tolerance, solar)
+                         fixed_aprad, source_tolerance, solar, rerun_registration)
         pass
