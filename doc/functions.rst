@@ -138,8 +138,11 @@ the logical order:
                              considered; the default is `high`; see
                              the `Source Extractor`_ manual section on
                              internal flags for details.
-
-
+   :param -rerun_registration: (optional) for some data, the image
+                               registration has to be run twice; this option
+			       will rerun the registration step, if not
+			       all frames registered successfull during
+			       the first try.	     
    :param images: images to run `pp_register` on
 
    `pp_register` automatically calls :func:`pp_extract` to identify
