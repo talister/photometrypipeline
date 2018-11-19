@@ -847,18 +847,36 @@ class catalog(object):
         db_conn = sql.connect(filename)
         db = db_conn.cursor()
 
+        from copy import deepcopy
+        write_table = deepcopy(self.data)
+
+        # rename Johnson filternames to avoid collisions with SDSS
+        for filtername in ['B', 'V', 'R', 'I']:
+            if '_'+filtername+'mag' in list(write_table.columns):
+                write_table.rename_column(
+                    '_{:s}mag'.format(filtername),
+                    '_{:s}Johnsonmag'.format(filtername))
+                write_table.rename_column(
+                    '_e_{:s}mag'.format(filtername),
+                    '_e_{:s}Johnsonmag'.format(filtername))
+            elif filtername+'mag' in list(write_table.columns):
+                write_table.rename_column(
+                    '{:s}mag'.format(filtername),
+                    '{:s}Johnsonmag'.format(filtername))
+                write_table.rename_column(
+                    'e_{:s}mag'.format(filtername),
+                    'e_{:s}Johnsonmag'.format(filtername))
+
         # create header and write to database
         header = Table([[self.catalogname], [self.origin], [self.history],
                         [self.magsys], [self.obstime[0]], [self.obstime[1]],
                         [self.obj]],
                        names=['name', 'origin', 'description',
                               'magsys', 'obstime', 'exptime', 'obj'])
-        header.to_pandas().to_sql('header', db_conn,
-                                  if_exists='replace', index=False)
+        header.to_pandas().to_sql('header', db_conn, index=False)
 
         # write data to database
-        self.data.to_pandas().to_sql('data', db_conn,
-                                     if_exists='replace', index=False)
+        write_table.to_pandas().to_sql('data', db_conn, index=False)
 
         db_conn.commit()
 
@@ -875,6 +893,8 @@ class catalog(object):
                                       self.origin,
                                       self.history]),
                           filename)))
+
+        db_conn.close()
 
         return n_obj
 
