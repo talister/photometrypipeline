@@ -491,7 +491,10 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
             filternames[filtername] = [filename]
         ldac_filename = filename[:filename.find('.fit')]+'.ldac'
         cat = catalog(filename)
-        cat.filtername = filtername
+        if manfilter is not False:
+            cat.filtername = filtername
+        else:
+            cat.filtername = manfilter
         if display:
             print(cat.read_ldac(ldac_filename, filename, maxflag=maxflag,
                                 object_keyword=obsparam['object'],
