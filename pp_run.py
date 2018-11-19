@@ -67,7 +67,8 @@ logging.basicConfig(filename=_pp_conf.log_filename,
 
 
 def run_the_pipeline(filenames, man_targetname, man_filtername,
-                     fixed_aprad, source_tolerance, solar, rerun_registration):
+                     fixed_aprad, source_tolerance, solar,
+                     rerun_registration, asteroids):
     """
     wrapper to run the photometry pipeline
     """
@@ -308,6 +309,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     distillate = pp_distill.distill(calibration['catalogs'],
                                     man_targetname, [0, 0],
                                     None, None,
+                                    asteroids=asteroids,
                                     display=True, diagnostics=True)
 
     targets = np.array(list(distillate['targetnames'].keys()))
@@ -350,7 +352,11 @@ if __name__ == '__main__':
                         help='restrict to solar-color stars',
                         action="store_true", default=False)
     parser.add_argument('-rerun_registration',
-                        help='rerun registration step if not successful for all images',
+                        help=('rerun registration step if not '
+                              'successful for all images'),
+                        action="store_true", default=False)
+    parser.add_argument('-asteroids',
+                        help='extract all known asteroids',
                         action="store_true", default=False)
     parser.add_argument('images', help='images to process or \'all\'',
                         nargs='+')
@@ -363,6 +369,7 @@ if __name__ == '__main__':
     source_tolerance = args.source_tolerance
     solar = args.solar
     rerun_registration = args.rerun_registration
+    asteroids = args.asteroids
     filenames = sorted(args.images)
 
     # if filenames = ['all'], walk through directories and run pipeline
@@ -396,7 +403,8 @@ if __name__ == '__main__':
                 os.chdir(root)
 
                 run_the_pipeline(filenames, man_targetname, man_filtername,
-                                 fixed_aprad, source_tolerance, solar, rerun_registration)
+                                 fixed_aprad, source_tolerance, solar,
+                                 rerun_registration, asteroids)
                 os.chdir(_masterroot_directory)
             else:
                 print('\n NOTHING TO DO IN %s' % root)
@@ -404,5 +412,6 @@ if __name__ == '__main__':
     else:
         # call run_the_pipeline only on filenames
         run_the_pipeline(filenames, man_targetname, man_filtername,
-                         fixed_aprad, source_tolerance, solar, rerun_registration)
+                         fixed_aprad, source_tolerance, solar,
+                         rerun_registration, asteroids)
         pass

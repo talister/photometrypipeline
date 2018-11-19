@@ -26,6 +26,13 @@ below. All functions presented here can be called from the terminal.
    :param -solar: the photometric calibration (`pp_calibrate`) is only
                   using stars with solar-like colors (see
                   `pp_calibrate` documentation for details)
+   :param -rerun_registration: (optional) for some data, the image
+                               registration has to be run twice; this option
+			       will rerun the registration step, if not
+			       all frames registered successfull during
+			       the first try.
+   :param -asteroids: (optional) make use of ``-asteroids`` option of
+                      :func:`pp_distill`
    :param images: images on which the pipeline is supposed to run,
                   wildcard symbols (``'*'``, ``'?'``) can be used; or,
                   by using ``all``, PP runs on all FITS files in
@@ -138,11 +145,6 @@ the logical order:
                              considered; the default is `high`; see
                              the `Source Extractor`_ manual section on
                              internal flags for details.
-   :param -rerun_registration: (optional) for some data, the image
-                               registration has to be run twice; this option
-			       will rerun the registration step, if not
-			       all frames registered successfull during
-			       the first try.	     
    :param images: images to run `pp_register` on
 
    `pp_register` automatically calls :func:`pp_extract` to identify
