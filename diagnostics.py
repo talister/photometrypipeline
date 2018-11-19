@@ -71,26 +71,26 @@ class Diagnostics_Html():
 
     from pp_setup import confdiagnostics as conf
 
-    def create_website(self, filename, content=''):
+    def create_website(self, filename, content='',
+                       content_dir='.diagnostics'):
         """
         create empty website for diagnostics output
         """
-
-        html = "<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'>\n"
-        html += "<HTML>\n"
-        html += "<HEAD>\n"
-        html += "<TITLE>Photometry Pipeline - Diagnostics</TITLE>\n"
-        html += "</HEAD>\n"
-        html += "<BODY>\n"
-        html += content
-        html += "</BODY>\n"
-        html += "</HTML>\n"
+        html = ("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'>\n"
+                "<HTML>\n"
+                "<HEAD>\n"
+                "  <TITLE>Photometry Pipeline - Diagnostics</TITLE>\n"
+                "  <LINK rel=\"stylesheet\" href=\"{:s}"
+                "diagnostics_stylesheet.css\">\n"
+                "</HEAD>\n"
+                "<BODY>\n"
+                "{:s}\n"
+                "</BODY>\n"
+                "</HTML>\n").format(os.getenv('PHOTPIPEDIR'), content)
 
         outf = open(filename, 'w')
         outf.writelines(html)
         outf.close()
-
-        return None
 
     def append_website(self, filename, content, insert_at='</BODY>',
                        replace_below='X?!do not replace anything!?X'):
@@ -117,8 +117,6 @@ class Diagnostics_Html():
                 continue
             outf.writelines(line)
         outf.close()
-
-        return None
 
     # # pipeline summary website
 
@@ -149,74 +147,66 @@ class Diagnostics_Html():
     #                                    _pp_conf.pp_process_idx))
 
 
-class Prepare_Diagnostics():
+class Prepare_Diagnostics(Diagnostics_Html):
     """diagnostics run as part of pp_prepare"""
 
-    def create_index(filenames, directory, obsparam,
-                     display=False, imagestretch='linear'):
-    """
-    create index.html
-    diagnostic root website for one pipeline process
-    """
+    def frame_table(self, filenames, obsparam):
 
-    if display:
-        print('create frame index table and frame images')
-    logging.info('create frame index table and frame images')
+        # create frame information table
+        html = "<P><TABLE CLASS=\"gridtable\">\n"
+        html += ("<TR><TH>Idx</TH>"
+                 "<TH>Filename</TH>"
+                 "<TH>Midtime (JD)</TH>"
+                 "<TH>Objectname</TH>"
+                 "<TH>Filter</TH>"
+                 "<TH>Airmass</TH>"
+                 "<TH>Exptime (s)</TH>"
+                 "<TH>FoV (arcmin)</TH></TR>\n")
 
-    # obtain filtername from first image file
-    refheader = fits.open(filenames[0], ignore_missing_end=True)[0].header
-    filtername = obsparam['filter_translations'][refheader[obsparam['filter']]]
+        for idx, filename in enumerate(filenames):
+            hdulist = fits.open(filename, ignore_missing_end=True)
+            header = hdulist[0].header
+            binning = toolbox.get_binning(header, obsparam)
+            try:
+                objectname = header[obsparam['object']]
+            except KeyError:
+                objectname = 'Unknown Target'
 
-    del(refheader)
+            if self.conf.show_preview_image:
+                framename = "<A HREF=\"{:s}\">{:s}</A>".format(
+                    '.diagnostics/'+filename+'.png', filename)
+                self.frame_preview(filename)
+            else:
+                framename = filename
 
-    html = "<H2>data directory: %s</H2>\n" % directory
+            html += ("<TR><TD>{:d}</TD>"
+                     "<TD>{:s}</TD>"
+                     "<TD>{:16.8f}</TD>"
+                     "<TD>{:s}</TD>"
+                     "<TD>{:s}</TD>"
+                     "<TD>{:4.2f}</TD>"
+                     "<TD>{:.1f}</TD>"
+                     "<TD>{:.1f} x {:.1f}</TD>\n"
+                     "</TR>\n").format(
+                         idx+1, framename,
+                         header["MIDTIMJD"],
+                         str(objectname),
+                         obsparam['filter_translations'][
+                             header[obsparam['filter']]],
+                         float(header[obsparam['airmass']]),
+                         float(header[obsparam['exptime']]),
+                         float(header[obsparam['extent'][0]]) *
+                         obsparam['secpix'][0]*binning[0]/60.,
+                         float(header[obsparam['extent'][1]]) *
+                         obsparam['secpix'][1]*binning[1]/60.)
 
-    html += ("<H1>%s/%s-band - Diagnostic Output</H1>\n" +
-             "%d frames total, see full pipeline " +
-             "<A HREF=\"%s\">log</A> for more information\n") % \
-        (obsparam['telescope_instrument'], filtername,
-         len(filenames),
-         '.diagnostics/' +
-         _pp_conf.log_filename.split('.diagnostics/')[1])
+        html += '</TABLE>\n'
 
-    # create frame information table
-    html += "<P><TABLE BORDER=\"1\">\n<TR>\n"
-    html += "<TH>Idx</TH><TH>Filename</TH><TH>Midtime (JD)</TH>" + \
-            "<TH>Objectname</TH><TH>Filter</TH>" + \
-            "<TH>Airmass</TH><TH>Exptime (s)</TH>" + \
-            "<TH>FoV (arcmin)</TH>\n</TR>\n"
+        return html
 
-    # fill table and create frames
-    filename = filenames
-    for idx, filename in enumerate(filenames):
-
-        # fill table
+    def frame_preview(self, filename):
+        """create preview image for one frame"""
         hdulist = fits.open(filename, ignore_missing_end=True)
-        header = hdulist[0].header
-
-        # read out image binning mode
-        binning = toolbox.get_binning(header, obsparam)
-
-        # framefilename = _pp_conf.diagroot + '/' + filename + '.png'
-        framefilename = '.diagnostics/' + filename + '.png'
-
-        try:
-            objectname = header[obsparam['object']]
-        except KeyError:
-            objectname = 'Unknown Target'
-
-        html += ("<TR><TD>%d</TD><TD><A HREF=\"%s\">%s</A></TD>" +
-                 "<TD>%16.8f</TD><TD>%s</TD>" +
-                 "<TD>%s</TD><TD>%4.2f</TD><TD>%.1f</TD>" +
-                 "<TD>%.1f x %.1f</TD>\n</TR>\n") % \
-            (idx+1, framefilename, filename, header["MIDTIMJD"],
-             objectname,
-             header[obsparam['filter']],
-             float(header[obsparam['airmass']]),
-             float(header[obsparam['exptime']]),
-             header[obsparam['extent'][0]] *
-             obsparam['secpix'][0]*binning[0]/60.,
-             header[obsparam['extent'][1]]*obsparam['secpix'][1]*binning[1]/60.)
 
         # create frame image
         imgdat = hdulist[0].data
@@ -235,9 +225,10 @@ class Prepare_Diagnostics():
                          min(imgdat.shape[1], 1000)))
         # resize image larger than 1000px on one side
 
-        norm = ImageNormalize(imgdat, interval=ZScaleInterval(),
-                              stretch={'linear': LinearStretch(),
-                                       'log': LogStretch()}[imagestretch])
+        norm = ImageNormalize(
+            imgdat, interval=ZScaleInterval(),
+            stretch={'linear': LinearStretch(),
+                     'log': LogStretch()}[self.conf.image_stretch])
 
         plt.figure(figsize=(5, 5))
 
@@ -248,23 +239,49 @@ class Prepare_Diagnostics():
         img.axes.get_xaxis().set_visible(False)
         img.axes.get_yaxis().set_visible(False)
 
+        framefilename = '.diagnostics/' + filename + '.png'
         plt.savefig(framefilename, format='png', bbox_inches='tight',
                     pad_inches=0, dpi=200)
 
         plt.close()
         hdulist.close()
-        del(imgdat)
 
-    html += '</TABLE>\n'
+    def add_index(self, filenames, directory, obsparam):
+        """
+        create index.html
+        diagnostic root website
+        """
 
-    create_website(_pp_conf.index_filename, html)
+        logging.info('create frame table and image thumbnails')
 
-    # add to summary website, if requested
-    if _pp_conf.use_diagnostics_summary:
-        add_to_summary(header[obsparam['object']], filtername,
-                       len(filenames))
+        # create header information
 
-    return None
+        # obtain filtername from first image file
+        refheader = fits.open(filenames[0],
+                              ignore_missing_end=True)[0].header
+        filtername = obsparam['filter_translations'][
+            refheader[obsparam['filter']]]
+
+        html = ("<H2>Photometry Pipeline Diagnostic Output</H2>\n"
+                "<TABLE CLASS=\"gridtable\">\n"
+                "  <TR><TH>Data Directory</TH><TD>{:s}</TD></TR>\n"
+                "  <TR><TH>N Frames</TH><TD>{:d}</TD></TR>\n"
+                "  <TR><TH>Telescope/Instrument</TH><TD>{:s}</TD></TR>\n"
+                "  <TR><TH>Filter</TH><TD>{:s}</TD></TR>\n"
+                "  <TR><TH>Log File</TH>"
+                "      <TD><A HREF=\"{:s}\">available</A></TD></TR>"
+                "</TABLE>\n").format(
+                    directory,
+                    len(filenames),
+                    obsparam['telescope_instrument'],
+                    filtername,
+                    ('.diagnostics/' +
+                     _pp_conf.log_filename.split('.diagnostics/')[1]))
+
+        html += "<H3>Data Summary</H3>\n"
+        html += self.frame_table(filenames, obsparam)
+
+        self.create_website(_pp_conf.index_filename, html)
 
 
 # registration results website
@@ -1030,4 +1047,5 @@ def abort(where):
     return None
 
 
+preparation = Prepare_Diagnostics()
 calibration = Calibration_Diagnostics()

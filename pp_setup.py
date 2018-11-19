@@ -83,6 +83,9 @@ class ConfDiagnostics(Conf):
     # general settings
     image_stretch = 'linear'  # could be 'linear', 'log', 'power'
 
+    # presentation of data overview
+    show_preview_image = False
+
     # presentation of calibration data
     show_individual_frame_data = True  # present individual frame data
     # next 3 parameters are ignored if the previous is `False`

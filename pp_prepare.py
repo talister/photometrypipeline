@@ -35,7 +35,7 @@ from astropy.io import fits
 # pipeline-specific modules
 import _pp_conf
 from catalog import *
-import diagnostics as diag
+from diagnostics import preparation as diag
 import toolbox
 
 # only import if Python3 is used
@@ -439,7 +439,7 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
         if display:
             print('creating diagnostic output')
         logging.info(' ~~~~~~~~~ creating diagnostic output')
-        diag.create_index(filenames, os.getcwd(), obsparam, display)
+        diag.add_index(filenames, os.getcwd(), obsparam)
 
     logging.info('Done! -----------------------------------------------------')
 
