@@ -63,8 +63,8 @@ def manual_positions(posfile, catalogs, display=True):
     option)"""
 
     if display:
-        print('# target positions as a function of time manually provided... ',
-              end=' ')
+        print(('# target positions as a function of time manually '
+               'provided... '), end=' ')
         sys.stdout.flush()
     logging.info('target positions as a function of time manually provided')
 
