@@ -343,8 +343,17 @@ the logical order:
                       asteroids in the image field using IMCCE's
                       SkyBoT service; extract objects that are bright
                       enough and have accurate orbits
-
-   :param images:  images to run `pp_distill` on
+    :param -filter: (optional) this option enables the filtering of
+      data based on predefined criteria before they enter the final
+      photometry file; a single rejection schema identifier or a
+      comma-separated list of identifiers (no whitespaces) can be
+      provided. Rejected observations will still show up in the final
+      photomoetry file, but will be commented out using ``#``; no
+      diagnostic output will be generated for rejected
+      observations. Valid identifiers are: ``pos`` (rejects
+      observations with positional residuals greater than 10
+      arcsec). Default: ``pos``
+:param images:  images to run `pp_distill` on
 
    This function will automatically read the target name from the FITS
    images (or use the manually provided one), pull target positions

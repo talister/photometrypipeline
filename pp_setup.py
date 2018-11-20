@@ -27,6 +27,8 @@ will override the definitions in this class. Definitions below are
 group into different class based on their pp function association.
 """
 
+from numpy import sqrt
+
 
 class Conf():
     """General pipeline configurations"""
@@ -64,7 +66,15 @@ class ConfCalibrate(Conf):
 
 class ConfDistill(Conf):
     """configuration setup for pp_distill"""
-    pass
+
+    # target rejection dictionary using `dat` as defined in pp_distill.distill
+    # key refers to rejection scheme identifier
+    # read as: schema `key` rejects sources with...
+    rejection = {
+        # geometric positional uncertainties > 10"
+        'pos': lambda dat: (sqrt((dat[1]-dat[3])**2 +
+                                 (dat[2]-dat[4])**2)*3600 > 10),
+    }
 
 
 class ConfDiagnostics(Conf):
@@ -84,3 +94,4 @@ class ConfMPCReport(Conf):
 
 confprepare = ConfPrepare()
 confcalibrate = ConfCalibrate()
+confdistill = ConfDistill()

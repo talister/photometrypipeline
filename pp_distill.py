@@ -22,7 +22,7 @@
 # <http://www.gnu.org/licenses/>.
 
 
-import numpy
+import numpy as np
 import os
 import sys
 import logging
@@ -46,6 +46,7 @@ if sys.version_info > (3, 0):
 
 # pipeline-specific modules
 import _pp_conf
+from pp_setup import confdistill as conf
 from catalog import *
 from toolbox import *
 import diagnostics as diag
@@ -79,19 +80,19 @@ def manual_positions(posfile, catalogs, display=True):
         if display:
             print(len(objects)/len(catalogs), 'object(s) found')
 
-        return (list(numpy.hstack(objects)))
+        return (list(np.hstack(objects)))
 
     try:
-        positions = numpy.genfromtxt(posfile, dtype=[('filename', 'S50'),
-                                                     ('ra', float),
-                                                     ('dec', float),
-                                                     ('MJD', float),
-                                                     ('name', 'S30')])
+        positions = np.genfromtxt(posfile, dtype=[('filename', 'S50'),
+                                                  ('ra', float),
+                                                  ('dec', float),
+                                                  ('MJD', float),
+                                                  ('name', 'S30')])
     except:
-        positions = numpy.genfromtxt(posfile, dtype=[('filename', 'S50'),
-                                                     ('ra', float),
-                                                     ('dec', float),
-                                                     ('MJD', float)])
+        positions = np.genfromtxt(posfile, dtype=[('filename', 'S50'),
+                                                  ('ra', float),
+                                                  ('dec', float),
+                                                  ('MJD', float)])
 
     try:
         assert len(positions) == len(catalogs)
@@ -145,7 +146,7 @@ def pick_controlstar(catalogs, display=True):
     objects = []
     if len(match[0][0]) > 0:
 
-        ctlstar_idx = numpy.argsort(match[1][3])[int(0.05*len(match[1][3]))]
+        ctlstar_idx = np.argsort(match[1][3])[int(0.05*len(match[1][3]))]
 
         for cat_idx, cat in enumerate(catalogs):
             objects.append({'ident': 'control_star',
@@ -278,14 +279,14 @@ def fixed_targets(fixed_targets_file, catalogs, display=True):
         sys.stdout.flush()
     logging.info('read fixed target file')
 
-    fixed_targets = numpy.genfromtxt(fixed_targets_file,
-                                     dtype=[('name', 'S20'),
-                                            ('ra', float),
-                                            ('dec', float)])
+    fixed_targets = np.genfromtxt(fixed_targets_file,
+                                  dtype=[('name', 'S20'),
+                                         ('ra', float),
+                                         ('dec', float)])
 
     # force array shape even for single line fixed_targets_files
     if len(fixed_targets.shape) == 0:
-        fixed_targets = numpy.array([fixed_targets])
+        fixed_targets = np.array([fixed_targets])
 
     objects = []
     for obj in fixed_targets:
@@ -319,7 +320,7 @@ def serendipitous_variablestars(catalogs, display=True):
                  (ra_deg, dec_deg, rad_deg))
 
     # derive observation midtime of sequence
-    midtime = numpy.average([cat.obstime[0] for cat in catalogs])
+    midtime = np.average([cat.obstime[0] for cat in catalogs])
 
     # setup Vizier query
     # note: column filters uses original Vizier column names
@@ -385,7 +386,7 @@ def serendipitous_asteroids(catalogs, display=True):
                        'in catalog "{:s}"').format(catalogs[0].catalogname))
         return []
 
-    maglims = [numpy.percentile(cat[band_key], 90) for cat in catalogs]
+    maglims = [np.percentile(cat[band_key], 90) for cat in catalogs]
 
     # maximum positional uncertainty = 5 px (unbinned)
     obsparam = _pp_conf.telescope_parameters[
@@ -398,7 +399,7 @@ def serendipitous_asteroids(catalogs, display=True):
                  (ra_deg, dec_deg, rad_deg))
 
     # derive observation midtime of sequence
-    midtime = numpy.average([cat.obstime[0] for cat in catalogs])
+    midtime = np.average([cat.obstime[0] for cat in catalogs])
 
     r = requests.get(server,
                      params={'RA': ra_deg, 'DEC': dec_deg,
@@ -447,8 +448,8 @@ def serendipitous_asteroids(catalogs, display=True):
 
 
 def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
-            display=False, diagnostics=False, variable_stars=False,
-            asteroids=False):
+            rejectionfilter, display=False, diagnostics=False,
+            variable_stars=False, asteroids=False):
     """
     distill wrapper
     """
@@ -526,10 +527,10 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
     for cat_idx, cat in enumerate(catalogs):
 
         # check for each target if it is within the image boundaries
-        min_ra = numpy.min(cat['ra_deg'])
-        max_ra = numpy.max(cat['ra_deg'])
-        min_dec = numpy.min(cat['dec_deg'])
-        max_dec = numpy.max(cat['dec_deg'])
+        min_ra = np.min(cat['ra_deg'])
+        max_ra = np.max(cat['ra_deg'])
+        min_dec = np.min(cat['dec_deg'])
+        max_dec = np.max(cat['dec_deg'])
         objects_thiscat = []
         for obj in objects:
             if obj['cat_idx'] != cat_idx:
@@ -624,7 +625,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
 
         outf = open('photometry_%s.dat' %
                     target.translate(_pp_conf.target2filename), 'w')
-        outf.write('#                          filename     julian_date      ' +
+        outf.write('#                           filename     julian_date      ' +
                    'mag    sig     source_ra    source_dec   [1]   [2]   ' +
                    '[3]   [4]    [5]       ZP ZP_sig inst_mag ' +
                    'in_sig               [6] [7] [8]    [9]          [10] ' +
@@ -633,6 +634,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
         for dat in data:
             # sort measured magnitudes by target
             if dat[0] == target:
+                reject_this_target = False
                 try:
                     filtername = dat[13].split(';')[3]
                     if 'manual_zp' in dat[13].split(';')[2]:
@@ -651,7 +653,22 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
                     if 'manual_zp' in catalogname:
                         catalogname = 'manual_zp'
 
-                output[target].append(dat)
+                # apply rejectionfilter
+                for reject in rejectionfilter.split(','):
+                    if conf.rejection[reject](dat):
+                        logging.info(('reject photometry for target {:s} '
+                                      'from frame {:s} due to rejection '
+                                      'schema {:s}').format(
+                                          dat[0],
+                                          dat[10].replace(' ', '_'),
+                                          reject))
+                        reject_this_target = True
+
+                if reject_this_target:
+                    outf.write('#')
+                else:
+                    outf.write(' ')
+                    output[target].append(dat)
                 outf.write(('%35.35s ' % dat[10].replace(' ', '_')) +
                            ('%15.7f ' % dat[9][0]) +
                            ('%8.4f ' % dat[7]) +
@@ -664,7 +681,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
                            ('%5.2f ' % offset[1]) +
                            ('%5.2f ' % dat[9][1]) +
                            ('%8.4f ' % (dat[7] - dat[5])) +
-                           ('%6.4f ' % numpy.sqrt(dat[8]**2 - dat[6]**2)) +
+                           ('%6.4f ' % np.sqrt(dat[8]**2 - dat[6]**2)) +
                            ('%8.4f ' % dat[5]) +
                            ('%6.4f ' % dat[6]) +
                            ('%s ' % catalogname) +
@@ -719,9 +736,11 @@ if __name__ == '__main__':
                               'observations'),
                         action="store_true")
     parser.add_argument('-asteroids',
-                        help='search for serendipitous asteroid observations',
+                        help='search for serendipitous asteroids',
                         action="store_true")
-
+    parser.add_argument('-reject',
+                        help='schemas for target rejection',
+                        nargs=1, default='pos')
     parser.add_argument('images', help='images to process', nargs='+')
     args = parser.parse_args()
     man_targetname = args.target
@@ -730,16 +749,18 @@ if __name__ == '__main__':
     variable_stars = args.variable_stars
     asteroids = args.asteroids
     posfile = args.positions
+    rejectionfilter = args.reject
     filenames = args.images
 
     # check if input filenames is actually a list
     if len(filenames) == 1:
         if filenames[0].find('.lst') > -1 or filenames[0].find('.list') > -1:
-            filenames = [filename[:-1] for filename in open(filenames[0], 'r').
-                         readlines()]
+            filenames = [filename[:-1] for filename in
+                         open(filenames[0], 'r').readlines()]
 
     distillate = distill(filenames, man_targetname, man_offset,
                          fixed_targets_file,
-                         posfile, display=True, diagnostics=True,
+                         posfile, rejectionfilter,
+                         display=True, diagnostics=True,
                          variable_stars=variable_stars,
                          asteroids=asteroids)
