@@ -181,10 +181,6 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
                                      change_header,
                                      diagnostics=True, display=True)
 
-    # check that all images are roughly for the same field in the sky
-
-    ra, dec, rad = toolbox.skycenter(catalogs)
-
     # run wcs registration
 
     # default sextractor/scamp parameters
