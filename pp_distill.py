@@ -49,7 +49,7 @@ import _pp_conf
 from pp_setup import confdistill as conf
 from catalog import *
 from toolbox import *
-import diagnostics as diag
+from diagnostics import distill as diag
 
 # setup logging
 logging.basicConfig(filename=_pp_conf.log_filename,

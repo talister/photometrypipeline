@@ -43,7 +43,7 @@ import _pp_conf
 import pp_extract
 from catalog import *
 from toolbox import *
-import diagnostics as diag
+from diagnostics import photometry as diag
 
 # setup logging
 logging.basicConfig(filename=_pp_conf.log_filename,

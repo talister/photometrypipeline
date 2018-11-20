@@ -315,7 +315,7 @@ class Registration_Diagnostics(Diagnostics_Html):
                  "(>{:.1f} usually ok); ").format(
                      _pp_conf.scamp_as_contrast_limit)
         html += ("XY_CONTRAST: xy-shift contrast "
-                 "(>%.1f usually ok)\n").format(
+                 "(>{:.1f} usually ok)\n").format(
             _pp_conf.scamp_xy_contrast_limit)
 
         return html
@@ -422,108 +422,115 @@ class Registration_Diagnostics(Diagnostics_Html):
                             replace_below="<H2>Registration Results</H2>\n")
 
 
-def add_photometry(data, extraction):
-    """
-    add photometry results to website
-    """
+class Photometry_Diagnostics(Diagnostics_Html):
 
-    parameters = data['parameters']
-    growth_filename = '.diagnostics/curve_of_growth.png'
-    fwhm_filename = '.diagnostics/fwhm.png'
+    def curve_of_growth_plot(self, data):
+        parameters = data['parameters']
+        growth_filename = '.diagnostics/curve_of_growth.png'
+        plt.subplot(211)
+        plt.xlabel('Aperture Radius (px)')
+        plt.ylim([-0.1, 1.1])
+        plt.xlim([min(parameters['aprad']), max(parameters['aprad'])])
+        plt.ylabel('Fractional Combined Flux')
+        if not parameters['target_only']:
+            plt.errorbar(parameters['aprad'], data['background_flux'][0],
+                         data['background_flux'][1], color='black',
+                         linewidth=1,
+                         label='background objects')
+        if not parameters['background_only']:
+            plt.errorbar(parameters['aprad'], data['target_flux'][0],
+                         data['target_flux'][1], color='red', linewidth=1,
+                         label='target')
+        plt.plot([data['optimum_aprad'], data['optimum_aprad']],
+                 [plt.ylim()[0], plt.ylim()[1]],
+                 linewidth=2, color='black')
+        plt.plot([plt.xlim()[0], plt.xlim()[1]],
+                 [data['fluxlimit_aprad'], data['fluxlimit_aprad']],
+                 color='black', linestyle='--')
+        plt.grid()
+        plt.legend(loc=4)
 
-    # plot curve-of-growth data
-    plt.subplot(211)
-    plt.xlabel('Aperture Radius (px)')
-    plt.ylim([-0.1, 1.1])
-    plt.xlim([min(parameters['aprad']), max(parameters['aprad'])])
-    plt.ylabel('Fractional Combined Flux')
-    if not parameters['target_only']:
-        plt.errorbar(parameters['aprad'], data['background_flux'][0],
-                     data['background_flux'][1], color='black',
-                     linewidth=1,
-                     label='background objects')
-    if not parameters['background_only']:
-        plt.errorbar(parameters['aprad'], data['target_flux'][0],
-                     data['target_flux'][1], color='red', linewidth=1,
-                     label='target')
-    plt.plot([data['optimum_aprad'], data['optimum_aprad']],
-             [plt.ylim()[0], plt.ylim()[1]],
-             linewidth=2, color='black')
-    plt.plot([plt.xlim()[0], plt.xlim()[1]],
-             [data['fluxlimit_aprad'], data['fluxlimit_aprad']],
-             color='black', linestyle='--')
-    plt.grid()
-    plt.legend(loc=4)
+        plt.subplot(212)
+        plt.ylim([-0.1, 1.1])
+        plt.xlim([min(parameters['aprad']), max(parameters['aprad'])])
+        plt.xlabel('Aperture Radius (px)')
+        plt.ylabel('SNR')
+        if not parameters['target_only']:
+            plt.errorbar(parameters['aprad'], data['background_snr'],
+                         color='black', linewidth=1)
+        if not parameters['background_only']:
+            plt.errorbar(parameters['aprad'], data['target_snr'],
+                         color='red', linewidth=1)
+        plt.plot([data['optimum_aprad'], data['optimum_aprad']],
+                 [plt.ylim()[0], plt.ylim()[1]],
+                 linewidth=2, color='black')
+        plt.grid()
+        plt.savefig(growth_filename, format='png')
+        plt.close()
+        data['growth_filename'] = growth_filename
 
-    plt.subplot(212)
-    plt.ylim([-0.1, 1.1])
-    plt.xlim([min(parameters['aprad']), max(parameters['aprad'])])
-    plt.xlabel('Aperture Radius (px)')
-    plt.ylabel('SNR')
-    if not parameters['target_only']:
-        plt.errorbar(parameters['aprad'], data['background_snr'],
-                     color='black', linewidth=1)
-    if not parameters['background_only']:
-        plt.errorbar(parameters['aprad'], data['target_snr'],
-                     color='red', linewidth=1)
-    plt.plot([data['optimum_aprad'], data['optimum_aprad']],
-             [plt.ylim()[0], plt.ylim()[1]],
-             linewidth=2, color='black')
-    plt.grid()
-    plt.savefig(growth_filename, format='png')
-    plt.close()
-    data['growth_filename'] = growth_filename
+    def fwhm_vs_time_plot(self, extraction, data):
+        fwhm_filename = '.diagnostics/fwhm.png'
 
-    # plot fwhm as a function of time
-    frame_midtimes = [frame['time'] for frame in extraction]
-    fwhm = [np.median(frame['catalog_data']['FWHM_IMAGE'])
-            for frame in extraction]
-    fwhm_sig = [np.std(frame['catalog_data']['FWHM_IMAGE'])
+        frame_midtimes = [frame['time'] for frame in extraction]
+        fwhm = [np.median(frame['catalog_data']['FWHM_IMAGE'])
                 for frame in extraction]
+        fwhm_sig = [np.std(frame['catalog_data']['FWHM_IMAGE'])
+                    for frame in extraction]
 
-    plt.subplot()
-    plt.title('Median PSF FWHM per Frame')
-    plt.xlabel('Observation Midtime (JD)')
-    plt.ylabel('Point Source FWHM (px)')
-    plt.scatter(frame_midtimes, fwhm, marker='o',
-                color='black')
-    xrange = [plt.xlim()[0], plt.xlim()[1]]
-    plt.plot(xrange, [data['optimum_aprad']*2, data['optimum_aprad']*2],
-             color='red')
-    plt.xlim(xrange)
-    plt.ylim([0, max([data['optimum_aprad']*2+1, max(fwhm)])])
+        plt.subplot()
+        plt.title('Median PSF FWHM per Frame')
+        plt.xlabel('Observation Midtime (JD)')
+        plt.ylabel('Point Source FWHM (px)')
+        plt.scatter(frame_midtimes, fwhm, marker='o',
+                    color='black')
+        xrange = [plt.xlim()[0], plt.xlim()[1]]
+        plt.plot(xrange, [data['optimum_aprad']*2, data['optimum_aprad']*2],
+                 color='red')
+        plt.xlim(xrange)
+        plt.ylim([0, max([data['optimum_aprad']*2+1, max(fwhm)])])
 
-    plt.grid()
-    plt.savefig(fwhm_filename, format='png')
-    plt.close()
-    data['fwhm_filename'] = fwhm_filename
+        plt.grid()
+        plt.savefig(fwhm_filename, format='png')
+        plt.close()
+        data['fwhm_filename'] = fwhm_filename
 
-    # update index.html
-    html = "<H2>Photometric Calibration - Aperture Size </H2>\n"
-    html += ("optimum aperture radius derived as %5.2f (px) " +
-             "through curve-of-growth analysis based on\n") % \
-        data['optimum_aprad']
-    if data['n_target'] > 0 and data['n_bkg'] > 0:
-        html += ("%d frames with target and %d frames with " +
-                 "background detections.\n") % \
-                (data['n_target'], data['n_bkg'])
-    elif data['n_target'] == 0 and data['n_bkg'] > 0:
-        html += "%d frames with background detections.\n" % data['n_bkg']
-    elif data['n_bkg'] == 0 and data['n_target'] > 0:
-        html += "%d frames with target detections.\n" % data['n_target']
-    else:
-        html += "no target or background detections."
+    def add_photometry(self, data, extraction):
+        """
+        add photometry results to website
+        """
+        # create curve-of-growth plot
+        self.curve_of_growth_plot(data)
 
-    html += "<P><IMG SRC=\"%s\">\n" % data['growth_filename']
-    html += "<IMG SRC=\"%s\">\n" % data['fwhm_filename']
-    html += ("<P> Current strategy for finding the optimum aperture " +
-             "radius: %s\n" % data['aprad_strategy'])
+        # create fwhm vs time plot
+        self.fwhm_vs_time_plot(extraction, data)
 
-    append_website(_pp_conf.index_filename, html,
-                   replace_below=("<H2>Photometric Calibration" +
-                                  " - Aperture Size </H2>\n"))
+        # update index.html
+        html = "<H2>Photometric Calibration - Aperture Size </H2>\n"
+        html += "Optimum aperture radius: {:5.2f} (px)".format(
+            data['optimum_aprad'])
+        html += "<BR>(based on "
+        if data['n_target'] > 0 and data['n_bkg'] > 0:
+            html += ("{:d} frames with target detection and {:d} frames"
+                     "with background detections.\n").format(
+                data['n_target'], data['n_bkg'])
+        elif data['n_target'] == 0 and data['n_bkg'] > 0:
+            html += "{:d} frames with background detections.\n".format(
+                data['n_bkg'])
+        elif data['n_bkg'] == 0 and data['n_target'] > 0:
+            html += "{:d} frames with target detections.\n".format(
+                data['n_target'])
+        else:
+            html += "no target or background detections."
 
-    return None
+        html += "<P><IMG SRC=\"{:s}\">\n".format(data['growth_filename'])
+        html += "<IMG SRC=\"{:s}\">\n".format(data['fwhm_filename'])
+        html += ("<P> Current strategy for finding the optimum aperture "
+                 "radius: {:s}\n").format(data['aprad_strategy'])
+
+        self.append_website(_pp_conf.index_filename, html,
+                            replace_below=("<H2>Photometric Calibration" +
+                                           " - Aperture Size </H2>\n"))
 
 
 class Calibration_Diagnostics(Diagnostics_Html):
@@ -792,263 +799,280 @@ class Calibration_Diagnostics(Diagnostics_Html):
 
         self.create_website(_pp_conf.cal_filename, content=html)
 
-    def add_calibration(self, data):
+    def add_calibration(self, data, instrumental=False):
         """
         wrapper to add calibration results to diagnostics website
         """
 
-        # create zeropoint overview plot
-        self.zeropoint_overview_plot(data)
-
-        # main diagnostics website content
         html = ("<H2>Photometric Calibration - "
                 "Magnitude Zeropoints</H2>\n")
-        html += "Image sources matched against {:s} ({:s}).\n".format(
-            data['ref_cat'].catalogname, data['ref_cat'].history)
-        if self.conf.show_individual_frame_data:
-            html += ("See the <A HREF=\"{:s}\">calibration</A> report for "
-                     "details.\n").format(_pp_conf.cal_filename)
-            self.detailed_report(data)
-        html += "<P><IMG SRC=\"{:s}\" ALT=\"Zeropoints\">\n".format(
-            '.diagnostics/'+data['zpplot'])
+
+        if not instrumental:
+            # create zeropoint overview plot
+            self.zeropoint_overview_plot(data)
+
+            # main diagnostics website content
+            html += "Image sources matched against {:s} ({:s}).\n".format(
+                data['ref_cat'].catalogname, data['ref_cat'].history)
+            if self.conf.show_individual_frame_data:
+                html += ("See the <A HREF=\"{:s}\">calibration</A>"
+                         "report for details.\n").format(
+                             _pp_conf.cal_filename)
+                self.detailed_report(data)
+            html += "<P><IMG SRC=\"{:s}\" ALT=\"Zeropoints\">\n".format(
+                '.diagnostics/'+data['zpplot'])
+        else:
+            html = ("Instrumental magnitudes are reported "
+                    "(filter used: {:s})").format(data['filtername'])
 
         self.append_website(_pp_conf.index_filename, html,
-                            replace_below=("<H2>Photometric Calibration "
-                                           "- Zeropoints</H2>\n"))
+                            replace_below=(
+                                "<H2>Photometric Calibration "
+                                "- Zeropoints</H2>\n"))
 
 
-def add_calibration_instrumental(data):
-    """
-    add instrumental calibration results to website
-    """
+class Distill_Diagnostics(Diagnostics_Html):
 
-    # update index.html
-    html = "<H2>Photometric Calibration - Zeropoints </H2>\n"
-    html += "Instrumental magnitudes have been derived for the image data "
-    html += "(recognized photometric filter: %s); " % data['filtername']
-    html += "all zeropoints have been set to zero.\n"
+    def lightcurve_plots(self, data):
+        data['lightcurveplots'] = {}
+        for target in data['targetnames']:
 
-    append_website(_pp_conf.index_filename, html,
-                   replace_below=("<H2>Photometric Calibration - "
-                                  "Zeropoints</H2>\n"))
+            if sys.version_info < (3, 0):
+                target = str(target)
 
-    return None
+            logging.info('create lightcurve plot for {:s}'.format(target))
+            plt.plot()
+            plt.title(target)
+            plt.xlabel('Observation Midtime (JD)')
+            plt.ylabel('Magnitude')
+            plt.errorbar([dat[9][0] for dat in data[target]],
+                         [dat[7] for dat in data[target]],
+                         yerr=[dat[8] for dat in data[target]],
+                         linestyle='', color='black')
+            plt.ylim([plt.ylim()[1], plt.ylim()[0]])
+            plt.grid()
+            plt.savefig('.diagnostics/{:s}.png'.format(
+                        target.translate(_pp_conf.target2filename)),
+                        format='png')
+            plt.close()
+            data['lightcurveplots'][target] = ('.diagnostics/'
+                                               '{:s}.png').format(
+                target.translate(_pp_conf.target2filename))
 
+    def thumbnail_images(self, data):
+        data['thumbnailplots'] = {}
 
-def add_results(data, imagestretch='linear'):
-    """
-    add results to website
-    """
+        boxsize = 300  # thumbnail boxsize
+        for target in data['targetnames']:
 
-    # create lightcurve plots for each target
+            if sys.version_info < (3, 0):
+                target = str(target)
 
-    data['lightcurveplots'] = {}
-    for target in data['targetnames']:
+            data['thumbnailplots'][target] = []
+            for dat in data[target]:
+                for fitsfilename in ['.fits', '.fit']:
+                    fitsfilename = (dat[10][:dat[10].find('.ldac')] +
+                                    fitsfilename)
+                    if os.path.isfile(fitsfilename):
+                        break
+                hdulist = fits.open(fitsfilename, ignore_missing_end=True)
 
-        if sys.version_info < (3, 0):
-            target = str(target)
+                logging.info('create thumbnail image for {:s}/{:s}'.format(
+                    target, fitsfilename))
 
-        logging.info('create lightcurve plot for %s' % target)
-        plt.plot()
-        plt.title(target)
-        plt.xlabel('Observation Midtime (JD)')
-        plt.ylabel('Magnitude')
-        plt.errorbar([dat[9][0] for dat in data[target]],
-                     [dat[7] for dat in data[target]],
-                     yerr=[dat[8] for dat in data[target]],
-                     linestyle='', color='black')
-        plt.ylim([plt.ylim()[1], plt.ylim()[0]])
-        plt.grid()
-        plt.savefig('.diagnostics/'
-                    + ('%s.png' % target.translate(_pp_conf.target2filename)),
-                    format='png')
-        plt.close()
-        data['lightcurveplots'][target] = ('.diagnostics/' + '%s.png' %
-                                           target.translate(_pp_conf.target2filename))
+                # turn relevant header keywords into floats
+                # should be fixed in astropy.wcs
+                for key, val in list(hdulist[0].header.items()):
+                    if 'CD1' in key or 'CD2' in key or \
+                       'CRVAL' in key or 'CRPIX' in key or \
+                       'EQUINOX' in key:
+                        hdulist[0].header[key] = float(val)
 
-    # create thumbnail images
+                w = wcs.WCS(hdulist[0].header)
+                obj_x, obj_y = dat[11], dat[12]
+                image_coords = w.wcs_world2pix(np.array([[dat[1], dat[2]]]),
+                                               True)
+                exp_x, exp_y = image_coords[0][0], image_coords[0][1]
 
-    data['thumbnailplots'] = {}
-    data['gifs'] = {}
-    boxsize = 300  # thumbnail boxsize
-    for target in data['targetnames']:
+                # create margin around image allowing for any cropping
+                composite = np.zeros((hdulist[0].data.shape[0]+2*boxsize,
+                                      hdulist[0].data.shape[1]+2*boxsize))
 
-        if sys.version_info < (3, 0):
-            target = str(target)
+                composite[boxsize:boxsize +
+                          hdulist[0].data.shape[0],
+                          boxsize:boxsize +
+                          hdulist[0].data.shape[1]] = hdulist[0].data
 
-        data['thumbnailplots'][target] = []
-        for dat in data[target]:
-            for fitsfilename in ['.fits', '.fit']:
-                fitsfilename = dat[10][:dat[10].find('.ldac')]+fitsfilename
-                if os.path.isfile(fitsfilename):
-                    break
-                #= dat[10][:dat[10].find('.ldac')]+'.fits'
-            hdulist = fits.open(fitsfilename, ignore_missing_end=True)
+                # extract thumbnail data accordingly
+                thumbdata = composite[int(boxsize+obj_y-boxsize/2):
+                                      int(boxsize+obj_y+boxsize/2),
+                                      int(boxsize+obj_x-boxsize/2):
+                                      int(boxsize+obj_x+boxsize/2)]
 
-            logging.info('create thumbnail image for %s/%s' % (target,
-                                                               fitsfilename))
+                # run statistics over center of the frame around the target
+                if thumbdata.shape[0] > 0 and thumbdata.shape[1] > 0:
+                    norm = ImageNormalize(
+                        thumbdata, interval=ZScaleInterval(),
+                        stretch={'linear': LinearStretch(),
+                                 'log': LogStretch()}[
+                                     self.conf.image_stretch])
 
-            # turn relevant header keywords into floats
-            # should be fixed in astropy.wcs
-            for key, val in list(hdulist[0].header.items()):
-                if 'CD1' in key or 'CD2' in key or \
-                   'CRVAL' in key or 'CRPIX' in key or \
-                   'EQUINOX' in key:
-                    hdulist[0].header[key] = float(val)
-                # if 'PV1' in key or 'PV2' in key:
-                #     del hdulist[0].header[key]
+                    # extract aperture radius
+                    if _pp_conf.photmode == 'APER':
+                        aprad = float(hdulist[0].header['APRAD'])
 
-            w = wcs.WCS(hdulist[0].header)
-            obj_x, obj_y = dat[11], dat[12]
-            image_coords = w.wcs_world2pix(np.array([[dat[1], dat[2]]]),
-                                           True)
-            exp_x, exp_y = image_coords[0][0], image_coords[0][1]
+                    # create plot
+                    fig = plt.figure()
+                    img = plt.imshow(thumbdata, cmap='gray',
+                                     origin='lower', norm=norm)
+                    # remove axes
+                    plt.axis('off')
+                    img.axes.get_xaxis().set_visible(False)
+                    img.axes.get_yaxis().set_visible(False)
 
-            # create margin around image allowing for any cropping
-            composite = np.zeros((hdulist[0].data.shape[0]+2*boxsize,
-                                  hdulist[0].data.shape[1]+2*boxsize))
+                    plt.annotate('{:s}\n{:5.3f}+-{:5.3f} mag'.format(
+                        fitsfilename, dat[7], dat[8]), (3, 10),
+                        color='white')
 
-            composite[boxsize:boxsize+hdulist[0].data.shape[0],
-                      boxsize:boxsize+hdulist[0].data.shape[1]] = hdulist[0].data
+                    # place aperture
+                    if _pp_conf.photmode == 'APER':
+                        targetpos = plt.Circle((boxsize/2, boxsize/2),
+                                               aprad, ec='red', fc='none',
+                                               linewidth=1)
+                    else:
+                        targetpos = plt.Rectangle(
+                            (boxsize/2-7, boxsize/2-7),
+                            15, 15, ec='red', fc='none',
+                            linewidth=1)
+                    plt.gca().add_patch(targetpos)
 
-            # extract thumbnail data accordingly
-            thumbdata = composite[int(boxsize+obj_y-boxsize/2):
-                                  int(boxsize+obj_y+boxsize/2),
-                                  int(boxsize+obj_x-boxsize/2):
-                                  int(boxsize+obj_x+boxsize/2)]
+                    # place expected position (if within thumbnail)
+                    if (abs(exp_x-obj_x) <= boxsize/2 and
+                            abs(exp_y-obj_y) <= boxsize/2):
+                        plt.scatter(exp_x-obj_x+boxsize/2,
+                                    exp_y-obj_y+boxsize/2,
+                                    marker='+', s=100, color='green')
 
-            # run statistics over center of the frame around the target
-            if thumbdata.shape[0] > 0 and thumbdata.shape[1] > 0:
-                norm = ImageNormalize(thumbdata, interval=ZScaleInterval(),
-                                      stretch={'linear': LinearStretch(),
-                                               'log': LogStretch()}[imagestretch])
-                # extract aperture radius
-                if _pp_conf.photmode == 'APER':
-                    aprad = float(hdulist[0].header['APRAD'])
-
-                # create plot
-                # plotsize = 7. # inches
-                fig = plt.figure()
-                img = plt.imshow(thumbdata, cmap='gray',
-                                 origin='lower', norm=norm)
-                # remove axes
-                plt.axis('off')
-                img.axes.get_xaxis().set_visible(False)
-                img.axes.get_yaxis().set_visible(False)
-
-                plt.annotate('%s\n%5.3f+-%5.3f mag' % (fitsfilename,
-                                                       dat[7], dat[8]), (3, 10),
-                             color='white')
-
-                # place aperture
-                if _pp_conf.photmode == 'APER':
-                    targetpos = plt.Circle((boxsize/2, boxsize/2),
-                                           aprad, ec='red', fc='none',
-                                           linewidth=1)
+                    thumbfilename = ('.diagnostics/' +
+                                     target.translate(
+                                         _pp_conf.target2filename) + '_' +
+                                     fitsfilename[:fitsfilename.
+                                                  find('.fit')] +
+                                     '_thumb.png')
+                    plt.savefig(thumbfilename, format='png',
+                                bbox_inches='tight',
+                                pad_inches=0)
+                    plt.close()
+                    hdulist.close()
+                    data['thumbnailplots'][target].append((fitsfilename,
+                                                           thumbfilename))
                 else:
-                    targetpos = plt.Rectangle((boxsize/2-7, boxsize/2-7),
-                                              15, 15, ec='red', fc='none',
-                                              linewidth=1)
-                plt.gca().add_patch(targetpos)
+                    logging.warning('cannot produce thumbnail image ' +
+                                    'for {:s} in frame {:s}').format(
+                                        target, dat[10])
+                    continue
 
-                # place expected position (if within thumbnail)
-                if (abs(exp_x-obj_x) <= boxsize/2 and
-                        abs(exp_y-obj_y) <= boxsize/2):
-                    plt.scatter(exp_x-obj_x+boxsize/2,
-                                exp_y-obj_y+boxsize/2,
-                                marker='+', s=100, color='green')
+    def target_animations(self, data):
+        data['gifs'] = {}
 
-                thumbfilename = ('.diagnostics/' +
-                                 target.translate(_pp_conf.target2filename) +
-                                 '_' +
-                                 fitsfilename[:fitsfilename.find('.fit')] +
-                                 '_thumb.png')
-                plt.savefig(thumbfilename, format='png',
-                            bbox_inches='tight',
-                            pad_inches=0)
-                plt.close()
-                hdulist.close()
-                data['thumbnailplots'][target].append((fitsfilename,
-                                                       thumbfilename))
-            else:
-                logging.warning('cannot produce thumbnail image ' +
-                                'for %s in frame %s' % (target, dat[10]))
-                continue
+        for target in data['targetnames']:
+            gif_filename = '{:s}.gif'.format(
+                target.translate(_pp_conf.target2filename))
+            logging.info('converting images to gif: {:s}'.format(
+                gif_filename))
+            root = os.getcwd()
+            os.chdir(_pp_conf.diagroot)
+            try:
+                convert = subprocess.Popen(
+                    ['convert', '-delay', '50',
+                     ('{:s}*thumb.png'.format(target.translate(
+                         _pp_conf.target2filename))),
+                     '-loop', '0',
+                     ('%s' % gif_filename)])
 
-        # create gif animation
-        gif_filename = ('%s.gif' % target.translate(_pp_conf.target2filename))
-        logging.info('converting images to gif: %s' % gif_filename)
-        root = os.getcwd()
-        os.chdir(_pp_conf.diagroot)
-        try:
-            convert = subprocess.Popen(['convert', '-delay', '50',
-                                        ('%s*thumb.png' %
-                                         (target.translate(_pp_conf.target2filename))),
-                                        '-loop', '0',
-                                        ('%s' % gif_filename)])
+                convert.wait()
+            except:
+                logging.warning('could not produce gif animation for '
+                                + 'target {:s}'.format(target))
+                data['gifs'][target] = '.diagnostics/' + gif_filename
+            os.chdir(root)
 
-            convert.wait()
-        except:
-            logging.warning('could not produce gif animation for '
-                            + 'target %s' % target)
-        data['gifs'][target] = '.diagnostics/' + gif_filename
-        os.chdir(root)
+    def add_frame_report(self, data):
+        data['resultswebsites'] = {}
+        for target in data['targetnames']:
 
-    # create results website for each target
-    data['resultswebsites'] = {}
-    for target in data['targetnames']:
+            if sys.version_info < (3, 0):
+                target = str(target)
 
-        if sys.version_info < (3, 0):
-            target = str(target)
+                html = "<H2>{:s} - Photometric Results</H2>\n".format(
+                    target)
+                html += "<P><IMG SRC=\"{:s}\">\n".format(
+                    data['lightcurveplots'][target].split(
+                        '.diagnostics/')[1])
+                html += "<IMG SRC=\"{:s}\">\n".format(
+                    data['gifs'][target].split('.diagnostics/')[1])
 
-        html = "<H2>%s - Photometric Results</H2>\n" % target
-        html += "<P><IMG SRC=\"%s\">\n" % \
-                data['lightcurveplots'][target].split('.diagnostics/')[1]
-        html += "<IMG SRC=\"%s\">\n" % \
-                data['gifs'][target].split('.diagnostics/')[1]
+                # create summary table
+                html += "<TABLE CLASS=\"gridtable\">\n<TR>\n"
+                html += ("<TH>Filename</TH><TH>Julian Date</TH>"
+                         "<TH>Target (mag)</TH>"
+                         "<TH>sigma (mag)</TH><TH>Target RA (deg)</TH>"
+                         "<TH>Target Dec (deg)</TH><TH>RA Offset (\")</TH>"
+                         "<TH>Dec Offset (\")</TH>\n</TR>\n")
+                for dat in data[target]:
+                    html += ("<TR><TD><A HREF=\"#{:s}\">{:s}</A></TD>"
+                             "<TD>{:15.7f}</TD><TD>{:7.4f}</TD>"
+                             "<TD>{:6.4f}</TD><TD>{:13.8f}</TD>"
+                             "<TD>{:+13.8f}</TD><TD>{:5.2f}</TD>"
+                             "<TD>{:5.2f}</TD>\n</TR>\n").format(
+                                 dat[10], dat[10], dat[9][0],
+                                 dat[7], dat[8], dat[3], dat[4],
+                                 ((dat[1]-dat[3])*3600.),
+                                 ((dat[2]-dat[4])*3600.))
+                html += "</TABLE>\n"
 
-        # create summary table
-        html += "<TABLE BORDER=\"1\">\n<TR>\n"
-        html += "<TH>Filename</TH><TH>Julian Date</TH><TH>Target (mag)</TH>" \
-            + "<TH>sigma (mag)</TH><TH>Target RA (deg)</TH>" \
-            + "<TH>Target Dec (deg)</TH><TH>RA Offset (\")</TH>" \
-            + "<TH>Dec Offset (\")</TH>\n</TR>\n"
-        for dat in data[target]:
-            html += ("<TR><TD><A HREF=\"#%s\">%s</A></TD>"
-                     + "<TD>%15.7f</TD><TD>%7.4f</TD>"
-                     + "<TD>%6.4f</TD><TD>%13.8f</TD>"
-                     + "<TD>%+13.8f</TD><TD>%5.2f</TD><TD>%5.2f</TD>\n"
-                     + "</TR>\n") % \
-                (dat[10], dat[10], dat[9][0], dat[7], dat[8], dat[3], dat[4],
-                 ((dat[1]-dat[3])*3600.), ((dat[2]-dat[4])*3600.))
-        html += "</TABLE>\n"
+                # plot individual thumbnails
+                html += "<H3>Thumbnails</H3>\n"
+                for idx, plts in enumerate(data['thumbnailplots'][target]):
+                    html += ("<P>{:s}<IMG ID=\"{:s}\" "
+                             "SRC=\"{:s}\">\n").format(
+                                 plts[0],
+                                 data[target][idx][10],
+                                 plts[1].split('.diagnostics/')[1])
+                filename = ('.diagnostics/' +
+                            target.translate(
+                                _pp_conf.target2filename) +
+                            '_' + 'results.html')
+                self.create_website(filename, html)
+                data['resultswebsites'][target] = filename
 
-        # plot individual thumbnails
-        html += "<H3>Thumbnails</H3>\n"
-        for idx, plts in enumerate(data['thumbnailplots'][target]):
-            html += "<P>%s<IMG ID=\"%s\" SRC=\"%s\">\n" % (plts[0],
-                                                           data[target][idx][10],
-                                                           plts[1].split('.diagnostics/')[1])
-        filename = '.diagnostics/' + \
-            target.translate(_pp_conf.target2filename) + \
-            '_' + 'results.html'
-        create_website(filename, html)
-        data['resultswebsites'][target] = filename
+    def add_results(self, data, imagestretch='linear'):
+        """
+        add results to website
+        """
 
-    # update index.html
-    html = "<H2>Photometry Results</H2>\n"
-    html += "<P>photometric data obtained for %d object(s): \n" % \
-            len(data['targetnames'])
-    for target in data['targetnames']:
-        html += "<BR><A HREF=\"%s\">%s</A>\n" % \
-                (data['resultswebsites'][target], target)
-    for target in data['targetnames']:
-        html += "<P><IMG SRC=\"%s\">\n" % data['lightcurveplots'][target]
-        html += "<IMG SRC=\"%s\">\n" % data['gifs'][target]
-    append_website(_pp_conf.index_filename, html,
-                   replace_below="<H2>Photometry Results</H2>\n")
+        self.lightcurve_plots(data)
 
-    return None
+        self.thumbnail_images(data)
+
+        self.target_animations(data)
+
+        self.add_frame_report(data)
+
+        html = "<H2>Photometry Results</H2>\n"
+        html += ("<P>photometric data obtained for {:d} "
+                 "object(s): \n").format(
+                     len(data['targetnames']))
+        for target in data['targetnames']:
+            html += "<BR><A HREF=\"{:s}\">{:s}</A>\n".format(
+                data['resultswebsites'][target], target)
+        for target in data['targetnames']:
+            html += "<P><IMG SRC=\"{:s}\">\n".format(
+                data['lightcurveplots'][target])
+            html += "<IMG SRC=\"{:s}\">\n".format(data['gifs'][target])
+
+        self.append_website(_pp_conf.index_filename, html,
+                            replace_below="<H2>Photometry Results</H2>\n")
 
 
 def abort(where):
@@ -1068,4 +1092,6 @@ def abort(where):
 
 preparation = Prepare_Diagnostics()
 registration = Registration_Diagnostics()
+photometry = Photometry_Diagnostics()
 calibration = Calibration_Diagnostics()
+distill = Distill_Diagnostics()
