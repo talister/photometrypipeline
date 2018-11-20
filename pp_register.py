@@ -86,6 +86,8 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
 
     n_success_last_iteration = None
 
+    goodfits, badfits = [], []
+
     for cat_idx, refcat in enumerate(obsparam['astrometry_catalogs']):
 
         # run extract routines
@@ -131,7 +133,6 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
             return {'goodfits': [], 'badfits': filenames}
 
         output = {}
-        fileline = " ".join(ldac_files)
 
         # check if sufficient reference stars are available in refcat
         logging.info('check if sufficient reference stars in catalog %s' %
@@ -140,9 +141,54 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         hdulist = fits.open(filenames[len(filenames)//2],
                             ignore_missing_end=True)
 
+        # get extent on the sky for a single frame
         ra, dec, rad = toolbox.skycenter(ldac_catalogs)
-        logging.info('FoV center (%.7f/%+.7f) and radius (%.2f deg) derived' %
-                     (ra, dec, rad))
+        logging.info(('FoV center ({:.7f}/{:+.7f}) and '
+                      'radius ({:.2f} deg) derived').format(
+                          ra, dec, rad))
+
+        if rad > 5:  # check if combined field radius >5 deg
+            logging.warning(('combined field radius is huge ({:.1f} deg);'
+                             'check if one or more frames can be rejected '
+                             'as outliers.').format(rad))
+
+            # derived center of mass
+            com_ra = np.median(np.hstack([cat['ra_deg']
+                                          for cat in ldac_catalogs]))
+            com_dec = np.median(np.hstack([cat['dec_deg']
+                                           for cat in ldac_catalogs]))
+
+            # for each frame derive distance from center of mass
+            dist = np.array([np.median(np.sqrt((cat['ra_deg']-com_ra)**2 +
+                                               (cat['dec_deg']-com_dec)**2))
+                             for cat in ldac_catalogs])
+
+            logging.warning(('reject files [{:s}] for registration '
+                             'due to large offset from other '
+                             'frames [{:s}]').format(
+                ",".join(np.array(filenames)[dist > 5]),
+                ",".join([str(d) for d in dist[dist > 5]])))
+            if display:
+                print(('reject files [{:s}] for registration '
+                       'due to large offset from other '
+                       'frames [{:s}] deg').format(
+                    ",".join(np.array(filenames)[dist > 5]),
+                    ",".join([str(d) for d in dist[dist > 5]])))
+
+            badfits += list(np.array(filenames)[dist > 5])
+
+            # reject files for which dist>threshold
+            filenames = np.array(filenames)[dist < 5]
+            ldac_files = np.array(ldac_files)[dist < 5]
+            ldac_catalogs = np.array(ldac_catalogs)[dist < 5]
+
+            ra, dec, rad = toolbox.skycenter(ldac_catalogs)
+            logging.info(('FoV center ({:.7f}/{:+.7f}) and '
+                          'radius ({:.2f} deg) derived').format(
+                              ra, dec, rad))
+
+        fileline = " ".join(ldac_files)
+
         del(ldac_catalogs)
 
         checkrefcat = catalog(refcat, display=False)
@@ -187,9 +233,9 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
 
         # assemble arguments for scamp, run it, and wait for it
         commandline = 'scamp -c '+obsparam['scamp-config-file'] + \
-                      ' -ASTR_FLAGSMASK '+st_code+' -FLAGS_MASK '+st_code + \
-                      ' -ASTREF_CATALOG FILE' + \
-                      ' -ASTREFCAT_NAME ' + refcat + '.cat ' + fileline
+            ' -ASTR_FLAGSMASK '+st_code+' -FLAGS_MASK '+st_code + \
+            ' -ASTREF_CATALOG FILE' + \
+            ' -ASTREFCAT_NAME ' + refcat + '.cat ' + fileline
 
         logging.info('call Scamp as: %s' % commandline)
 
@@ -200,7 +246,6 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
         # the contrast values provided by SCAMP
         scamp = _pp_conf.read_scamp_output()
         os.rename('scamp_output.xml', 'astrometry_scamp.xml')
-        goodfits, badfits = [], []
         fitresults = []  # store scamp outputs
         for dat in scamp[1]:
             # successful fit

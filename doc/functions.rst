@@ -153,7 +153,7 @@ the logical order:
    all sources in the field of view of each image; the source catalogs
    are stored as ``.ldac`` files. The `-snr` and `-minarea` options
    are passed on to :func:`pp_extract`/`Source Extractor` in order to
-   specify the source properties.  `pp_register` utilizes `SCAMP` to
+   specify the source properties. `pp_register` utilizes `SCAMP` to
    match the source catalogs with astrometric catalogs as specified
    for this telescope/instrument combination (see
    :ref:`telescope_setup` reference), or as provided by the user with
@@ -167,7 +167,11 @@ the logical order:
    registered properly, each catalog is matched twice using
    information from the last `SCAMP` run. The routine ends if all
    images have been registered properly or all catalogs have been used
-   twice.
+   twice. Before starting the registration process, this function will
+   check the distribution of sources in all images in the plane of the
+   sky. If there appear to be two or more fields that are
+   non-overlapping and separted by at least 5 degrees, those fields
+   with fewer sources will be rejected and considered not registered.
 
    The diagnostic output of this function is a table of the `SCAMP`
    output parameters and a presentation of each image overplotted with

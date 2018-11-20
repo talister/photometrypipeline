@@ -31,12 +31,8 @@ try:
 except ImportError:
     print('Module numpy not found. Please install with: pip install numpy')
     sys.exit()
-import shutil
 import logging
-import subprocess
 import argparse
-import shlex
-import time
 try:
     from astropy.io import fits
 except ImportError:
@@ -184,6 +180,10 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     preparation = pp_prepare.prepare(filenames, obsparam,
                                      change_header,
                                      diagnostics=True, display=True)
+
+    # check that all images are roughly for the same field in the sky
+
+    ra, dec, rad = toolbox.skycenter(catalogs)
 
     # run wcs registration
 
