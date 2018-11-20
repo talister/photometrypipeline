@@ -552,7 +552,8 @@ lowell42_param = {
     'object': 'OBJECT',  # object name keyword
     'filter': 'FILTNAME',  # filter keyword
     'filter_translations': {'V': 'V', 'I': 'I', 'VR': None,
-                            'R': 'R', 'clear': None, 'CN': None},
+                            'R': 'R', 'clear': None, 'CN': None,
+                            'open': None, 'Open': None},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
