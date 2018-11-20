@@ -33,12 +33,14 @@ below. All functions presented here can be called from the terminal.
 			       the first try.
    :param -asteroids: (optional) make use of ``-asteroids`` option of
                       :func:`pp_distill`
+   :param -filter: (optional) make use of ``-filter`` option of
+                   :func:`pp_distill`, default: ``pos``
    :param images: images on which the pipeline is supposed to run,
                   wildcard symbols (``'*'``, ``'?'``) can be used; or,
                   by using ``all``, PP runs on all FITS files in
                   underlying directories (the range of images can be
                   limited by using the `-prefix` option)
-
+   
    The use of `pp_run` is discussed in the :ref:`quickstart` reference.
 
    This wrapper should work successfully for most data sets. If the
@@ -343,7 +345,7 @@ the logical order:
                       asteroids in the image field using IMCCE's
                       SkyBoT service; extract objects that are bright
                       enough and have accurate orbits
-    :param -filter: (optional) this option enables the filtering of
+   :param -filter: (optional) this option enables the filtering of
       data based on predefined criteria before they enter the final
       photometry file; a single rejection schema identifier or a
       comma-separated list of identifiers (no whitespaces) can be
@@ -353,7 +355,7 @@ the logical order:
       observations. Valid identifiers are: ``pos`` (rejects
       observations with positional residuals greater than 10
       arcsec). Default: ``pos``
-:param images:  images to run `pp_distill` on
+   :param images:  images to run `pp_distill` on
 
    This function will automatically read the target name from the FITS
    images (or use the manually provided one), pull target positions

@@ -309,6 +309,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     distillate = pp_distill.distill(calibration['catalogs'],
                                     man_targetname, [0, 0],
                                     None, None,
+                                    rejectionfilter,
                                     asteroids=asteroids,
                                     display=True, diagnostics=True)
 
@@ -358,6 +359,9 @@ if __name__ == '__main__':
     parser.add_argument('-asteroids',
                         help='extract all known asteroids',
                         action="store_true", default=False)
+    parser.add_argument('-reject',
+                        help='schemas for target rejection',
+                        nargs=1, default='pos')
     parser.add_argument('images', help='images to process or \'all\'',
                         nargs='+')
 
@@ -370,6 +374,7 @@ if __name__ == '__main__':
     solar = args.solar
     rerun_registration = args.rerun_registration
     asteroids = args.asteroids
+    rejectionfilter = args.reject
     filenames = sorted(args.images)
 
     # if filenames = ['all'], walk through directories and run pipeline
