@@ -564,9 +564,10 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
 
         # identify magnitudes
         mag_keys = ['MAG_APER', 'MAGERR_APER']
-        for key in cat.fields:
-            if filtername+'mag' in key:
-                mag_keys.append(key)
+        if filtername is not None:
+            for key in cat.fields:
+                if filtername+'mag' in key:
+                    mag_keys.append(key)
 
         # build field lists for observed catalogs
         match_keys_other_catalog, extract_other_catalog = [], []
