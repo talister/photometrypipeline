@@ -90,7 +90,7 @@ the logical order:
    input image is available from this table.
 	     
 
-.. function:: pp_extract ([-snr float], [-minarea integer], [-paramfile path], [-aprad float], [-telescope name], [-ignore_saturation], [-quiet], [-write_cat], images)
+.. function:: pp_extract ([-snr float], [-minarea integer], [-paramfile path], [-aprad float], [-telescope string], [-ignore_saturation], [-nodeblending], [-quiet], images)
 	      
    wrapper for `Source Extractor`_
 
@@ -111,6 +111,7 @@ the logical order:
                               flag saturated sources; as a result,
                               they are not rejected in the
                               registration and calibration process
+   :param -nodeblending: (optional) deactives Source Extractor deblending 
    :param -quiet: (optional) suppress output on the screen
    :param images: images to run `pp_extract` on
 
@@ -120,7 +121,7 @@ the logical order:
    function manually.
 
 
-.. function:: pp_register ([-snr float], [-minarea integer], [-cat catalogname], images)
+.. function:: pp_register ([-snr float], [-minarea integer], [-cat catalogname], [-source_tolerance string], [-nodeblending], images)
 
    astrometric calibration of the input images using `SCAMP`_ 
 
@@ -147,6 +148,8 @@ the logical order:
                              considered; the default is `high`; see
                              the `Source Extractor`_ manual section on
                              internal flags for details.
+   :param -nodeblending: (optional) deactives Source Extractor deblending
+                         in the detection of sources in the image frames
    :param images: images to run `pp_register` on
 
    `pp_register` automatically calls :func:`pp_extract` to identify
@@ -171,14 +174,19 @@ the logical order:
    check the distribution of sources in all images in the plane of the
    sky. If there appear to be two or more fields that are
    non-overlapping and separted by at least 5 degrees, those fields
-   with fewer sources will be rejected and considered not registered.
+   with fewer sources will be rejected and considered not
+   registered. The `-nodeblending` option will deactivate deblending
+   that is usually performed by Source Extractor. The advantage of
+   deactivating deblending is that bright and saturated sources are
+   recognized as single objects instead of a group of fainter sources;
+   this is especially useful in the registration process.
 
    The diagnostic output of this function is a table of the `SCAMP`
    output parameters and a presentation of each image overplotted with
    the catalog sources used in the matching.
 
 
-.. function:: pp_photometry ([-snr float], [-minarea float], [-aprad float], [-target targetname], [-background_only], [-target_only], images))
+.. function:: pp_photometry ([-snr float], [-minarea float], [-aprad float], [-target string], [-background_only], [-target_only], images))
 
    curve-of-growth analysis of the input images and source extraction
    using a derived optimum aperture radius resulting in final
@@ -200,7 +208,7 @@ the logical order:
                             curve-of-growth analysis
    :param -target_only: only account for the target in the
                         curve-of-growth analysis
-   :param image: images to run `pp_photometry` on
+   :param images: images to run `pp_photometry` on
 
 
    `pp_photometry` calls :func:`pp_extract` with a list of 20
@@ -319,7 +327,7 @@ the logical order:
 
 
 
-.. function:: pp_distill ([-target string], [-offset float float], [-fixed_coo float float], images)
+.. function:: pp_distill ([-target string], [-offset float float], [-positions string], [-fixedtargets string], [-variable_stars], [-asteroids], [-reject string], images)
 
    extraction of calibrated photometry for targets
 
@@ -349,7 +357,7 @@ the logical order:
                       asteroids in the image field using IMCCE's
                       SkyBoT service; extract objects that are bright
                       enough and have accurate orbits
-   :param -filter: (optional) this option enables the filtering of
+   :param -reject: (optional) this option enables the filtering of
       data based on predefined criteria before they enter the final
       photometry file; a single rejection schema identifier or a
       comma-separated list of identifiers (no whitespaces) can be

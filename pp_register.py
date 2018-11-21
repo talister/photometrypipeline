@@ -53,8 +53,8 @@ logging.basicConfig(filename=_pp_conf.log_filename,
 
 
 def register(filenames, telescope, sex_snr, source_minarea, aprad,
-             mancat, obsparam, source_tolerance, display=False,
-             diagnostics=False):
+             mancat, obsparam, source_tolerance, nodeblending,
+             display=False, diagnostics=False):
     """
     registration wrapper
     output: diagnostic properties
@@ -101,6 +101,7 @@ def register(filenames, telescope, sex_snr, source_minarea, aprad,
                              'aprad': aprad, 'telescope': telescope,
                              'ignore_saturation': True,
                              'global_background': False,
+                             'nodeblending': nodeblending,
                              'quiet': False}
 
         extraction = pp_extract.extract_multiframe(filenames,
@@ -422,6 +423,9 @@ if __name__ == '__main__':
                         default=None)
     parser.add_argument("-cat", help='manually select reference catalog',
                         choices=_pp_conf.allcatalogs, default=None)
+    parser.add_argument('-nodeblending',
+                        help='deactivate deblending in source extraction',
+                        action="store_true")
     parser.add_argument('images', help='images to process', nargs='+')
 
     args = parser.parse_args()
@@ -429,6 +433,7 @@ if __name__ == '__main__':
     source_minarea = float(args.minarea)
     mancat = args.cat
     source_tolerance = args.source_tolerance
+    nodeblending = args.nodeblending
     filenames = args.images
 
     # read telescope and filter information from fits headers
@@ -466,5 +471,5 @@ if __name__ == '__main__':
     # run registration wrapper
     registration = register(filenames, telescope, snr,
                             source_minarea, aprad, mancat, obsparam,
-                            source_tolerance,
+                            source_tolerance, nodeblending,
                             display=True, diagnostics=True)
