@@ -130,6 +130,9 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                       (n_raw-n_rejected, n_raw))
                 logging.info('%d/%d sources left with solar-like colors' %
                              (n_raw-n_rejected, n_raw))
+            cat.history += (', {:d} stars left with solar colors'.
+                            format(n_raw-n_rejected))
+            cat.catalogname += '_solar'
 
         # transform catalog to requested filtername, if necessesary
         if (n_sources > 0 and
@@ -282,11 +285,13 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
         # fewer than 3 reference stars -> skip this catalog
         if len(residuals) < 3:
             if display:
-                print(('Warning: %d reference stars after source matching '
-                       + 'for frame %s') % (len(residuals), cat.catalogname))
-                logging.warning(('Warning: %d reference stars after source '
-                                 + 'matching for frame %s') %
-                                (len(residuals), cat.catalogname))
+                print(('Warning: {:d} stars left after source matching '
+                       'for frame {:s}; report instrumental magnitudes').
+                      format(len(residuals), cat.catalogname))
+                logging.warning(
+                    ('Warning: {:d} stars left after source matching '
+                     'for frame {:s}; report instrumental magnitudes').
+                    format(len(residuals), cat.catalogname))
                 clipping_steps = [[0, 0, 1e-10, [], [[], []]]]
 
                 output['zeropoints'].append({'filename': cat.catalogname,

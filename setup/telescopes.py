@@ -3427,7 +3427,7 @@ pdo25cmf63st8_param = {
     'aprad_default': 5,  # default aperture radius in px
     'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/pdo.sex',
-    'mask_file': {}, # mask files as a function of x,y binning
+    'mask_file': {},  # mask files as a function of x,y binning
 
     # registration settings (Scamp)
     'scamp-config-file': rootpath+'/setup/pdo.scamp',
@@ -3514,7 +3514,8 @@ pdo05mf81kaf1001e_param = {
 
 # CS3-PDS-2-14N, 35cm SCT, STL-1001E
 pds35cmstl1001e_param = {
-    'telescope_instrument': 'CS3-PDS-2-14N 35cm SCT/STL-1001E',  # telescope/instrument name
+    # telescope/instrument name
+    'telescope_instrument': 'CS3-PDS-2-14N 35cm SCT/STL-1001E',
     'telescope_keyword': 'PDS35CMSTL1001E',      # telescope/instrument keyword
     'observatory_code': 'U82',         # MPC observatory code
     'secpix': (1.48, 1.48),  # pixel size (arcsec) before binning
@@ -3549,7 +3550,7 @@ pds35cmstl1001e_param = {
     'aprad_default': 5,  # default aperture radius in px
     'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/pds.sex',
-    'mask_file': {}, # mask files as a function of x,y binning
+    'mask_file': {},  # mask files as a function of x,y binning
 
     # registration settings (Scamp)
     'scamp-config-file': rootpath+'/setup/pds.scamp',
@@ -3606,6 +3607,7 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'E2V CCD-231 4096x4112': 'LOWELL42',
                           'PRISM Instrument':  'LOWELL72',
                           'Prism 2048x2048 CCD': 'LOWELL72',
+                          'prism': 'LOWELL72',
                           'cfccd':             'CTIO09',
                           'Y4KCam':            'CTIO10',
                           'ANDICAM-CCD':       'CTIO13CCD',
@@ -3654,9 +3656,10 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'DFOSC_FASU': 'DFOSC',
                           'loneos': 'LONEOS',
                           '25cm f/6.3 SCT_SBIG ST-8': 'PDO25CMF63ST8',
-                          '0.5m f/8.1 Ritchey-Chretien_FLI KAF1001E': 'PDO05F81KAF1001E',
+                          '0.5m f/8.1 Ritchey-Chretien_FLI KAF1001E':
+                          'PDO05F81KAF1001E',
                           '0.35-m SCT_STL-1001E': 'PDS35CMSTL1001E',
-}
+                          }
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,

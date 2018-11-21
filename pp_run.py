@@ -195,6 +195,7 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
                                             source_minarea, aprad,
                                             None, obsparam,
                                             obsparam['source_tolerance'],
+                                            False,
                                             display=True,
                                             diagnostics=True)
 
@@ -269,32 +270,42 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
 
     print('\n----- run photometric calibration\n')
 
-    calibration = pp_calibrate.calibrate(filenames, minstars, filtername,
-                                         manualcatalog, obsparam, solar=solar,
-                                         display=True,
-                                         diagnostics=True)
+    while True:
+        calibration = pp_calibrate.calibrate(filenames, minstars,
+                                             filtername,
+                                             manualcatalog, obsparam,
+                                             solar=solar,
+                                             display=True,
+                                             diagnostics=True)
 
-    # if calibration == None:
-    #     print('Nothing to do!')
-    #     logging.error('Nothing to do! Error in pp_calibrate')
-    #     diag.abort('pp_calibrate')
-    #     sys.exit(1)
+        try:
+            zps = [frame['zp'] for frame in calibration['zeropoints']]
+            zp_errs = [frame['zp_sig']
+                       for frame in calibration['zeropoints']]
 
-    try:
-        zps = [frame['zp'] for frame in calibration['zeropoints']]
-        zp_errs = [frame['zp_sig'] for frame in calibration['zeropoints']]
+            # rerun calibration
+            if solar and any(np.isnan(zps)):
+                logging.warning(('Photometric calibration failed for one '
+                                 'or more frames; re-try without the '
+                                 'solar option'))
+                print(('Warning: Photometric calibration '
+                       'failed for one or more frames; '
+                       're-try without the -solar option'))
+                solar = False
+                continue
 
-        if calibration['ref_cat'] is not None:
-            refcatname = calibration['ref_cat'].catalogname
-        else:
-            refcatname = 'instrumental magnitudes'
-        summary_message = "<FONT COLOR=\"green\">average zeropoint = " + \
-            ("%5.2f+-%5.2f using %s</FONT>; " %
-             (np.average(zps),
-              np.average(zp_errs),
-              refcatname))
-    except TypeError:
-        summary_message = "<FONT COLOR=\"red\">no phot. calibration</FONT>; "
+            if calibration['ref_cat'] is not None:
+                refcatname = calibration['ref_cat'].catalogname
+            else:
+                refcatname = 'instrumental magnitudes'
+                summary_message = "<FONT COLOR=\"green\">average zeropoint = " + \
+                                  ("%5.2f+-%5.2f using %s</FONT>; " %
+                                   (np.average(zps),
+                                    np.average(zp_errs),
+                                    refcatname))
+        except TypeError:
+            summary_message = "<FONT COLOR=\"red\">no phot. calibration</FONT>; "
+        break
 
     # add information to summary website, if requested
     if _pp_conf.use_diagnostics_summary:

@@ -25,7 +25,10 @@ below. All functions presented here can be called from the terminal.
                              :func:`pp_register` for details.
    :param -solar: the photometric calibration (`pp_calibrate`) is only
                   using stars with solar-like colors (see
-                  `pp_calibrate` documentation for details)
+		  `pp_calibrate` documentation for details); if the
+		  calibration using `-solar` fails (too few matches with
+		  reference catalog), the calibration is automatically
+		  repeated without the `-solar` option
    :param -rerun_registration: (optional) for some data, the image
                                registration has to be run twice; this option
 			       will rerun the registration step, if not
