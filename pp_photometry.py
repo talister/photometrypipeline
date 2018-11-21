@@ -152,11 +152,15 @@ def curve_of_growth_analysis(filenames, parameters,
         data = catalog('Sextractor_LDAC')
         data.read_ldac(ldac_filename, maxflag=3)
 
+        if data.shape[0] == 0:
+            continue
+
         # identify target and extract its curve-of-growth
         n_target_identified = 0
         if not parameters['background_only']:
             residuals = numpy.sqrt((data['ra_deg']-target_ra)**2 +
                                    (data['dec_deg']-target_dec)**2)
+
             target_idx = numpy.argmin(residuals)
             if residuals[target_idx] > _pp_conf.pos_epsilon/3600:
                 logging.warning(('WARNING: frame %s, large residual to ' +
@@ -182,8 +186,8 @@ def curve_of_growth_analysis(filenames, parameters,
             n_src = 50  # use only 50 sources
             for idx, src in enumerate(data.data[:n_src]):
                 if (numpy.any(numpy.isnan(src['FLUX_'+_pp_conf.photmode])) or
-                    numpy.any(numpy.isnan(src['FLUXERR_'+_pp_conf.photmode])) or
-                        src['FLAGS'] > 3):
+                    numpy.any(numpy.isnan(src['FLUXERR_'+_pp_conf.photmode]))
+                        or src['FLAGS'] > 3):
                     continue
 
                 # create growth curve

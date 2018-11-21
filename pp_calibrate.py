@@ -507,7 +507,13 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
                           exptime_keyword=obsparam['exptime'],
                           time_keyword='MIDTIMJD')
 
-        catalogs.append(cat)
+        if cat.shape[0] > 0:
+            catalogs.append(cat)
+        else:
+            logging.warning(('catalog {:s} is empty; '
+                             'ignore').format(ldac_filename))
+            if display:
+                print('catalog {:s} is empty; ignore'.format(ldac_filename))
 
     # derive center and radius of field of view of all images
     ra_deg, dec_deg, rad_deg = skycenter(catalogs)

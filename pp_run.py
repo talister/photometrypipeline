@@ -31,12 +31,8 @@ try:
 except ImportError:
     print('Module numpy not found. Please install with: pip install numpy')
     sys.exit()
-import shutil
 import logging
-import subprocess
 import argparse
-import shlex
-import time
 try:
     from astropy.io import fits
 except ImportError:
