@@ -498,7 +498,9 @@ if __name__ == '__main__':
         for key in _pp_conf.instrument_keys:
             if key in header:
                 instruments.append(header[key])
-        hdulist.close()
+                break
+            hdulist.close()
+
 
     if telescope is None:
         try:
