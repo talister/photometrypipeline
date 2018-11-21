@@ -3390,6 +3390,186 @@ loneos_param = {
     'photometry_catalogs': ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
 }
 
+# Palmer Divide Observatory, 25cm f/6.3, SBIG ST-8
+pdo25cmf63st8_param = {
+    'telescope_instrument': 'PDO 25cm f6.3/SBIG ST-8',  # telescope/instrument name
+    'telescope_keyword': 'PDO25CMF63ST8',      # telescope/instrument keyword
+    'observatory_code': '716',         # MPC observatory code
+    'secpix': (0.1875, 0.1875),  # pixel size (arcsec) before binning
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('BINNING', 'BINNING'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'OBJCTRA',  # telescope pointing, RA
+    'dec': 'OBJCTDEC',  # telescope pointin, Dec
+    'radec_separator': ' ',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATETIME',  # obs date/time
+    # keyword; use 'date|time' if separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'clear': None},
+    # filtername translation dictionary
+    'exptime': 'EXPOSURE',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 10,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/pdo.sex',
+    'mask_file': {}, # mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/pdo.scamp',
+    'reg_max_mag': 16,
+    'reg_search_radius': 0.2,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('TELESCOP,INSTRUME,FILTER,EXPOSURE,OBJECT,' +
+                      'DATETIME,OBJCTRA,OBJCTDEC,SECPIX,' +
+                      'TEL_KEYW,BINNING,MIDTIMJD'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file': rootpath+'/setup/pdo.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['TGAS'],
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
+}
+
+# Palmer Divide Observatory, 0.5m f/8.1 Ritchey-Chretien, FLI KAF1001E -- misspelling
+pdo05mf81kaf1001e_param = {
+    'telescope_instrument': 'PDO 0.5m f8.1/FLI KAF1001E',  # telescope/instrument name
+    'telescope_keyword': 'POD05MF81KAF1001E',      # telescope/instrument keyword
+    'observatory_code': '716',         # MPC observatory code
+    'secpix': (1.2, 1.2),  # pixel size (arcsec) before binning
+    'ext_coeff': 0.05,          # typical extinction coefficient
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': True,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('BINNING', 'BINNING'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'OBJCTRA',  # telescope pointing, RA
+    'dec': 'OBJCTDEC',  # telescope pointin, Dec
+    'radec_separator': ':',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'Clear': None},
+    # filtername translation dictionary
+    'exptime': 'EXPOSURE',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 12,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/pdo.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/pdo.scamp',
+    'reg_max_mag': 19,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('TELESCOP,INSTRUME,FILTER,EXPOSURE,OBJECT,' +
+                      'DATE-OBS,OBJCTRA,OBJCTDEC,SECPIX,AIRMASS,' +
+                      'TEL_KEYW,BINNING,MIDTIMJD'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file': rootpath+'/setup/pdo.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
+}
+
+
+# CS3-PDS-2-14N, 35cm SCT, STL-1001E
+pds35cmstl1001e_param = {
+    'telescope_instrument': 'CS3-PDS-2-14N 35cm SCT/STL-1001E',  # telescope/instrument name
+    'telescope_keyword': 'PDS35CMSTL1001E',      # telescope/instrument keyword
+    'observatory_code': 'U82',         # MPC observatory code
+    'secpix': (1.48, 1.48),  # pixel size (arcsec) before binning
+
+    # image orientation preferences
+    'flipx': False,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('XBINNING', 'YBINNING'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'OBJCTRA',  # telescope pointing, RA
+    'dec': 'OBJCTDEC',  # telescope pointin, Dec
+    'radec_separator': ' ',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use 'date|time' if separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'NF': None},
+    # filtername translation dictionary
+    'exptime': 'EXPOSURE',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 10,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/pds.sex',
+    'mask_file': {}, # mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/pds.scamp',
+    'reg_max_mag': 16,
+    'reg_search_radius': 0.2,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('TELESCOP,INSTRUME,FILTER,EXPOSURE,OBJECT,' +
+                      'DATETIME,OBJCTRA,OBJCTDEC,SECPIX,' +
+                      'TEL_KEYW,XBINNING,YBINNING,MIDTIMJD'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file': rootpath+'/setup/pds.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
+}
+
 
 # access functions for telescope configurations
 
@@ -3410,7 +3590,8 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'LCOSINFL16', 'LCOSINFL11',
                           'LCOSINFA03', 'LCOSINFA15',
                           'LCOSPECFS01', 'P60OPT', 'P60SEDM', 'GMOSN',
-                          'DFOSC', 'LONEOS']
+                          'DFOSC', 'LONEOS', 'PDO25CMF63ST8', 'PDO05F81KAF1001E',
+                          'PDS35CMSTL1001E']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword
@@ -3471,7 +3652,11 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'Rainbow Cam': 'P60SEDM',
                           'GMOS-N': 'GMOSN',
                           'DFOSC_FASU': 'DFOSC',
-                          'loneos': 'LONEOS', }
+                          'loneos': 'LONEOS',
+                          '25cm f/6.3 SCT_SBIG ST-8': 'PDO25CMF63ST8',
+                          '0.5m f/8.1 Ritchey-Chretien_FLI KAF1001E': 'PDO05F81KAF1001E',
+                          '0.35-m SCT_STL-1001E': 'PDS35CMSTL1001E',
+}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
@@ -3523,7 +3708,11 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'P60SEDM': p60sedm_param,
                         'GMOSN': gmosn_param,
                         'DFOSC': dfosc_param,
-                        'LONEOS': loneos_param, }
+                        'LONEOS': loneos_param,
+                        'PDO25CMF63ST8': pdo25cmf63st8_param,
+                        'PDO05F81KAF1001E': pdo05mf81kaf1001e_param,
+                        'PDS35CMSTL1001E': pds35cmstl1001e_param,
+                        }
 
 
 # append mytelescopes.py, if available

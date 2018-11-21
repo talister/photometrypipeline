@@ -367,7 +367,7 @@ class catalog(object):
 
             try:
                 self.data = vquery.query_region(field,
-                                                radius=rad_deg.u.deg,
+                                                radius=rad_deg*u.deg,
                                                 catalog="I/337/tgas",
                                                 cache=False)[0]
             except IndexError:
