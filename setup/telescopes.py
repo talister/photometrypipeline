@@ -673,7 +673,7 @@ lowell72_param = {
     'rotate': 0,
 
     # instrument-specific FITS header keywords
-    'binning': (3, 3),
+    'binning': ('CCDSUM#blank1', 'CCDSUM#blank2'),
     # binning in x/y, '_blankN' denotes that both axes
     # are listed in one keyword, sep. by blanks
     'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
