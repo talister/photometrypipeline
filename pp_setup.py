@@ -84,7 +84,9 @@ class ConfDiagnostics(Conf):
     image_stretch = 'linear'  # could be 'linear', 'log', 'power'
 
     # presentation of data overview
-    show_preview_image = False
+    show_preview_image = True
+
+    individual_frame_pages = True
 
     # presentation of registration results
     show_registration_table = True  # show table with registration results
@@ -93,7 +95,7 @@ class ConfDiagnostics(Conf):
     # presentation of calibration data
     show_individual_frame_data = True  # present individual frame data
     # next 3 parameters are ignored if the previous is `False`
-    show_curve_of_growth = True  # present individual curve of growth results
+    show_phot_calibration_plots = True  # present individual curve of growth results
     show_calibration_star_map = True  # present map of calibration stars
     show_calibration_star_table = True  # present table of calibration stars
 

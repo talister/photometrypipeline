@@ -628,7 +628,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
             if display:
                 print('creating diagnostic output')
             logging.info(' ~~~~~~~~~ creating diagnostic output')
-            diag.add_calibration_instrumental(output)
+            diag.add_calibration(output, instrumental=True)
 
         return output
 
