@@ -99,6 +99,10 @@ class ConfDiagnostics(Conf):
     show_calibration_star_map = True  # present map of calibration stars
     show_calibration_star_table = True  # present table of calibration stars
 
+    # target thumbnail properties
+    thumbsize_px = 200  # edge length of thumbnail cutout
+    thumb_scalelength = 10  # length of pixelscale indicators in arcsec
+
 
 class ConfCombine(Conf):
     """configuration setup for pp_combine"""

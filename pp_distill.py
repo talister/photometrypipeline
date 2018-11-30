@@ -149,7 +149,7 @@ def pick_controlstar(catalogs, display=True):
         ctlstar_idx = np.argsort(match[1][3])[int(0.05*len(match[1][3]))]
 
         for cat_idx, cat in enumerate(catalogs):
-            objects.append({'ident': 'control_star',
+            objects.append({'ident': 'Control Star',
                             'obsdate.jd':  cat.obstime[0],
                             'cat_idx':  cat_idx,
                             'ra_deg':  match[1][0][ctlstar_idx],
@@ -491,9 +491,6 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
     if posfile is not None:
         objects += manual_positions(posfile, catalogs, display=display)
 
-    # select a sufficiently bright star as control star
-    objects += pick_controlstar(catalogs, display=display)
-
     # check Horizons for primary target (if a moving target)
     if posfile is None and fixed_targets_file is None and asteroids is False:
         objects += moving_primary_target(catalogs, man_targetname, offset,
@@ -510,6 +507,9 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
     # serendipitous variable stars
     if variable_stars:
         objects += serendipitous_variablestars(catalogs, display=display)
+
+    # select a sufficiently bright star as control star
+    objects += pick_controlstar(catalogs, display=display)
 
     if display:
         print('#-----------------------')
@@ -610,7 +610,11 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
             #         fwhm
             targetnames[match[0][2][i]] = 1
 
+    # list of targets
     output['targetnames'] = targetnames
+
+    # dictionary: list of frames per target
+    output['targetframes'] = {}
 
     # write results to ASCII file
 
@@ -620,6 +624,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
             target = str(target)
 
         output[target] = []
+        output['targetframes'][target] = []
 
         if display:
             print('write photometry results for %s' % target)
@@ -691,6 +696,7 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
                            ('%s' % dat[13].split(';')[0]) +
                            ('%10s ' % _pp_conf.photmode) +
                            ('%4.2f\n' % (dat[15]*3600)))
+                output['targetframes'][target].append(dat[10][:-4]+'fits')
 
         outf.writelines('#\n# [1]: predicted_RA - source_RA [arcsec]\n' +
                         '# [2]: predicted_Dec - source_Dec [arcsec]\n' +
@@ -707,9 +713,11 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
     # output content
     #
     # { 'targetnames': list of all targets,
+    #   'targetframes': lists of frames per target,
     #   '(individual targetname)': [ident, RA_exp, Dec_exp, RA_img, Dec_img,
-    #                               mag_inst, sigmag_instr, mag_cal, sigmag_cal
-    #                               obstime, filename, img_x, img_y],
+    #                               mag_inst, sigmag_instr, mag_cal,
+    #                               sigmag_cal, obstime, filename, img_x,
+    #                               img_y, origin, flags, fwhm],
     # }
     ###
 

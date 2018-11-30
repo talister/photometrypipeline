@@ -75,6 +75,7 @@ class Diagnostics_Html():
         """
         create empty website for diagnostics output
         """
+
         html = ("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'>\n"
                 "<HTML>\n"
                 "<HEAD>\n"
@@ -83,6 +84,15 @@ class Diagnostics_Html():
                 "diagnostics_stylesheet.css\">\n"
                 "</HEAD>\n"
                 "<BODY>\n"
+                "<script>\n"
+                "  function toggledisplay(elementID)\n"
+                "  {{\n"
+                "  (function(style) {{\n"
+                "  style.display = style.display === 'none' ? '' :"
+                "'none';\n"
+                "  }})(document.getElementById(elementID).style);\n"
+                "  }}\n"
+                "</script>\n\n"
                 "{:s}\n"
                 "</BODY>\n"
                 "</HTML>\n").format(os.getenv('PHOTPIPEDIR'), content)
@@ -248,34 +258,34 @@ class Prepare_Diagnostics(Diagnostics_Html):
 
         for filename in filenames:
             header = fits.open(filename)[0].header
-            html = ("<script>\n"
-                    "  function toggledisplay(elementID)\n"
-                    "  {\n"
-                    "  (function(style) {\n"
-                    "  style.display = style.display === 'none' ? '' :"
-                    "'none';\n"
-                    "  })(document.getElementById(elementID).style);\n"
-                    "  }\n"
-                    "</script>\n\n")
-            html += ("<H1>{:s} Diagnostics</H1>"
-                     "<P><TABLE CLASS=\"gridtable\">\n"
-                     "<TR><TH>Telescope/Instrument</TH><TD>{:s} ({:s})</TD>"
-                     "</TR>\n"
-                     "<TR><TH>Target/Field Identifier</TH><TD>{:s}</TD>"
-                     "</TR>\n"
-                     "<TR><TH>RA</TH><TD>{:s}</TD></TR>\n"
-                     "<TR><TH>Dec</TH><TD>{:s}</TD></TR>\n"
-                     "<TR><TH>Exposure Time (s)</TH><TD>{:s}</TD></TR>\n"
-                     "<TR><TH>Observation Midtime</TH><TD>{:s}</TD></TR>\n"
-                     "</TABLE>\n\n").format(
-                         filename,
-                         obsparam['telescope_instrument'],
-                         obsparam['telescope_keyword'],
-                         header[obsparam['object']],
-                         str(header[obsparam['ra']]),
-                         str(header[obsparam['dec']]),
-                         str(header[obsparam['exptime']]),
-                         str(Time(header['MIDTIMJD'], format='jd').iso),
+            # html = ("<script>\n"
+            #         "  function toggledisplay(elementID)\n"
+            #         "  {\n"
+            #         "  (function(style) {\n"
+            #         "  style.display = style.display === 'none' ? '' :"
+            #         "'none';\n"
+            #         "  })(document.getElementById(elementID).style);\n"
+            #         "  }\n"
+            #         "</script>\n\n")
+            html = ("<H1>{:s} Diagnostics</H1>"
+                    "<P><TABLE CLASS=\"gridtable\">\n"
+                    "<TR><TH>Telescope/Instrument</TH><TD>{:s} ({:s})</TD>"
+                    "</TR>\n"
+                    "<TR><TH>Target/Field Identifier</TH><TD>{:s}</TD>"
+                    "</TR>\n"
+                    "<TR><TH>RA</TH><TD>{:s}</TD></TR>\n"
+                    "<TR><TH>Dec</TH><TD>{:s}</TD></TR>\n"
+                    "<TR><TH>Exposure Time (s)</TH><TD>{:s}</TD></TR>\n"
+                    "<TR><TH>Observation Midtime</TH><TD>{:s}</TD></TR>\n"
+                    "</TABLE>\n\n").format(
+                filename,
+                obsparam['telescope_instrument'],
+                obsparam['telescope_keyword'],
+                header[obsparam['object']],
+                str(header[obsparam['ra']]),
+                str(header[obsparam['dec']]),
+                str(header[obsparam['exptime']]),
+                str(Time(header['MIDTIMJD'], format='jd').iso),
             )
 
             self.create_website('.diagnostics/{:s}.html'.format(filename),
@@ -471,11 +481,11 @@ class Registration_Diagnostics(Diagnostics_Html):
                 # update frame page
                 filename = framedata[0]
                 if filename in data['goodfits']:
-                    resultstring = ('<FONT COLOR="GREEN">Registered '
-                                    'successfully</FONT>')
+                    resultstring = ('<P><FONT COLOR="GREEN">Registration '
+                                    'successful</FONT></P>')
                 else:
-                    resultstring = ('<FONT COLOR="RED">Registration '
-                                    'faild</FONT>')
+                    resultstring = ('<P><FONT COLOR="RED">Registration '
+                                    'failed</FONT></P>')
 
                 framehtml = (
                     "<!-- Registration -->\n"
@@ -580,24 +590,40 @@ class Photometry_Diagnostics(Diagnostics_Html):
         fwhm_sig = [np.std(frame['catalog_data']['FWHM_IMAGE'])
                     for frame in extraction]
 
-        plt.title('Median PSF FWHM per Frame')
-        plt.xlabel('Minutes after {:s} UT'.format(
+        fig, ax = plt.subplots()
+
+        ax.set_title('Median PSF FWHM per Frame')
+        ax.set_xlabel('Minutes after {:s} UT'.format(
             Time(frame_midtimes.min(), format='jd',
                  out_subfmt='date_hm').iso))
-        plt.ylabel('Point Source FWHM (px)')
-        plt.scatter((frame_midtimes-frame_midtimes.min())*1440,
-                    fwhm, marker='o',
-                    color='black')
+        ax.set_ylabel('Point Source FWHM (px)')
+        ax.scatter((frame_midtimes-frame_midtimes.min())*1440,
+                   fwhm, marker='o',
+                   color='black')
         xrange = [plt.xlim()[0], plt.xlim()[1]]
-        plt.plot(xrange, [data['optimum_aprad']*2, data['optimum_aprad']*2],
-                 color='blue')
-        plt.xlim(xrange)
-        plt.ylim([0, max([data['optimum_aprad']*2+1, max(fwhm)])])
+        ax.plot(xrange, [data['optimum_aprad']*2, data['optimum_aprad']*2],
+                color='blue')
+        ax.set_xlim(xrange)
+        ax.set_ylim([0, max([data['optimum_aprad']*2+1, max(fwhm)])])
 
-        plt.grid()
-        plt.savefig(fwhm_filename, format='png')
-        plt.close()
+        ax.grid()
+        fig.savefig(fwhm_filename, format='png')
         data['fwhm_filename'] = fwhm_filename
+
+        # create html map
+        data['fwhm_map'] = ""
+        for i in range(len(extraction)):
+            x, y = ax.transData.transform_point(
+                [((frame_midtimes-frame_midtimes.min())*1440)[i],
+                 fwhm[i]])
+            filename = extraction[i]['fits_filename']
+            data['fwhm_map'] += (
+                '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
+                'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
+                    x, fig.bbox.height - y, 5,
+                    '.diagnostics/' + filename+'.html',
+                    '',
+                    filename, filename)
 
     def add_photometry(self, data, extraction):
         """
@@ -651,7 +677,11 @@ class Photometry_Diagnostics(Diagnostics_Html):
         html += "</TABLE>\n"
 
         html += "<P><IMG SRC=\"{:s}\">\n".format(data['growth_filename'])
-        html += "<IMG SRC=\"{:s}\">\n".format(data['fwhm_filename'])
+
+        html += "<IMG SRC=\"{:s}\" USEMAP=\"#FWHM\">\n".format(
+            data['fwhm_filename'])
+        html += "<MAP NAME=\"#FWHM\">\n{:s}</MAP>\n".format(
+            data['fwhm_map'])
 
         self.append_website(_pp_conf.index_filename, html,
                             replace_from=self.function_tag)
@@ -670,22 +700,36 @@ class Calibration_Diagnostics(Diagnostics_Html):
         zp = [dat['zp'] for dat in data['zeropoints']]
         zperr = [dat['zp_sig'] for dat in data['zeropoints']]
 
-        plt.plot()
-        plt.errorbar((times-times.min())*1440, zp, yerr=zperr, linestyle='',
-                     color='blue', marker='s', capsize=3)
-        plt.xlabel('Minutes after {:s} UT'.format(
+        fig, ax = plt.subplots()
+        ax.errorbar((times-times.min())*1440, zp, yerr=zperr, linestyle='',
+                    color='blue', marker='s', capsize=3)
+        ax.set_xlabel('Minutes after {:s} UT'.format(
             Time(times.min(), format='jd',
                  out_subfmt='date_hm').iso))
-        plt.ylabel(
+        ax.set_ylabel(
             '{:s}-Band Magnitude Zeropoints (mag)'.format(
                 data['filtername']))
-        plt.ylim([plt.ylim()[1], plt.ylim()[0]])
-        plt.grid()
-        plt.savefig('.diagnostics/zeropoints.png', format='png')
+        ax.set_ylim([ax.get_ylim()[1], ax.get_ylim()[0]])
+        ax.grid()
+        fig.savefig('.diagnostics/zeropoints.png', format='png')
         logging.info('zeropoint overview plot written to {:s}'.format(
             os.path.abspath('.diagnostics/zeropoints.png')))
-        plt.close()
         data['zpplot'] = 'zeropoints.png'
+
+        # create html map
+        data['zpplotmap'] = ""
+        for i in range(len(times)):
+            x, y = ax.transData.transform_point(
+                [((times-times.min())*1440)[i],
+                 [dat['zp'] for dat in data['zeropoints']][i]])
+            filename = data['zeropoints'][i]['filename'][:-4]+'fits'
+            data['zpplotmap'] += (
+                '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
+                'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
+                    x, fig.bbox.height - y, 5,
+                    '.diagnostics/' + filename+'.html',
+                    'calibration_overview',
+                    filename, filename)
 
     def phot_calibration_plot(self, data, idx):
         """produce curve-of-growth plot for each frame"""
@@ -985,8 +1029,10 @@ class Calibration_Diagnostics(Diagnostics_Html):
                              len(dat['match'][0][0]))
             html += "</TABLE></P>\n"
 
-            html += "<P><IMG SRC=\"{:s}\" ALT=\"Zeropoints\">\n".format(
+            html += "<P><IMG SRC=\"{:s}\" USEMAP=\"#Zeropoints\">\n".format(
                 '.diagnostics/'+data['zpplot'])
+            html += "<MAP NAME=\"#Zeropoints\">\n{:s}</MAP>\n".format(
+                data['zpplotmap'])
         else:
             html += ("Instrumental magnitudes are reported "
                      "(filter used: {:s})\n").format(
@@ -1002,43 +1048,72 @@ class Distill_Diagnostics(Diagnostics_Html):
 
     def lightcurve_plots(self, data):
         data['lightcurveplots'] = {}
+        data['lightcurveplots']['maps'] = {}
         for target in data['targetnames']:
 
             logging.info('create lightcurve plot for {:s}'.format(target))
 
             midtimes = np.array([dat[9][0] for dat in data[target]])
 
-            plt.plot()
-            plt.title(target.replace('_', ' '))
-            plt.xlabel('Minutes after {:s} UT'.format(
+            fig, ax = plt.subplots()
+            ax.set_title(target.replace('_', ' '))
+            ax.set_xlabel('Minutes after {:s} UT'.format(
                 Time(midtimes.min(), format='jd',
                      out_subfmt='date_hm').iso))
-            plt.ylabel('Magnitude')
-            plt.errorbar((midtimes-midtimes.min())*1440,
-                         [dat[7] for dat in data[target]],
-                         yerr=[dat[8] for dat in data[target]],
-                         linestyle='', color='red',
-                         marker='o', capsize=3)
-            plt.ylim([plt.ylim()[1], plt.ylim()[0]])
-            plt.xticklabels = [Time(t, format='jd').iso
-                               for t in plt.xticks()[0]]
-            plt.grid()
-            plt.savefig('.diagnostics/{:s}.png'.format(
+            ax.set_ylabel('Magnitude')
+            ax.errorbar((midtimes-midtimes.min())*1440,
+                        [dat[7] for dat in data[target]],
+                        yerr=[dat[8] for dat in data[target]],
+                        linestyle='', color='red',
+                        marker='o', capsize=3)
+            ax.set_ylim([ax.get_ylim()[1], ax.get_ylim()[0]])
+            ax.set_xticklabels = [Time(t, format='jd').iso
+                                  for t in plt.xticks()[0]]
+            ax.grid()
+
+            # def print_pixel_coords(event):
+            #     fig = event.canvas.figure
+            #     ax = fig.axes[0]
+            #     print(ax.transData.transform_point())
+            #     for i in range(28):
+            #         x, y = ax.transData.transform_point([i, i])
+            #         print(x, fig.bbox.height - y)
+
+            # fig.canvas.mpl_connect('draw_event', print_pixel_coords)
+            fig.savefig('.diagnostics/{:s}.png'.format(
                         target.translate(_pp_conf.target2filename)),
                         format='png')
             logging.info('lightcurve plot for {:s} written to {:s}'.format(
                 target, os.path.abspath('.diagnostics/{:s}.png'.format(
                     target.translate(_pp_conf.target2filename)))))
-            plt.close()
             data['lightcurveplots'][target] = ('.diagnostics/'
                                                '{:s}.png').format(
                 target.translate(_pp_conf.target2filename))
 
+            # create html map
+            data['lightcurveplots']['maps'][target] = ""
+            for i in range(len(midtimes)):
+                x, y = ax.transData.transform_point(
+                    [((midtimes-midtimes.min())*1440)[i],
+                     [dat[7] for dat in data[target]][i]])
+                data['lightcurveplots']['maps'][target] += (
+                    '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
+                    'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
+                        x, fig.bbox.height - y, 5,
+                        '.diagnostics/'+data[
+                            target][i][10][:-4]+'fits.html',
+                        target,
+                        data[target][i][10][:-4] + 'fits',
+                        data[target][i][10][:-4] + 'fits')
+
     def thumbnail_images(self, data):
         data['thumbnailplots'] = {}
+        data['thumbnailoverlays'] = {}
 
-        boxsize = 300  # thumbnail boxsize
         for target in data['targetnames']:
+
+            data['thumbnailplots'][target] = []
+            data['thumbnailoverlays'][target] = []
 
             if sys.version_info < (3, 0):
                 target = str(target)
@@ -1069,83 +1144,149 @@ class Distill_Diagnostics(Diagnostics_Html):
                                                True)
                 exp_x, exp_y = image_coords[0][0], image_coords[0][1]
 
-                # create margin around image allowing for any cropping
-                composite = np.zeros((hdulist[0].data.shape[0]+2*boxsize,
-                                      hdulist[0].data.shape[1]+2*boxsize))
+                # check if thumbnail area is close to image edge
+                if (exp_x < self.conf.thumbsize_px/2 or
+                    exp_x > (hdulist[0].data.shape[0] -
+                             self.conf.thumbsize_px/2) or
+                    exp_y < self.conf.thumbsize_px/2 or
+                        exp_y > (hdulist[0].data.shape[1] -
+                                 self.conf.thumbsize_px/2)):
+                    # create margin around image allowing for any cropping
+                    composite = np.ones((hdulist[0].data.shape[0] +
+                                         2*self.conf.thumbsize_px,
+                                         hdulist[0].data.shape[1] +
+                                         2*self.conf.thumbsize_px))*np.nan
+                    # insert image
+                    composite[
+                        self.conf.thumbsize_px:
+                        self.conf.thumbsize_px+hdulist[0].data.shape[0],
+                        self.conf.thumbsize_px:
+                        self.conf.thumbsize_px+hdulist[0].data.shape[1]] = (
+                            hdulist[0].data)
 
-                composite[boxsize:boxsize +
-                          hdulist[0].data.shape[0],
-                          boxsize:boxsize +
-                          hdulist[0].data.shape[1]] = hdulist[0].data
-
-                # extract thumbnail data accordingly
-                thumbdata = composite[int(boxsize+obj_y-boxsize/2):
-                                      int(boxsize+obj_y+boxsize/2),
-                                      int(boxsize+obj_x-boxsize/2):
-                                      int(boxsize+obj_x+boxsize/2)]
-
-                # run statistics over center of the frame around the target
-                if thumbdata.shape[0] > 0 and thumbdata.shape[1] > 0:
-                    norm = ImageNormalize(
-                        thumbdata, interval=ZScaleInterval(),
-                        stretch={'linear': LinearStretch(),
-                                 'log': LogStretch()}[
-                                     self.conf.image_stretch])
-
-                    # extract aperture radius
-                    if _pp_conf.photmode == 'APER':
-                        aprad = float(hdulist[0].header['APRAD'])
-
-                    # create plot
-                    fig = plt.figure()
-                    img = plt.imshow(thumbdata, cmap='gray',
-                                     origin='lower', norm=norm)
-                    # remove axes
-                    plt.axis('off')
-                    img.axes.get_xaxis().set_visible(False)
-                    img.axes.get_yaxis().set_visible(False)
-
-                    plt.annotate('{:s}\n{:5.3f}+-{:5.3f} mag'.format(
-                        fitsfilename, dat[7], dat[8]), (3, 10),
-                        color='white')
-
-                    # place aperture
-                    if _pp_conf.photmode == 'APER':
-                        targetpos = plt.Circle((boxsize/2, boxsize/2),
-                                               aprad, ec='red', fc='none',
-                                               linewidth=1)
-                    else:
-                        targetpos = plt.Rectangle(
-                            (boxsize/2-7, boxsize/2-7),
-                            15, 15, ec='red', fc='none',
-                            linewidth=1)
-                    plt.gca().add_patch(targetpos)
-
-                    # place expected position (if within thumbnail)
-                    if (abs(exp_x-obj_x) <= boxsize/2 and
-                            abs(exp_y-obj_y) <= boxsize/2):
-                        plt.scatter(exp_x-obj_x+boxsize/2,
-                                    exp_y-obj_y+boxsize/2,
-                                    marker='+', s=100, color='green')
-
-                    thumbfilename = ('.diagnostics/' +
-                                     target.translate(
-                                         _pp_conf.target2filename) + '_' +
-                                     fitsfilename[:fitsfilename.
-                                                  find('.fit')] +
-                                     '_thumb.png')
-                    plt.savefig(thumbfilename, format='png',
-                                bbox_inches='tight',
-                                pad_inches=0)
-                    plt.close()
-                    hdulist.close()
-                    data['thumbnailplots'][target].append((fitsfilename,
-                                                           thumbfilename))
+                    # extract thumbnail data accordingly
+                    thumbdata = composite[int(self.conf.thumbsize_px+obj_y -
+                                              self.conf.thumbsize_px/2):
+                                          int(self.conf.thumbsize_px+obj_y +
+                                              self.conf.thumbsize_px/2),
+                                          int(self.conf.thumbsize_px+obj_x -
+                                              self.conf.thumbsize_px/2):
+                                          int(self.conf.thumbsize_px+obj_x +
+                                              self.conf.thumbsize_px/2)]
+                    del composite
                 else:
-                    logging.warning('cannot produce thumbnail image ' +
-                                    'for {:s} in frame {:s}').format(
-                                        target, dat[10])
-                    continue
+                    thumbdata = hdulist[0].data[
+                        int(obj_y-self.conf.thumbsize_px/2):
+                        int(obj_y+self.conf.thumbsize_px/2),
+                        int(obj_x-self.conf.thumbsize_px/2):
+                        int(obj_x+self.conf.thumbsize_px/2)]
+
+                norm = ImageNormalize(
+                    thumbdata, interval=ZScaleInterval(),
+                    stretch={'linear': LinearStretch(),
+                             'log': LogStretch()}[
+                                 self.conf.image_stretch])
+
+                # create plot
+                fig = plt.figure(figsize=(4, 4))
+                img = plt.imshow(thumbdata, cmap='gray',
+                                 origin='lower', norm=norm)
+                # remove axes
+                plt.axis('off')
+                img.axes.get_xaxis().set_visible(False)
+                img.axes.get_yaxis().set_visible(False)
+
+                thumbfilename = ('.diagnostics/' +
+                                 target.translate(
+                                     _pp_conf.target2filename) + '_' +
+                                 fitsfilename[:fitsfilename.
+                                              find('.fit')] +
+                                 '_thumb.png')
+
+                plt.savefig(thumbfilename, format='png',
+                            bbox_inches='tight',
+                            pad_inches=0)
+                plt.close()
+
+                # create overlay
+                fig = plt.figure(figsize=(4, 4))
+                img = plt.imshow(np.ones((self.conf.thumbsize_px,
+                                          self.conf.thumbsize_px))*np.nan,
+                                 origin='lower')
+
+                # remove axes
+                plt.axis('off')
+                img.axes.get_xaxis().set_visible(False)
+                img.axes.get_yaxis().set_visible(False)
+
+                # add image filename
+                plt.annotate('{:s}'.format(fitsfilename), (3, 5),
+                             color='white', fontsize=12)
+                # add target name
+                plt.annotate('{:s}'.format(target.replace('_', ' ')),
+                             (3, self.conf.thumbsize_px-10),
+                             color='white', fontsize=12)
+                # add scales
+                pixelscales = (np.fabs(w.pixel_scale_matrix[0][0])*3600,
+                               np.fabs(w.pixel_scale_matrix[1][1])*3600)
+                plt.plot([self.conf.thumbsize_px-3,
+                          self.conf.thumbsize_px-3],
+                         [3, 3+self.conf.thumb_scalelength/pixelscales[1]],
+                         color='white')
+                plt.plot([self.conf.thumbsize_px-3,
+                          self.conf.thumbsize_px-3 -
+                          self.conf.thumb_scalelength/pixelscales[0]],
+                         [3, 3],
+                         color='white')
+                plt.annotate('10\"',
+                             xy=(self.conf.thumbsize_px-3 -
+                                 0.5*self.conf.thumb_scalelength /
+                                 pixelscales[0],
+                                 3+0.5*self.conf.thumb_scalelength /
+                                 pixelscales[1]),
+                             color='white', fontsize=12,
+                             horizontalalignment='center',
+                             verticalalignment='center')
+                # add compass?
+
+                # place aperture
+                if _pp_conf.photmode == 'APER':
+                    aprad = float(hdulist[0].header['APRAD'])
+                    targetpos = plt.Circle((self.conf.thumbsize_px/2,
+                                            self.conf.thumbsize_px/2),
+                                           aprad, ec='red', fc='none',
+                                           linewidth=1)
+                else:
+                    targetpos = plt.Rectangle(
+                        (self.conf.thumbsize_px/2-7,
+                         self.conf.thumbsize_px/2-7),
+                        15, 15, ec='red', fc='none',
+                        linewidth=1)
+                plt.gca().add_patch(targetpos)
+
+                # place expected position (if within thumbnail)
+                if (abs(exp_x-obj_x) <= self.conf.thumbsize_px/2 and
+                        abs(exp_y-obj_y) <= self.conf.thumbsize_px/2):
+                    plt.scatter(exp_x-obj_x+self.conf.thumbsize_px/2,
+                                exp_y-obj_y+self.conf.thumbsize_px/2,
+                                marker='x', s=70, color='cornflowerblue')
+
+                thumbfileoverlay = ('.diagnostics/' +
+                                    target.translate(
+                                        _pp_conf.target2filename) + '_' +
+                                    fitsfilename[:fitsfilename.
+                                                 find('.fit')] +
+                                    '_thumb_overlay.png')
+
+                plt.savefig(thumbfileoverlay, format='png',
+                            bbox_inches='tight', transparent=True,
+                            pad_inches=0)
+                plt.close()
+                hdulist.close()
+                data['thumbnailplots'][target].append((fitsfilename,
+                                                       thumbfilename))
+                data['thumbnailoverlays'][target].append((fitsfilename,
+                                                          thumbfileoverlay))
 
     def target_animations(self, data):
         data['gifs'] = {}
@@ -1172,55 +1313,6 @@ class Distill_Diagnostics(Diagnostics_Html):
             data['gifs'][target] = '.diagnostics/' + gif_filename
             os.chdir(root)
 
-    def add_frame_report(self, data):
-        data['resultswebsites'] = {}
-        for target in data['targetnames']:
-
-            if sys.version_info < (3, 0):
-                target = str(target)
-
-            html = "<H2>{:s} - Photometric Results</H2>\n".format(
-                target)
-            html += "<P><IMG SRC=\"{:s}\">\n".format(
-                data['lightcurveplots'][target].split(
-                    '.diagnostics/')[1])
-            html += "<IMG SRC=\"{:s}\">\n".format(
-                data['gifs'][target].split('.diagnostics/')[1])
-
-            # create summary table
-            html += "<TABLE CLASS=\"gridtable\">\n<TR>\n"
-            html += ("<TH>Filename</TH><TH>Julian Date</TH>"
-                     "<TH>Target (mag)</TH>"
-                     "<TH>sigma (mag)</TH><TH>Target RA (deg)</TH>"
-                     "<TH>Target Dec (deg)</TH><TH>RA Offset (\")</TH>"
-                     "<TH>Dec Offset (\")</TH>\n</TR>\n")
-            for dat in data[target]:
-                html += ("<TR><TD><A HREF=\"#{:s}\">{:s}</A></TD>"
-                         "<TD>{:15.7f}</TD><TD>{:7.4f}</TD>"
-                         "<TD>{:6.4f}</TD><TD>{:13.8f}</TD>"
-                         "<TD>{:+13.8f}</TD><TD>{:5.2f}</TD>"
-                         "<TD>{:5.2f}</TD>\n</TR>\n").format(
-                             dat[10], dat[10], dat[9][0],
-                             dat[7], dat[8], dat[3], dat[4],
-                             ((dat[1]-dat[3])*3600.),
-                             ((dat[2]-dat[4])*3600.))
-            html += "</TABLE>\n"
-
-            # plot individual thumbnails
-            html += "<H3>Thumbnails</H3>\n"
-            for idx, plts in enumerate(data['thumbnailplots'][target]):
-                html += ("<P>{:s}<IMG ID=\"{:s}\" "
-                         "SRC=\"{:s}\">\n").format(
-                             plts[0],
-                             data[target][idx][10],
-                             plts[1].split('.diagnostics/')[1])
-            filename = ('.diagnostics/' +
-                        target.translate(
-                            _pp_conf.target2filename) +
-                        '_' + 'results.html')
-            self.create_website(filename, html)
-            data['resultswebsites'][target] = filename
-
     def add_results(self, data, imagestretch='linear'):
         """
         add results to website
@@ -1232,21 +1324,118 @@ class Distill_Diagnostics(Diagnostics_Html):
 
         self.target_animations(data)
 
-        self.add_frame_report(data)
+        # self.add_frame_report(data)
 
         html = self.function_tag+'\n'
         html += "<H2>Photometry Results</H2>\n"
-        html += ("<P>photometric data obtained for {:d} "
-                 "object(s): \n").format(
-                     len(data['targetnames']))
-        for target in data['targetnames']:
-            print(target)
-            html += "<BR><A HREF=\"{:s}\">{:s}</A>\n".format(
-                data['resultswebsites'][target], target)
-        for target in data['targetnames']:
-            html += "<P><IMG SRC=\"{:s}\">\n".format(
-                data['lightcurveplots'][target])
-            html += "<IMG SRC=\"{:s}\">\n".format(data['gifs'][target])
+
+        for idx, target in enumerate(data['targetnames']):
+            html += ("<A HREF=\"#{:s}\" "
+                     "ONCLICK=\"toggledisplay"
+                     "('{:s}');\">"
+                     "<H3>{:s}</H3></A>\n"
+                     "<DIV ID=\"{:s}\" "
+                     "STYLE=\"display: none\"\>\n"
+                     "<TABLE BORDER=\"0\"><TR><TD>\n"
+                     "<IMG SRC=\"{:s}\" USEMAP=\"#{:s}\">\n"
+                     "<MAP NAME=\"{:s}\">\n{:s}</MAP>\n\n</TD>\n"
+                     "<TD><IMG SRC=\"{:s}\" \></TD>"
+                     "</TR></TABLE>\n</DIV>\n").format(
+                         target, target,
+                         target.replace('_', ' '), target,
+                         data['lightcurveplots'][target],
+                         target, target,
+                         data['lightcurveplots']['maps'][target],
+                         data['gifs'][target])
+
+            # update framepages
+            for fidx, framedat in enumerate(data[target]):
+                fitsfilename = framedat[10][:-4]+'fits'
+
+                # identify next/previous frame in cyclical
+                # data['targetframes'] list
+                previousframe = data['targetframes'][target][
+                    (np.where(np.array(data['targetframes'][target]) ==
+                              fitsfilename)[0][0]-1) %
+                    len(data['targetframes'][target])]
+                nextframe = data['targetframes'][target][
+                    (np.where(np.array(data['targetframes'][target]) ==
+                              fitsfilename)[0][0]+1) %
+                    len(data['targetframes'][target])]
+
+                assert (data['thumbnailplots'][target][fidx][0].strip() ==
+                        fitsfilename.strip())
+                framehtml = ("<!-- Results {:s} -->\n"
+                             "<A HREF=\"#{:s}\" "
+                             "ONCLICK=\"toggledisplay"
+                             "('{:s}');\">"
+                             "<H1>{:s}  Photometry</H1></A>\n"
+                             "<DIV ID=\"{:s}\"\>\n"
+                             "<TABLE BORDER=\"0\"><TR><TD>"
+                             "<TABLE CLASS=\"gridtable\">\n"
+                             "<TR><TH>Apparent Magnitude</TH>"
+                             "<TD>{:.2f} +- {:.2f}</TD></TR>\n"
+                             "<TR><TH>Target RA (deg)</TH>"
+                             "<TD>{:7.5f}</TD></TR>\n"
+                             "<TR><TH>Target Dec (deg)</TH>"
+                             "<TD>{:6.4f}</TD></TR>\n"
+                             "<TR><TH>RA Offset from Prediction (\")</TH>"
+                             "<TD>{:.2f}</TD></TR>\n"
+                             "<TR><TH>Dec Offset from Prediction (\")</TH>"
+                             "<TD>{:.2f}</TD></TR>\n"
+                             "<TH>Target Source Flag</TH>"
+                             "<TD>{:d}</TD></TR>\n"
+                             "</TABLE>\n"
+                             "<P ALIGN=\"center\">"
+                             "<BUTTON ONCLICK=\""
+                             "window.open('{:s}', 'targetWindow', "
+                             "'height=376,width=376,status=no,location=no,"
+                             "scrollbars=no,toolbar=no,menubar=no')\">"
+                             "open animation in new window</BUTTON></P>"
+                             "<P ALIGN=\"center\">"
+                             "<BUTTON ONCLICK=\""
+                             "window.open('{:s}', 'targetWindow', "
+                             "'height=480,width=640,status=no,location=no,"
+                             "scrollbars=no,toolbar=no,menubar=no')\">"
+                             "open lightcurve in new window</BUTTON></P>"
+                             "<P ALIGN=\"center\">"
+                             "<BUTTON ONCLICK=\"toggledisplay"
+                             "('{:s}');\">toggle overlay</BUTTON></P>"
+                             "</TD><TD>\n"
+                             "<DIV CLASS=\"parent_image\">\n"
+                             "<IMG CLASS=\"back_image\" SRC=\"{:s}\" />\n"
+                             "<IMG ID=\"overlay_{:s}\" "
+                             "CLASS=\"front_image\" SRC=\"{:s}\" />\n"
+                             "</DIV>\n"
+                             "<DIV ALIGN=\"center\">"
+                             "<A HREF=\"{:s}#{:s}\">"
+                             "&laquo; previous frame &laquo;</A> | "
+                             "<A HREF=\"{:s}#{:s}\">"
+                             "&raquo; next frame &raquo;</A></DIV>\n"
+                             "</TD></TR></TABLE></DIV>\n").format(
+                                 target, target, target,
+                                 target.replace('_', ' '), target,
+                                 framedat[7], framedat[8],
+                                 framedat[3], framedat[4],
+                                 (framedat[1]-framedat[3])*3600,
+                                 (framedat[2]-framedat[4])*3600,
+                                 int(framedat[14]),
+                                 data['gifs'][target].split('/')[-1],
+                                 data['lightcurveplots'][
+                                     target].split('/')[-1],
+                                 'overlay_'+target,
+                                 data['thumbnailplots'][
+                                     target][fidx][1].split('/')[-1],
+                                 target,
+                                 data['thumbnailoverlays'][
+                                     target][fidx][1].split('/')[-1],
+                                 previousframe+'.html', target,
+                                 nextframe+'.html', target)
+
+                self.append_website(
+                    '.diagnostics/{:s}.html'.format(fitsfilename),
+                    framehtml,
+                    replace_from='<!-- Results {:s} -->'.format(target))
 
         self.append_website(_pp_conf.index_filename, html,
                             replace_from=self.function_tag)
