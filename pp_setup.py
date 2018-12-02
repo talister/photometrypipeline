@@ -80,12 +80,29 @@ class ConfDistill(Conf):
 class ConfDiagnostics(Conf):
     """configuration setup for diagnostics"""
 
-    # general settings
+    # path and file settings
+    # diagnostics_path = '{{run_base}}.diagnostics'  # output path
+    diagnostics_path = '/tmp/pp/'  # .diagnostics'  # output path
+    # each {{element}} will be replaced as detailed below and joined
+    # appropriately to the fixed path elements:
+    # {{run_base}}: base directory of current pp run
+    # {{date}}: date in YYYYMMDD
+    image_file_format = 'png'  # output format for images and plots
+
+    # general image settings
     image_stretch = 'linear'  # could be 'linear', 'log', 'power'
+    image_size_lg_px = 1000  # cutout size for large image in px
+    image_size_lg_in = 5     # image size for large image in inches
+    image_size_thumb_px = 200  # cutout size for thumbnail in px
+    image_size_thumb_in = 2.5     # image size for thumbnail in inches
+    image_dpi = 150  # image output dpi
+    overlay_lg_linewidth = 0.5  # linewidth in overlays for large images
+
+    # general plot settings
+    plot_dpi = 100  # plot output dpi
 
     # presentation of data overview
     show_preview_image = True
-
     individual_frame_pages = True
 
     # presentation of registration results
@@ -99,9 +116,13 @@ class ConfDiagnostics(Conf):
     show_calibration_star_map = True  # present map of calibration stars
     show_calibration_star_table = True  # present table of calibration stars
 
-    # target thumbnail properties
-    thumbsize_px = 200  # edge length of thumbnail cutout
+    # target thumbnail overlay properties
     thumb_scalelength = 10  # length of pixelscale indicators in arcsec
+    thumb_fontsize = 8  # fontsize for text in thumbnail overlay
+    thumb_linewidth = 0.3  # linewidth for lines on overlay
+    thumb_predicted_pos_marker = 'x'  # marker style for predicted position
+    thumb_predicted_pos_size = 50  # marker size for predicted position
+    thumb_predicted_pos_color = 'cornflowerblue'  # marker color
 
 
 class ConfCombine(Conf):

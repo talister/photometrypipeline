@@ -43,7 +43,8 @@ except ImportError:
 try:
     from skimage.transform import resize
 except ImportError:
-    print('Module skimage not found. Please install with: pip install skimage')
+    print('Module skimage not found. Please install with: pip install '
+          'skimage')
     sys.exit()
 
 # pipeline-specific modules
@@ -58,20 +59,12 @@ logging.basicConfig(filename=_pp_conf.log_filename,
                     datefmt=_pp_conf.log_datefmt)
 
 
-# diagnostics guidelines
-#
-# - diagnostics.html goes into the data directory
-# - all supplementary data and website go into diagroot (see _pp_init.py)
-# - if there are sub-directories with data, create diagnostics.html in
-#   each directory with data; summary.html links to other directories
-###
-
 class Diagnostics_Html():
+    """basis class for building pp html diagnostic output"""
 
     from pp_setup import confdiagnostics as conf
 
-    def create_website(self, filename, content='',
-                       content_dir='.diagnostics'):
+    def create_website(self, filename, content=''):
         """
         create empty website for diagnostics output
         """
@@ -79,19 +72,19 @@ class Diagnostics_Html():
         html = ("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'>\n"
                 "<HTML>\n"
                 "<HEAD>\n"
-                "  <TITLE>Photometry Pipeline - Diagnostics</TITLE>\n"
-                "  <LINK rel=\"stylesheet\" href=\"{:s}"
+                "<TITLE>Photometry Pipeline - Diagnostics</TITLE>\n"
+                "<LINK rel=\"stylesheet\" href=\"{:s}"
                 "diagnostics_stylesheet.css\">\n"
                 "</HEAD>\n"
                 "<BODY>\n"
                 "<script>\n"
-                "  function toggledisplay(elementID)\n"
-                "  {{\n"
-                "  (function(style) {{\n"
-                "  style.display = style.display === 'none' ? '' :"
+                "function toggledisplay(elementID)\n"
+                "{{\n"
+                "(function(style) {{\n"
+                "style.display = style.display === 'none' ? '' :"
                 "'none';\n"
-                "  }})(document.getElementById(elementID).style);\n"
-                "  }}\n"
+                "}})(document.getElementById(elementID).style);\n"
+                "}}\n"
                 "</script>\n\n"
                 "{:s}\n"
                 "</BODY>\n"
@@ -101,13 +94,13 @@ class Diagnostics_Html():
         outf.writelines(html)
         outf.close()
 
-    def append_website(self, filename, content, insert_at='</BODY>',
-                       replace_from='X?!do not replace anything!?X'):
-        """
-        append content to an existing website:
-        insert content before line that contains `insert_at`
-        replace lines between `replace_from` and `insert_at` (by
-        default, nothing is replaced)
+    def append_website(self, filename, content,
+                       replace_from='X?!do not replace anything!?X',
+                       keep_at='</BODY>',):
+        """append content to an existing website: replace content starting
+        at line containing `replace_from` until line containin `keep_at`;
+        by default, all content following `replace_from` is
+        replaced
         """
         # read existing code
         existing_html = open(filename, 'r').readlines()
@@ -119,13 +112,56 @@ class Diagnostics_Html():
             if replace_from in line:
                 delete = True
                 continue
-            if insert_at in line:
+            if keep_at in line:
                 outf.writelines(content)
                 delete = False
             if delete:
                 continue
             outf.writelines(line)
         outf.close()
+
+    def abort(self, where):
+        """
+        use this function to add information to index.html that the
+        pipeline crashed and where
+        """
+        logging.info('adding pipeline crash to diagnostics')
+
+        html = ("<P><FONT COLOR=\"RED\">Pipeline crashed "
+                "unexpectedly in module {:s}; refer to <A "
+                "HREF=\"{:s}\">log</A> "
+                "for additional information</FONT>\n").format(
+                    _pp_conf.log_filename, where)
+
+        self.append_website(_pp_conf.index_filename, html)
+        logging.info('pipeline crash added')
+
+    def path(self, date='now'):
+        """build absolute path for diagnostics output; date must be
+        astropy.time.Time object or string or int in the right format
+        (yyymmdd) if provided
+
+        """
+        path_str = self.conf.diagnostics_path
+
+        if '{{date}}' in path_str:
+            if date == 'now':
+                path_str = os.path.join(
+                    path_str.split('{{date}}')[0],
+                    Time.now().iso.replace('-', '').split()[0],
+                    path_str.split('{{date}}')[1])
+            elif isinstance(date, (str, int)):
+                path_str = os.path.join(
+                    path_str.split('{{date}}')[0],
+                    str(date),
+                    path_str.split('{{date}}')[1])
+        if '{{run_base}}' in path_str:
+            path_str = os.path.join(
+                path_str.split('{{run_base}}')[0],
+                os.getcwd(),
+                path_str.split('{{run_base}}')[1])
+
+        return os.path.abspath(path_str)
 
 
 class Prepare_Diagnostics(Diagnostics_Html):
@@ -163,7 +199,7 @@ class Prepare_Diagnostics(Diagnostics_Html):
 
             if self.conf.individual_frame_pages:
                 framename = "<A HREF=\"{:s}\">{:s}</A>".format(
-                    '.diagnostics/'+filename+'.html', filename)
+                    os.path.join(self.path(), filename+'.html'), filename)
                 self.frame_preview(filename)
 
                 # update frame page
@@ -174,9 +210,9 @@ class Prepare_Diagnostics(Diagnostics_Html):
                              "</A>\n"
                              "<IMG ID=\"quickview\" SRC=\"{:s}\" "
                              "STYLE=\"display: none\"\>\n\n").format(
-                    filename+'.png')
+                    filename+'.'+self.conf.image_file_format)
                 self.append_website(
-                    '.diagnostics/{:s}.html'.format(filename),
+                    os.path.join(self.path(), '{:s}.html'.format(filename)),
                     framehtml, replace_from='<!-- Quickview -->')
             else:
                 framename = filename
@@ -206,6 +242,8 @@ class Prepare_Diagnostics(Diagnostics_Html):
 
         html += '</TABLE>\n'
 
+        logging.info('data summary table created')
+
         return html
 
     def frame_preview(self, filename):
@@ -218,23 +256,20 @@ class Prepare_Diagnostics(Diagnostics_Html):
 
         # create frame image
         imgdat = hdulist[0].data
-        # clip extreme values
-        # imgdat = np.clip(imgdat, np.percentile(imgdat, 1),
-        #                  np.percentile(imgdat, 99))
-
         # normalize imgdat to pixel values 0 < px < 1
         imgdat = (imgdat - np.min(imgdat)) / np.max(imgdat)
-        # resize image larger than 1000px on one side
+        # resize image larger than lg_image_size_px on one side
         imgdat = resize(imgdat,
-                        (min(imgdat.shape[0], 1000),
-                         min(imgdat.shape[1], 1000)))
+                        (min(imgdat.shape[0], self.conf.image_size_lg_px),
+                         min(imgdat.shape[1], self.conf.image_size_lg_px)))
 
         norm = ImageNormalize(
             imgdat, interval=ZScaleInterval(),
             stretch={'linear': LinearStretch(),
                      'log': LogStretch()}[self.conf.image_stretch])
 
-        plt.figure(figsize=(5, 5))
+        plt.figure(figsize=(self.conf.image_size_lg_in,
+                            self.conf.image_size_lg_in))
 
         img = plt.imshow(imgdat, cmap='gray', norm=norm,
                          origin='lower')
@@ -243,30 +278,25 @@ class Prepare_Diagnostics(Diagnostics_Html):
         img.axes.get_xaxis().set_visible(False)
         img.axes.get_yaxis().set_visible(False)
 
-        framefilename = '.diagnostics/' + filename + '.png'
-        plt.savefig(framefilename, format='png', bbox_inches='tight',
-                    pad_inches=0, dpi=200)
+        framefilename = os.path.join(self.path(), filename + '.' +
+                                     self.conf.image_file_format)
+        plt.savefig(framefilename, format=self.conf.image_file_format,
+                    bbox_inches='tight',
+                    pad_inches=0, dpi=self.conf.image_dpi)
         logging.info('image preview for file {:s} written to {:s}'.format(
-            filename, os.path.abspath('.diagnostics/' + filename + '.png')))
+            filename, os.path.join(self.path(), filename + '.' +
+                                   self.conf.image_file_format)))
 
         plt.close()
         hdulist.close()
 
     def frame_pages(self, filenames, obsparam):
+        """build information page for each individual frame"""
 
         logging.info('setting up individual frame diagnostics report pages')
 
         for filename in filenames:
             header = fits.open(filename)[0].header
-            # html = ("<script>\n"
-            #         "  function toggledisplay(elementID)\n"
-            #         "  {\n"
-            #         "  (function(style) {\n"
-            #         "  style.display = style.display === 'none' ? '' :"
-            #         "'none';\n"
-            #         "  })(document.getElementById(elementID).style);\n"
-            #         "  }\n"
-            #         "</script>\n\n")
             html = ("<H1>{:s} Diagnostics</H1>"
                     "<P><TABLE CLASS=\"gridtable\">\n"
                     "<TR><TH>Telescope/Instrument</TH><TD>{:s} ({:s})</TD>"
@@ -288,12 +318,14 @@ class Prepare_Diagnostics(Diagnostics_Html):
                 str(Time(header['MIDTIMJD'], format='jd').iso),
             )
 
-            self.create_website('.diagnostics/{:s}.html'.format(filename),
-                                html)
+            self.create_website(
+                os.path.join(self.path(), '{:s}.html'.format(filename)),
+                html)
             logging.info(('diagnostics report page for file {:s} '
                           'written to {:s}').format(
                               filename,
-                              '.diagnostics/{:s}.html'.format(filename)))
+                              os.path.join(self.path(),
+                                           '{:s}.html'.format(filename))))
 
     def add_index(self, filenames, directory, obsparam):
         """
@@ -327,13 +359,15 @@ class Prepare_Diagnostics(Diagnostics_Html):
                     len(filenames),
                     raw_filtername,
                     translated_filtername,
-                    ('.diagnostics/' +
-                     _pp_conf.log_filename.split('.diagnostics/')[1]))
+                    os.path.join(self.path(),
+                                 _pp_conf.log_filename.split(
+                                     os.path.sep)[-1]))
 
         html += "<H3>Data Summary</H3>\n"
         html += self.frame_table(filenames, obsparam)
 
         self.create_website(_pp_conf.index_filename, html)
+        logging.info('frame table created')
 
 
 # registration results website
@@ -343,6 +377,7 @@ class Registration_Diagnostics(Diagnostics_Html):
     function_tag = "<!-- pp_register -->"
 
     def registration_table(self, data, extraction_data, obsparam):
+        """build overview table with astrometric registration results"""
 
         logging.info('creating image registration overview table')
 
@@ -355,7 +390,8 @@ class Registration_Diagnostics(Diagnostics_Html):
                 "<TH>&chi;<SUP>2</SUP><SUB>Internal</SUB></TH>\n</TR>\n")
 
         for dat in data['fitresults']:
-            framefilename = '.diagnostics/{:s}.html'.format(dat[0])
+            framefilename = os.path.join(self.path(),
+                                         '{:s}.html'.format(dat[0]))
             filename = '<A HREF=\"{:s}\">{:s}</A>'.format(
                 framefilename, dat[0])
 
@@ -381,11 +417,14 @@ class Registration_Diagnostics(Diagnostics_Html):
                  "catalog and the respective frame as provided by SCAMP."
                  "</P>\n")
 
+        logging.info('image registration overview table created')
         return html
 
     def registration_maps(self, data, extraction_data, obsparam):
+        """build overlays for image maps indicating astrometric reference
+        stars"""
 
-        logging.info('create registration maps with reference stars')
+        logging.info('create registration overlays with reference stars')
 
         # load reference catalog
         refcat = catalog(data['catalog'])
@@ -394,13 +433,17 @@ class Registration_Diagnostics(Diagnostics_Html):
                 refcat.read_ldac(filename)
                 break
 
-        # create frame images
+        # create overlays
         for dat in extraction_data:
-            framefilename = '.diagnostics/{:s}_astrometry.png'.format(
-                dat['fits_filename'])
+            framefilename = os.path.join(self.path(),
+                                         '{:s}_astrometry.{:s}'.format(
+                                             dat['fits_filename'],
+                                             self.conf.image_file_format))
             imgdat = fits.open(dat['fits_filename'],
                                ignore_missing_end=True)[0].data
-            resize_factor = min(1., 1000./np.max(imgdat.shape))
+            resize_factor = min(
+                1.,
+                self.conf.image_size_lg_px/np.max(imgdat.shape))
 
             header = fits.open(dat['fits_filename'],
                                ignore_missing_end=True)[0].header
@@ -413,9 +456,12 @@ class Registration_Diagnostics(Diagnostics_Html):
                    'EQUINOX' in key:
                     header[key] = float(val)
 
-            plt.figure(figsize=(5, 5))
+            plt.figure(figsize=(self.conf.image_size_lg_in,
+                                self.conf.image_size_lg_in))
             # create fake image to ensure image dimensions and margins
-            img = plt.imshow(np.ones((1000, 1000))*np.nan, origin='lower')
+            img = plt.imshow(np.ones((self.conf.image_size_lg_px,
+                                      self.conf.image_size_lg_px))*np.nan,
+                             origin='lower')
 
             # remove axes
             plt.axis('off')
@@ -436,7 +482,8 @@ class Registration_Diagnostics(Diagnostics_Html):
                     plt.scatter([c[0]*resize_factor for c in img_coo],
                                 [c[1]*resize_factor for c in img_coo],
                                 s=5, marker='o', edgecolors='red',
-                                linewidth=0.3, facecolor='none')
+                                linewidth=self.conf.overlay_lg_linewidth,
+                                facecolor='none')
                 except astropy.wcs._wcs.InvalidTransformError:
                     logging.error('could not plot reference sources due to '
                                   'astropy.wcs._wcs.InvalidTransformError; '
@@ -444,17 +491,22 @@ class Registration_Diagnostics(Diagnostics_Html):
                                   'parameters.')
 
             plt.savefig(framefilename, bbox_inches='tight',
-                        pad_inches=0, dpi=200, transparent=True)
+                        pad_inches=0, dpi=self.conf.image_dpi,
+                        transparent=True)
             logging.info(('registration map image file for image {:s} '
                           'written to {:s}').format(
                               filename, os.path.abspath(framefilename)))
 
             plt.close()
 
+        logging.info('create registration overlays with reference stars')
+
     def add_registration(self, data, extraction_data):
         """
         add registration results to website
         """
+        logging.info('adding registration information')
+
         obsparam = extraction_data[0]['parameters']['obsparam']
 
         # update index.html
@@ -513,13 +565,16 @@ class Registration_Diagnostics(Diagnostics_Html):
                         filename, framedata[1], framedata[2], framedata[3],
                         framedata[4], framedata[5], framedata[6],
                         resultstring,
-                        filename+'.png', filename+"_astrometry.png")
+                        filename+'.'+self.conf.image_file_format,
+                        filename+"_astrometry."+self.conf.image_file_format)
                 self.append_website(
-                    '.diagnostics/{:s}.html'.format(filename),
+                    os.path.join(self.path(), '{:s}.html'.format(filename)),
                     framehtml, replace_from='<!-- Registration -->')
 
         self.append_website(_pp_conf.index_filename, html,
                             replace_from=self.function_tag)
+
+        logging.info('registration information added')
 
 
 class Photometry_Diagnostics(Diagnostics_Html):
@@ -527,8 +582,13 @@ class Photometry_Diagnostics(Diagnostics_Html):
     function_tag = "<!-- pp_photometry -->"
 
     def curve_of_growth_plot(self, data):
+        """ create curve of growth plot"""
+
+        logging.info('create curve-of-growth plot')
+
         parameters = data['parameters']
-        growth_filename = '.diagnostics/curve_of_growth.png'
+        growth_filename = os.path.join(self.path(), 'curve_of_growth.' +
+                                       self.conf.image_file_format)
 
         f, (ax1, ax2) = plt.subplots(2, sharex=True)
 
@@ -577,12 +637,20 @@ class Photometry_Diagnostics(Diagnostics_Html):
                  linewidth=2, color='blue')
         ax2.grid()
         ax2.set_xlabel('Aperture Radius (px)')
-        plt.savefig(growth_filename, format='png')
+        plt.savefig(growth_filename, format=self.conf.image_file_format,
+                    dpi=self.conf.plot_dpi)
         plt.close()
         data['growth_filename'] = growth_filename
 
+        logging.info('curve-of-growth plot created')
+
     def fwhm_vs_time_plot(self, extraction, data):
-        fwhm_filename = '.diagnostics/fwhm.png'
+        """create fwhm plot"""
+
+        logging.info('create FWHM plot')
+
+        fwhm_filename = os.path.join(self.path(),
+                                     'fwhm.'+self.conf.image_file_format)
 
         frame_midtimes = np.array([frame['time'] for frame in extraction])
         fwhm = [np.median(frame['catalog_data']['FWHM_IMAGE'])
@@ -607,7 +675,8 @@ class Photometry_Diagnostics(Diagnostics_Html):
         ax.set_ylim([0, max([data['optimum_aprad']*2+1, max(fwhm)])])
 
         ax.grid()
-        fig.savefig(fwhm_filename, format='png')
+        fig.savefig(fwhm_filename, dpi=self.conf.plot_dpi,
+                    format=self.conf.image_file_format)
         data['fwhm_filename'] = fwhm_filename
 
         # create html map
@@ -621,14 +690,18 @@ class Photometry_Diagnostics(Diagnostics_Html):
                 '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
                 'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
                     x, fig.bbox.height - y, 5,
-                    '.diagnostics/' + filename+'.html',
+                    os.path.join(self.path(), filename+'.html'),
                     '',
                     filename, filename)
+
+        logging.info('FWHM plot created')
 
     def add_photometry(self, data, extraction):
         """
         add photometry results to website
         """
+        logging.info('adding photometry information')
+
         # create curve-of-growth plot
         self.curve_of_growth_plot(data)
 
@@ -675,9 +748,7 @@ class Photometry_Diagnostics(Diagnostics_Html):
             )
 
         html += "</TABLE>\n"
-
         html += "<P><IMG SRC=\"{:s}\">\n".format(data['growth_filename'])
-
         html += "<IMG SRC=\"{:s}\" USEMAP=\"#FWHM\">\n".format(
             data['fwhm_filename'])
         html += "<MAP NAME=\"#FWHM\">\n{:s}</MAP>\n".format(
@@ -685,6 +756,7 @@ class Photometry_Diagnostics(Diagnostics_Html):
 
         self.append_website(_pp_conf.index_filename, html,
                             replace_from=self.function_tag)
+        logging.info('photometry information added')
 
 
 class Calibration_Diagnostics(Diagnostics_Html):
@@ -711,10 +783,14 @@ class Calibration_Diagnostics(Diagnostics_Html):
                 data['filtername']))
         ax.set_ylim([ax.get_ylim()[1], ax.get_ylim()[0]])
         ax.grid()
-        fig.savefig('.diagnostics/zeropoints.png', format='png')
+        fig.savefig(os.path.join(self.path(),
+                                 'zeropoints.'+self.conf.image_file_format),
+                    format=self.conf.image_file_format,
+                    dpi=self.conf.plot_dpi)
         logging.info('zeropoint overview plot written to {:s}'.format(
-            os.path.abspath('.diagnostics/zeropoints.png')))
-        data['zpplot'] = 'zeropoints.png'
+            os.path.abspath(os.path.join(self.path(), 'zeropoints.' +
+                                         self.conf.image_file_format))))
+        data['zpplot'] = 'zeropoints.' + self.conf.image_file_format
 
         # create html map
         data['zpplotmap'] = ""
@@ -727,12 +803,15 @@ class Calibration_Diagnostics(Diagnostics_Html):
                 '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
                 'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
                     x, fig.bbox.height - y, 5,
-                    '.diagnostics/' + filename+'.html',
+                    os.path.join(self.path(), filename+'.html'),
                     'calibration_overview',
                     filename, filename)
+        logging.info('zeropoint overview plot created')
 
     def phot_calibration_plot(self, data, idx):
-        """produce curve-of-growth plot for each frame"""
+        """produce diagnostic plot for each frame"""
+
+        logging.info('create photometric calibration overview plot')
 
         f, (ax1, ax3) = plt.subplots(2)
         plt.subplots_adjust(hspace=0.3)
@@ -767,6 +846,7 @@ class Calibration_Diagnostics(Diagnostics_Html):
                  color='blue')
         ax2.set_ylabel(r'reduced $\chi^2$', fontdict={'color': 'blue'})
         ax2.set_yscale('log')
+        ax2.plot([min(x), max(x)], [1, 1], linestyle='dotted', color='blue')
 
         # residual plot
         ax3.set_xlabel('Reference Star Magnitude')
@@ -789,12 +869,19 @@ class Calibration_Diagnostics(Diagnostics_Html):
 
         ax3.grid(linestyle='--')
 
-        plotfilename = '.diagnostics/{:s}_photcal.png'.format(
-            data['catalogs'][idx].catalogname)
-        plt.savefig(plotfilename, format='png')
+        plotfilename = os.path.join(self.path(),
+                                    '{:s}_photcal.{:s}'.format(
+                                        data['catalogs'][idx].catalogname,
+                                        self.conf.image_file_format))
+        plt.savefig(plotfilename, dpi=self.conf.plot_dpi,
+                    format=self.conf.image_file_format)
         data['zeropoints'][idx]['plotfilename'] = plotfilename
+        logging.info('create photometric calibration overview plot')
 
     def calibration_raw_data_tables(self, dat):
+        """build table with photometric calibration raw data"""
+
+        logging.info('create calibration data table')
 
         html = "<TD><TABLE CLASS=\"gridtable\">\n<TR>\n"
         html += ("<TH>Idx</TH><TH>Source Name</TH><TH>RA</TH><TH>Dec</TH>"
@@ -824,43 +911,39 @@ class Calibration_Diagnostics(Diagnostics_Html):
                          dat['match'][0][0][idx])
         html += "</TABLE>\n"
 
+        logging.info('calibration data table created')
         return html
 
     def calibration_star_maps(self, dat):
         """create thumbnail images with calibration stars marked"""
 
+        logging.info('create calibration reference star overlay')
+
         fits_filename = (dat['filename'][:dat['filename'].find('.ldac')]
                          + '.fits')
+
         imgdat = fits.open(fits_filename,
                            ignore_missing_end=True)[0].data
-        resize_factor = min(1., 1000./np.max(imgdat.shape))
+        resize_factor = min(
+            1.,
+            self.conf.image_size_lg_px/np.max(imgdat.shape))
 
-        # normalize imgdat to pixel values 0 < px < 1
-        if np.min(imgdat) < 0:
-            imgdat = imgdat + np.min(imgdat)
-        if np.max(imgdat) > 1:
-            imgdat = imgdat / np.max(imgdat)
-
-        imgdat = resize(imgdat,
-                        (min(imgdat.shape[0], 1000),
-                         min(imgdat.shape[1], 1000)))
         header = fits.open(fits_filename,
                            ignore_missing_end=True)[0].header
 
-        norm = ImageNormalize(
-            imgdat, interval=ZScaleInterval(),
-            stretch={'linear': LinearStretch(),
-                     'log': LogStretch()}[self.conf.image_stretch])
-
         # turn relevant header keys into floats
+        # astropy.io.fits bug
         for key, val in list(header.items()):
             if 'CD1_' in key or 'CD2_' in key or \
                'CRVAL' in key or 'CRPIX' in key or \
                'EQUINOX' in key:
                 header[key] = float(val)
 
-        plt.figure(figsize=(4, 4))
-        img = plt.imshow(imgdat, cmap='gray', norm=norm,
+        plt.figure(figsize=(self.conf.image_size_lg_in,
+                            self.conf.image_size_lg_in))
+        # create fake image to ensure image dimensions and margins
+        img = plt.imshow(np.ones((self.conf.image_size_lg_px,
+                                  self.conf.image_size_lg_px))*np.nan,
                          origin='lower')
 
         # remove axes
@@ -894,17 +977,22 @@ class Calibration_Diagnostics(Diagnostics_Html):
                               'most likely unknown distortion '
                               'parameters.')
 
-        catframe = ('.diagnostics/{:s}.'
-                    'fits_reference_stars.png').format(
-            dat['filename'][:dat['filename'].find('.ldac')])
-        plt.savefig(catframe, format='png', bbox_inches='tight',
-                    pad_inches=0, dpi=200)
+        catframe = os.path.join(
+            self.path(),
+            '{:s}.fits_reference_stars.{:s}'.format(
+                dat['filename'][:dat['filename'].find('.ldac')],
+                self.conf.image_file_format))
+        plt.savefig(catframe, format=self.conf.image_file_format,
+                    bbox_inches='tight',
+                    pad_inches=0, dpi=self.conf.image_dpi, transparent=True)
         plt.close()
+        logging.info('calibration reference star overlay created')
 
     def add_calibration(self, data, instrumental=False):
         """
         wrapper to add calibration results to diagnostics website
         """
+        logging.info('adding photometric calibration information')
 
         html = self.function_tag+'\n'
         html += "<H2>Photometric Calibration</H2>\n"
@@ -935,7 +1023,8 @@ class Calibration_Diagnostics(Diagnostics_Html):
                 # update frame pages
                 if self.conf.individual_frame_pages:
                     framename = "<A HREF=\"{:s}\">{:s}</A>".format(
-                        '.diagnostics/'+dat['filename'][:-4]+'fits'+'.html',
+                        os.path.join(self.path(),
+                                     dat['filename'][:-4]+'fits.html'),
                         dat['filename'][:-4]+'fits')
 
                     framehtml = ("<!-- Calibration -->\n"
@@ -969,10 +1058,11 @@ class Calibration_Diagnostics(Diagnostics_Html):
                     framehtml += "</TABLE></P>\n"
 
                     # frame calibration data
-                    catframe = ('.diagnostics/{:s}.'
-                                'fits_reference_stars.png').format(
-                                    dat['filename'][:dat['filename'].find(
-                                        '.ldac')])
+                    catframe = os.path.join(
+                        self.path(),
+                        '{:s}.fits_reference_stars.{:s}'.format(
+                            dat['filename'][:dat['filename'].find('.ldac')],
+                            self.conf.image_file_format))
 
                     # build individual curve of growth plots
                     if self.conf.show_phot_calibration_plots:
@@ -984,7 +1074,7 @@ class Calibration_Diagnostics(Diagnostics_Html):
                             "<H3>Calibration Analysis</H3></A>\n"
                             "<DIV ID=\"calibration_plot\">\n"
                             "<P><IMG SRC={:s} \></DIV>\n").format(
-                            dat['plotfilename'].split('.diagnostics/')[1])
+                            dat['plotfilename'].split(os.path.sep)[-1])
 
                     # build individual catalog maps
                     if self.conf.show_calibration_star_map:
@@ -996,8 +1086,16 @@ class Calibration_Diagnostics(Diagnostics_Html):
                             "<H3>Calibration Map</H3></A>\n"
                             "<DIV ID=\"calibration_starmap\" "
                             "STYLE=\"display: none\"\>\n"
-                            "<P><IMG SRC={:s} \></DIV>\n").format(
-                            catframe.split('.diagnostics/')[1])
+                            "<DIV CLASS=\"parent_image\">\n"
+                            "<IMG CLASS=\"back_image\" SRC=\"{:s}\" />\n"
+                            "<IMG CLASS=\"front_image\" SRC=\"{:s}\" />\n"
+                            "</DIV>\n"
+                            #"<P><IMG SRC={:s} \>"
+                            "</DIV>\n").format(
+                                os.path.join(self.path(),
+                                             dat['filename'][:-4]+'fits.' +
+                                             self.conf.image_file_format),
+                                catframe.split(os.path.sep)[-1])
 
                     # build individual catalog data table websites
                     if self.conf.show_calibration_star_table:
@@ -1014,8 +1112,8 @@ class Calibration_Diagnostics(Diagnostics_Html):
                     framehtml += "</DIV>\n\n"
 
                     self.append_website(
-                        '.diagnostics/{:s}.html'.format(
-                            dat['filename'][:-4]+'fits'),
+                        os.path.join(self.path(), '{:s}.html'.format(
+                            dat['filename'][:-4]+'fits')),
                         framehtml, replace_from='<!-- Calibration -->')
 
                 else:
@@ -1030,7 +1128,7 @@ class Calibration_Diagnostics(Diagnostics_Html):
             html += "</TABLE></P>\n"
 
             html += "<P><IMG SRC=\"{:s}\" USEMAP=\"#Zeropoints\">\n".format(
-                '.diagnostics/'+data['zpplot'])
+                os.path.join(self.path(), data['zpplot']))
             html += "<MAP NAME=\"#Zeropoints\">\n{:s}</MAP>\n".format(
                 data['zpplotmap'])
         else:
@@ -1040,6 +1138,7 @@ class Calibration_Diagnostics(Diagnostics_Html):
 
         self.append_website(_pp_conf.index_filename, html,
                             replace_from=self.function_tag)
+        logging.info('photometric calibration information added')
 
 
 class Distill_Diagnostics(Diagnostics_Html):
@@ -1047,6 +1146,9 @@ class Distill_Diagnostics(Diagnostics_Html):
     function_tag = "<!-- pp_distill -->"
 
     def lightcurve_plots(self, data):
+        """build lightcurve plots for targets"""
+        logging.info('create lightcurve plots for all targets')
+
         data['lightcurveplots'] = {}
         data['lightcurveplots']['maps'] = {}
         for target in data['targetnames']:
@@ -1071,24 +1173,20 @@ class Distill_Diagnostics(Diagnostics_Html):
                                   for t in plt.xticks()[0]]
             ax.grid()
 
-            # def print_pixel_coords(event):
-            #     fig = event.canvas.figure
-            #     ax = fig.axes[0]
-            #     print(ax.transData.transform_point())
-            #     for i in range(28):
-            #         x, y = ax.transData.transform_point([i, i])
-            #         print(x, fig.bbox.height - y)
-
-            # fig.canvas.mpl_connect('draw_event', print_pixel_coords)
-            fig.savefig('.diagnostics/{:s}.png'.format(
-                        target.translate(_pp_conf.target2filename)),
-                        format='png')
+            fig.savefig(os.path.join(self.path(), '{:s}.{:s}'.format(
+                        target.translate(_pp_conf.target2filename),
+                        self.conf.image_file_format)),
+                        format=self.conf.image_file_format,
+                        dpi=self.conf.plot_dpi)
             logging.info('lightcurve plot for {:s} written to {:s}'.format(
-                target, os.path.abspath('.diagnostics/{:s}.png'.format(
-                    target.translate(_pp_conf.target2filename)))))
-            data['lightcurveplots'][target] = ('.diagnostics/'
-                                               '{:s}.png').format(
-                target.translate(_pp_conf.target2filename))
+                target, os.path.abspath(
+                    os.path.join(self.path(), '{:s}.{:s}'.format(
+                        target.translate(_pp_conf.target2filename),
+                        self.conf.image_file_format)))))
+            data['lightcurveplots'][target] = os.path.join(
+                self.path(), '{:s}.{:s}'.format(
+                    target.translate(_pp_conf.target2filename),
+                    self.conf.image_file_format))
 
             # create html map
             data['lightcurveplots']['maps'][target] = ""
@@ -1100,13 +1198,18 @@ class Distill_Diagnostics(Diagnostics_Html):
                     '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
                     'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
                         x, fig.bbox.height - y, 5,
-                        '.diagnostics/'+data[
-                            target][i][10][:-4]+'fits.html',
+                        os.path.join(self.path(), data[
+                            target][i][10][:-4]+'fits.html'),
                         target,
                         data[target][i][10][:-4] + 'fits',
                         data[target][i][10][:-4] + 'fits')
 
+        logging.info('lightcurve plots for all targets created')
+
     def thumbnail_images(self, data):
+        """build thumbnail images for each frame/target"""
+        logging.info('create thumbnail images and overlays for all targets')
+
         data['thumbnailplots'] = {}
         data['thumbnailoverlays'] = {}
 
@@ -1145,41 +1248,45 @@ class Distill_Diagnostics(Diagnostics_Html):
                 exp_x, exp_y = image_coords[0][0], image_coords[0][1]
 
                 # check if thumbnail area is close to image edge
-                if (exp_x < self.conf.thumbsize_px/2 or
+                if (exp_x < self.conf.image_size_thumb_px/2 or
                     exp_x > (hdulist[0].data.shape[0] -
-                             self.conf.thumbsize_px/2) or
-                    exp_y < self.conf.thumbsize_px/2 or
+                             self.conf.image_size_thumb_px/2) or
+                    exp_y < self.conf.image_size_thumb_px/2 or
                         exp_y > (hdulist[0].data.shape[1] -
-                                 self.conf.thumbsize_px/2)):
+                                 self.conf.image_size_thumb_px/2)):
                     # create margin around image allowing for any cropping
-                    composite = np.ones((hdulist[0].data.shape[0] +
-                                         2*self.conf.thumbsize_px,
-                                         hdulist[0].data.shape[1] +
-                                         2*self.conf.thumbsize_px))*np.nan
+                    composite = np.ones(
+                        (hdulist[0].data.shape[0] +
+                         2*self.conf.image_size_thumb_px,
+                         hdulist[0].data.shape[1] +
+                         2*self.conf.image_size_thumb_px))*np.nan
                     # insert image
                     composite[
-                        self.conf.thumbsize_px:
-                        self.conf.thumbsize_px+hdulist[0].data.shape[0],
-                        self.conf.thumbsize_px:
-                        self.conf.thumbsize_px+hdulist[0].data.shape[1]] = (
+                        self.conf.image_size_thumb_px:
+                        self.conf.image_size_thumb_px +
+                        hdulist[0].data.shape[0],
+                        self.conf.image_size_thumb_px:
+                        self.conf.image_size_thumb_px +
+                        hdulist[0].data.shape[1]] = (
                             hdulist[0].data)
 
                     # extract thumbnail data accordingly
-                    thumbdata = composite[int(self.conf.thumbsize_px+obj_y -
-                                              self.conf.thumbsize_px/2):
-                                          int(self.conf.thumbsize_px+obj_y +
-                                              self.conf.thumbsize_px/2),
-                                          int(self.conf.thumbsize_px+obj_x -
-                                              self.conf.thumbsize_px/2):
-                                          int(self.conf.thumbsize_px+obj_x +
-                                              self.conf.thumbsize_px/2)]
+                    thumbdata = composite[
+                        int(self.conf.image_size_thumb_px+obj_y -
+                            self.conf.image_size_thumb_px/2):
+                        int(self.conf.image_size_thumb_px+obj_y +
+                            self.conf.image_size_thumb_px/2),
+                        int(self.conf.image_size_thumb_px+obj_x -
+                            self.conf.image_size_thumb_px/2):
+                        int(self.conf.image_size_thumb_px+obj_x +
+                            self.conf.image_size_thumb_px/2)]
                     del composite
                 else:
                     thumbdata = hdulist[0].data[
-                        int(obj_y-self.conf.thumbsize_px/2):
-                        int(obj_y+self.conf.thumbsize_px/2),
-                        int(obj_x-self.conf.thumbsize_px/2):
-                        int(obj_x+self.conf.thumbsize_px/2)]
+                        int(obj_y-self.conf.image_size_thumb_px/2):
+                        int(obj_y+self.conf.image_size_thumb_px/2),
+                        int(obj_x-self.conf.image_size_thumb_px/2):
+                        int(obj_x+self.conf.image_size_thumb_px/2)]
 
                 norm = ImageNormalize(
                     thumbdata, interval=ZScaleInterval(),
@@ -1188,7 +1295,8 @@ class Distill_Diagnostics(Diagnostics_Html):
                                  self.conf.image_stretch])
 
                 # create plot
-                fig = plt.figure(figsize=(4, 4))
+                fig = plt.figure(figsize=(self.conf.image_size_thumb_in,
+                                          self.conf.image_size_thumb_in))
                 img = plt.imshow(thumbdata, cmap='gray',
                                  origin='lower', norm=norm)
                 # remove axes
@@ -1196,23 +1304,27 @@ class Distill_Diagnostics(Diagnostics_Html):
                 img.axes.get_xaxis().set_visible(False)
                 img.axes.get_yaxis().set_visible(False)
 
-                thumbfilename = ('.diagnostics/' +
-                                 target.translate(
-                                     _pp_conf.target2filename) + '_' +
-                                 fitsfilename[:fitsfilename.
-                                              find('.fit')] +
-                                 '_thumb.png')
+                thumbfilename = (
+                    os.path.join(self.path(), target.translate(
+                        _pp_conf.target2filename) + '_' +
+                        fitsfilename[:fitsfilename.
+                                     find('.fit')] +
+                        '_thumb.'+self.conf.image_file_format))
 
-                plt.savefig(thumbfilename, format='png',
+                plt.savefig(thumbfilename,
+                            format=self.conf.image_file_format,
                             bbox_inches='tight',
-                            pad_inches=0)
+                            pad_inches=0, dpi=self.conf.image_dpi)
                 plt.close()
 
                 # create overlay
-                fig = plt.figure(figsize=(4, 4))
-                img = plt.imshow(np.ones((self.conf.thumbsize_px,
-                                          self.conf.thumbsize_px))*np.nan,
-                                 origin='lower')
+
+                fig = plt.figure(figsize=(self.conf.image_size_thumb_in,
+                                          self.conf.image_size_thumb_in))
+                img = plt.imshow(
+                    np.ones((self.conf.image_size_thumb_px,
+                             self.conf.image_size_thumb_px))*np.nan,
+                    origin='lower')
 
                 # remove axes
                 plt.axis('off')
@@ -1221,30 +1333,33 @@ class Distill_Diagnostics(Diagnostics_Html):
 
                 # add image filename
                 plt.annotate('{:s}'.format(fitsfilename), (3, 5),
-                             color='white', fontsize=12)
+                             color='white',
+                             fontsize=self.conf.thumb_fontsize)
                 # add target name
                 plt.annotate('{:s}'.format(target.replace('_', ' ')),
-                             (3, self.conf.thumbsize_px-10),
-                             color='white', fontsize=12)
+                             (3, self.conf.image_size_thumb_px-10),
+                             color='white',
+                             fontsize=self.conf.thumb_fontsize)
                 # add scales
                 pixelscales = (np.fabs(w.pixel_scale_matrix[0][0])*3600,
                                np.fabs(w.pixel_scale_matrix[1][1])*3600)
-                plt.plot([self.conf.thumbsize_px-3,
-                          self.conf.thumbsize_px-3],
+                plt.plot([self.conf.image_size_thumb_px-3,
+                          self.conf.image_size_thumb_px-3],
                          [3, 3+self.conf.thumb_scalelength/pixelscales[1]],
                          color='white')
-                plt.plot([self.conf.thumbsize_px-3,
-                          self.conf.thumbsize_px-3 -
+                plt.plot([self.conf.image_size_thumb_px-3,
+                          self.conf.image_size_thumb_px-3 -
                           self.conf.thumb_scalelength/pixelscales[0]],
                          [3, 3],
                          color='white')
-                plt.annotate('10\"',
-                             xy=(self.conf.thumbsize_px-3 -
+                plt.annotate('{:d}\"'.format(self.conf.thumb_scalelength),
+                             xy=(self.conf.image_size_thumb_px-3 -
                                  0.5*self.conf.thumb_scalelength /
                                  pixelscales[0],
                                  3+0.5*self.conf.thumb_scalelength /
                                  pixelscales[1]),
-                             color='white', fontsize=12,
+                             color='white',
+                             fontsize=self.conf.thumb_fontsize,
                              horizontalalignment='center',
                              verticalalignment='center')
                 # add compass?
@@ -1252,43 +1367,53 @@ class Distill_Diagnostics(Diagnostics_Html):
                 # place aperture
                 if _pp_conf.photmode == 'APER':
                     aprad = float(hdulist[0].header['APRAD'])
-                    targetpos = plt.Circle((self.conf.thumbsize_px/2,
-                                            self.conf.thumbsize_px/2),
-                                           aprad, ec='red', fc='none',
-                                           linewidth=1)
+                    targetpos = plt.Circle(
+                        (self.conf.image_size_thumb_px/2,
+                         self.conf.image_size_thumb_px/2),
+                        aprad, ec='red', fc='none',
+                        linewidth=self.conf.thumb_linewidth)
                 else:
                     targetpos = plt.Rectangle(
-                        (self.conf.thumbsize_px/2-7,
-                         self.conf.thumbsize_px/2-7),
+                        (self.conf.image_size_thumb_px/2-7,
+                         self.conf.image_size_thumb_px/2-7),
                         15, 15, ec='red', fc='none',
-                        linewidth=1)
+                        linewidth=self.conf.thumb_linewidth)
                 plt.gca().add_patch(targetpos)
 
-                # place expected position (if within thumbnail)
-                if (abs(exp_x-obj_x) <= self.conf.thumbsize_px/2 and
-                        abs(exp_y-obj_y) <= self.conf.thumbsize_px/2):
-                    plt.scatter(exp_x-obj_x+self.conf.thumbsize_px/2,
-                                exp_y-obj_y+self.conf.thumbsize_px/2,
-                                marker='x', s=70, color='cornflowerblue')
+                # place predicted position (if within thumbnail)
+                if ((abs(exp_x-obj_x) <=
+                     self.conf.image_size_thumb_px/2) and
+                        (abs(exp_y-obj_y) <=
+                         self.conf.image_size_thumb_px/2)):
+                    plt.scatter(exp_x-obj_x+self.conf.image_size_thumb_px/2,
+                                exp_y-obj_y+self.conf.image_size_thumb_px/2,
+                                marker=self.conf.thumb_predicted_pos_marker,
+                                s=self.conf.thumb_predicted_pos_size,
+                                color=self.conf.thumb_predicted_pos_color)
 
-                thumbfileoverlay = ('.diagnostics/' +
-                                    target.translate(
-                                        _pp_conf.target2filename) + '_' +
-                                    fitsfilename[:fitsfilename.
-                                                 find('.fit')] +
-                                    '_thumb_overlay.png')
+                thumbfileoverlay = os.path.join(
+                    self.path(),
+                    target.translate(_pp_conf.target2filename) + '_' +
+                    fitsfilename[:fitsfilename.find('.fit')] +
+                    '_thumb_overlay.' + self.conf.image_file_format)
 
-                plt.savefig(thumbfileoverlay, format='png',
+                plt.savefig(thumbfileoverlay,
+                            format=self.conf.image_file_format,
                             bbox_inches='tight', transparent=True,
-                            pad_inches=0)
+                            pad_inches=0, dpi=self.conf.image_dpi)
                 plt.close()
                 hdulist.close()
                 data['thumbnailplots'][target].append((fitsfilename,
                                                        thumbfilename))
                 data['thumbnailoverlays'][target].append((fitsfilename,
                                                           thumbfileoverlay))
+        logging.info(('thumbnail images and overlays for all targets '
+                      'created'))
 
     def target_animations(self, data):
+        """assemble thumbnails to gif animations"""
+        logging.info('create target thumbnail animations')
+
         data['gifs'] = {}
 
         for target in data['targetnames']:
@@ -1301,8 +1426,9 @@ class Distill_Diagnostics(Diagnostics_Html):
             try:
                 convert = subprocess.Popen(
                     ['convert', '-delay', '50',
-                     ('{:s}*thumb.png'.format(target.translate(
-                         _pp_conf.target2filename))),
+                     ('{:s}*thumb.{:s}'.format(target.translate(
+                         _pp_conf.target2filename),
+                         self.conf.image_file_format)),
                      '-loop', '0',
                      ('%s' % gif_filename)])
 
@@ -1310,13 +1436,16 @@ class Distill_Diagnostics(Diagnostics_Html):
             except:
                 logging.warning('could not produce gif animation for '
                                 + 'target {:s}'.format(target))
-            data['gifs'][target] = '.diagnostics/' + gif_filename
+            data['gifs'][target] = os.path.join(self.path(), gif_filename)
             os.chdir(root)
+
+        logging.info('target thumbnail animations created')
 
     def add_results(self, data, imagestretch='linear'):
         """
         add results to website
         """
+        logging.info('adding distill results')
 
         self.lightcurve_plots(data)
 
@@ -1432,28 +1561,14 @@ class Distill_Diagnostics(Diagnostics_Html):
                                  previousframe+'.html', target,
                                  nextframe+'.html', target)
 
-                self.append_website(
-                    '.diagnostics/{:s}.html'.format(fitsfilename),
+                self.append_website(os.path.join(
+                    self.path(), '{:s}.html'.format(fitsfilename)),
                     framehtml,
                     replace_from='<!-- Results {:s} -->'.format(target))
 
         self.append_website(_pp_conf.index_filename, html,
                             replace_from=self.function_tag)
-
-
-def abort(where):
-    """
-    use this function to add information to index.html that the
-    pipeline crashed and where
-    """
-    html = ("<P><FONT COLOR=\"RED\">Pipeline crashed "
-            + "unexpectedly in module %s; refere to <A HREF=\"%s\">log</A> "
-            + "for additional information</FONT>\n") % (
-                _pp_conf.log_filename, where)
-
-    append_website(_pp_conf.index_filename, html)
-
-    return None
+        logging.info('distill results added')
 
 
 preparation = Prepare_Diagnostics()
