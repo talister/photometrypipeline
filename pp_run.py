@@ -72,20 +72,21 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     # increment pp process idx
     _pp_conf.pp_process_idx += 1
 
-    # reset diagnostics for this data set
-    _pp_conf.dataroot, _pp_conf.diagroot, \
-        _pp_conf.index_filename, _pp_conf.reg_filename, _pp_conf.cal_filename, \
-        _pp_conf.res_filename = _pp_conf.setup_diagnostics()
+    # # reset diagnostics for this data set
+    # _pp_conf.dataroot, _pp_conf.diagroot, \
+    #     _pp_conf.index_filename, _pp_conf.reg_filename, _pp_conf.cal_filename, \
+    #     _pp_conf.res_filename = _pp_conf.setup_diagnostics()
 
     # setup logging again (might be a different directory)
-    logging.basicConfig(filename=_pp_conf.log_filename,
+    logging.basicConfig(filename='LOG',
                         level=_pp_conf.log_level,
                         format=_pp_conf.log_formatline,
                         datefmt=_pp_conf.log_datefmt)
 
     # read telescope information from fits headers
     # check that they are the same for all images
-    logging.info('##### new pipeline process in %s #####' % _pp_conf.dataroot)
+    logging.info('##### new pipeline process in {:s} #####'.format(
+        os.getcwd()))
     logging.info(('check for same telescope/instrument for %d ' +
                   'frames') % len(filenames))
     instruments = []
@@ -203,13 +204,13 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
             summary_message = "<FONT COLOR=\"red\">registration failed</FONT>"
         elif len(registration['goodfits']) == len(filenames):
             summary_message = "<FONT COLOR=\"green\">all images registered" + \
-                              "</FONT>; "
+                "</FONT>; "
             break
         else:
             summary_message = "<FONT COLOR=\"orange\">registration failed for " + \
-                              ("%d/%d images</FONT>; " %
-                               (len(registration['badfits']),
-                                len(filenames)))
+                ("%d/%d images</FONT>; " %
+                 (len(registration['badfits']),
+                  len(filenames)))
         # break from loop if maximum number of iterations (2) achieved
         registration_run_number += 1
         if registration_run_number == 2:
@@ -299,10 +300,10 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
             else:
                 refcatname = 'instrumental magnitudes'
                 summary_message = "<FONT COLOR=\"green\">average zeropoint = " + \
-                                  ("%5.2f+-%5.2f using %s</FONT>; " %
-                                   (np.average(zps),
-                                    np.average(zp_errs),
-                                    refcatname))
+                    ("%5.2f+-%5.2f using %s</FONT>; " %
+                     (np.average(zps),
+                      np.average(zp_errs),
+                      refcatname))
         except TypeError:
             summary_message = "<FONT COLOR=\"red\">no phot. calibration</FONT>; "
         break

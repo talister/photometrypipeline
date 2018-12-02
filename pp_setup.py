@@ -81,12 +81,11 @@ class ConfDiagnostics(Conf):
     """configuration setup for diagnostics"""
 
     # path and file settings
-    # diagnostics_path = '{{run_base}}.diagnostics'  # output path
-    diagnostics_path = '/tmp/pp/'  # .diagnostics'  # output path
-    # each {{element}} will be replaced as detailed below and joined
-    # appropriately to the fixed path elements:
-    # {{run_base}}: base directory of current pp run
-    # {{date}}: date in YYYYMMDD
+    diagnostics_path = '.'
+    # '.' puts diagnostics.html into the data directory
+    # ancillary files go into '.diagnostics' relative to diagnostics_path
+    # can be any other absolute path; can be changed during runtime
+    main_html = 'diagnostics.html'  # main html document
     image_file_format = 'png'  # output format for images and plots
 
     # general image settings
@@ -112,7 +111,7 @@ class ConfDiagnostics(Conf):
     # presentation of calibration data
     show_individual_frame_data = True  # present individual frame data
     # next 3 parameters are ignored if the previous is `False`
-    show_phot_calibration_plots = True  # present individual curve of growth results
+    show_phot_calibration_plots = True  # present calibration results plot
     show_calibration_star_map = True  # present map of calibration stars
     show_calibration_star_table = True  # present table of calibration stars
 
@@ -121,7 +120,7 @@ class ConfDiagnostics(Conf):
     thumb_fontsize = 8  # fontsize for text in thumbnail overlay
     thumb_linewidth = 0.3  # linewidth for lines on overlay
     thumb_predicted_pos_marker = 'x'  # marker style for predicted position
-    thumb_predicted_pos_size = 50  # marker size for predicted position
+    thumb_predicted_pos_size = 20  # marker size for predicted position
     thumb_predicted_pos_color = 'cornflowerblue'  # marker color
 
 
