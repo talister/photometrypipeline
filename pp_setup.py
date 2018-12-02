@@ -114,7 +114,7 @@ class ConfDiagnostics(Conf):
     show_calibration_star_table = True  # present table of calibration stars
 
     # distill settings
-    show_target_animations = True
+    show_target_animations = True  # build and show target gif animations
 
     # target thumbnail overlay properties
     thumb_scalelength = 10  # length of pixelscale indicators in arcsec
