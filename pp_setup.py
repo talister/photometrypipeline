@@ -80,15 +80,16 @@ class ConfDistill(Conf):
 class ConfDiagnostics(Conf):
     """configuration setup for diagnostics"""
 
-    # path and file settings
+    # general settings
     diagnostics_path = '.'
     # '.' puts diagnostics.html into the data directory
     # ancillary files go into '.diagnostics' relative to diagnostics_path
     # can be any other absolute path; can be changed during runtime
     main_html = 'diagnostics.html'  # main html document
     image_file_format = 'png'  # output format for images and plots
+    individual_frame_pages = True  # produce frame-specific pages
 
-    # general image settings
+    # image settings
     image_stretch = 'linear'  # could be 'linear', 'log', 'power'
     image_size_lg_px = 1000  # cutout size for large image in px
     image_size_lg_in = 5     # image size for large image in inches
@@ -96,24 +97,24 @@ class ConfDiagnostics(Conf):
     image_size_thumb_in = 2.5     # image size for thumbnail in inches
     image_dpi = 150  # image output dpi
     overlay_lg_linewidth = 0.5  # linewidth in overlays for large images
+    show_quickview_image = True  # show quickview image
+    # (the quickview image is required for registration_star_map and
+    #  calibration_star_map)
 
-    # general plot settings
+    # plot settings
     plot_dpi = 100  # plot output dpi
-
-    # presentation of data overview
-    show_preview_image = True
-    individual_frame_pages = True
 
     # presentation of registration results
     show_registration_table = True  # show table with registration results
     show_registration_star_map = True  # registration catalog on images
 
     # presentation of calibration data
-    show_individual_frame_data = True  # present individual frame data
-    # next 3 parameters are ignored if the previous is `False`
     show_phot_calibration_plots = True  # present calibration results plot
     show_calibration_star_map = True  # present map of calibration stars
     show_calibration_star_table = True  # present table of calibration stars
+
+    # distill settings
+    show_target_animations = True
 
     # target thumbnail overlay properties
     thumb_scalelength = 10  # length of pixelscale indicators in arcsec

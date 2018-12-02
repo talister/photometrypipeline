@@ -176,22 +176,24 @@ class Prepare_Diagnostics(Diagnostics_Html):
                     os.path.join(self.conf.diagnostics_path,
                                  '.diagnostics', filename+'.html'),
                     filename)
-                self.frame_preview(filename)
+                if self.conf.show_quickview_image:
+                    self.quickview_image(filename)
 
-                # update frame page
-                framehtml = ("<!-- Quickview -->\n"
-                             "<A HREF=\"#quickview\" "
-                             "ONCLICK=\"toggledisplay"
-                             "('quickview');\"><H2>Quickview Image</H2>"
-                             "</A>\n"
-                             "<IMG ID=\"quickview\" SRC=\"{:s}\" "
-                             "STYLE=\"display: none\"\>\n\n").format(
-                    filename+'.'+self.conf.image_file_format)
-                self.append_website(
-                    os.path.join(self.conf.diagnostics_path,
-                                 '.diagnostics',
-                                 '{:s}.html'.format(filename)),
-                    framehtml, replace_from='<!-- Quickview -->')
+                    # update frame page
+                    framehtml = ("<!-- Quickview -->\n"
+                                 "<A HREF=\"#quickview\" "
+                                 "ONCLICK=\"toggledisplay"
+                                 "('quickview');\"><H2>Quickview Image</H2>"
+                                 "</A>\n"
+                                 "<IMG ID=\"quickview\" SRC=\"{:s}\" "
+                                 "STYLE=\"display: none\"\>\n\n").format(
+                                     filename+'.' +
+                                     self.conf.image_file_format)
+                    self.append_website(
+                        os.path.join(self.conf.diagnostics_path,
+                                     '.diagnostics',
+                                     '{:s}.html'.format(filename)),
+                        framehtml, replace_from='<!-- Quickview -->')
             else:
                 framename = filename
 
@@ -224,8 +226,8 @@ class Prepare_Diagnostics(Diagnostics_Html):
 
         return html
 
-    def frame_preview(self, filename):
-        """create preview image for one frame"""
+    def quickview_image(self, filename):
+        """create quickview image for one frame"""
 
         logging.info('create image preview for file {:s}'.format(
             filename))
@@ -385,8 +387,11 @@ class Registration_Diagnostics(Diagnostics_Html):
             framefilename = os.path.join(self.conf.diagnostics_path,
                                          '.diagnostics',
                                          '{:s}.html'.format(dat[0]))
-            filename = '<A HREF=\"{:s}\">{:s}</A>'.format(
-                framefilename, dat[0])
+            if self.conf.individual_frame_pages:
+                filename = '<A HREF=\"{:s}\">{:s}</A>'.format(
+                    framefilename, dat[0])
+            else:
+                filename = dat[0]
 
             html += ("<TR><TD>{:s}</TD>"
                      + "<TD>{:4.1f}</TD><TD>{:4.1f}</TD>"
@@ -503,23 +508,23 @@ class Registration_Diagnostics(Diagnostics_Html):
 
         obsparam = extraction_data[0]['parameters']['obsparam']
 
-        # update index.html
         html = self.function_tag+'\n'
         html += ('<H2>Registration</H2>\n'
-                 '<P>Registration based on {:s} catalog: ').format(
+                 '<P>Registration based on {:s} catalog: \n').format(
             data['catalog'])
         if len(data['badfits']) == 0:
             html += ('<STRONG><FONT COLOR="GREEN">All frames registered '
-                     'successfully</FONT></STRONG></P>')
+                     'successfully</FONT></STRONG></P>\n')
         else:
             html += ('<STRONG><FONT COLOR="RED">{:d} files could not be '
-                     'registered</FONT></STRONG></P>').format(
+                     'registered</FONT></STRONG></P>\n').format(
                          len(data['badfits']))
 
         if self.conf.show_registration_table:
             html += self.registration_table(data, extraction_data, obsparam)
 
         if (self.conf.individual_frame_pages and
+            self.conf.show_quickview_image and
                 self.conf.show_registration_star_map):
             self.registration_maps(data, extraction_data, obsparam)
 
@@ -679,20 +684,21 @@ class Photometry_Diagnostics(Diagnostics_Html):
         data['fwhm_filename'] = fwhm_filename
 
         # create html map
-        data['fwhm_map'] = ""
-        for i in range(len(extraction)):
-            x, y = ax.transData.transform_point(
-                [((frame_midtimes-frame_midtimes.min())*1440)[i],
-                 fwhm[i]])
-            filename = extraction[i]['fits_filename']
-            data['fwhm_map'] += (
-                '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
-                'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
-                    x, fig.bbox.height - y, 5,
-                    os.path.join(self.conf.diagnostics_path,
-                                 '.diagnostics', filename+'.html'),
-                    '',
-                    filename, filename)
+        if self.conf.individual_frame_pages:
+            data['fwhm_map'] = ""
+            for i in range(len(extraction)):
+                x, y = ax.transData.transform_point(
+                    [((frame_midtimes-frame_midtimes.min())*1440)[i],
+                     fwhm[i]])
+                filename = extraction[i]['fits_filename']
+                data['fwhm_map'] += (
+                    '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
+                    'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
+                        x, fig.bbox.height - y, 5,
+                        os.path.join(self.conf.diagnostics_path,
+                                     '.diagnostics', filename+'.html'),
+                        '',
+                        filename, filename)
 
         logging.info('FWHM plot created')
 
@@ -749,10 +755,14 @@ class Photometry_Diagnostics(Diagnostics_Html):
 
         html += "</TABLE>\n"
         html += "<P><IMG SRC=\"{:s}\">\n".format(data['growth_filename'])
-        html += "<IMG SRC=\"{:s}\" USEMAP=\"#FWHM\">\n".format(
-            data['fwhm_filename'])
-        html += "<MAP NAME=\"#FWHM\">\n{:s}</MAP>\n".format(
-            data['fwhm_map'])
+        if self.conf.individual_frame_pages:
+            html += "<IMG SRC=\"{:s}\" USEMAP=\"#FWHM\">\n".format(
+                data['fwhm_filename'])
+            html += "<MAP NAME=\"#FWHM\">\n{:s}</MAP>\n".format(
+                data['fwhm_map'])
+        else:
+            html += "<IMG SRC=\"{:s}\">\n".format(
+                data['fwhm_filename'])
 
         self.append_website(os.path.join(self.conf.diagnostics_path,
                                          self.conf.main_html), html,
@@ -795,20 +805,21 @@ class Calibration_Diagnostics(Diagnostics_Html):
         data['zpplot'] = 'zeropoints.' + self.conf.image_file_format
 
         # create html map
-        data['zpplotmap'] = ""
-        for i in range(len(times)):
-            x, y = ax.transData.transform_point(
-                [((times-times.min())*1440)[i],
-                 [dat['zp'] for dat in data['zeropoints']][i]])
-            filename = data['zeropoints'][i]['filename'][:-4]+'fits'
-            data['zpplotmap'] += (
-                '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
-                'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
-                    x, fig.bbox.height - y, 5,
-                    os.path.join(self.conf.diagnostics_path,
-                                 '.diagnostics', filename+'.html'),
-                    'calibration_overview',
-                    filename, filename)
+        if self.conf.individual_frame_pages:
+            data['zpplotmap'] = ""
+            for i in range(len(times)):
+                x, y = ax.transData.transform_point(
+                    [((times-times.min())*1440)[i],
+                     [dat['zp'] for dat in data['zeropoints']][i]])
+                filename = data['zeropoints'][i]['filename'][:-4]+'fits'
+                data['zpplotmap'] += (
+                    '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
+                    'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
+                        x, fig.bbox.height - y, 5,
+                        os.path.join(self.conf.diagnostics_path,
+                                     '.diagnostics', filename+'.html'),
+                        'calibration_overview',
+                        filename, filename)
         logging.info('zeropoint overview plot created')
 
     def phot_calibration_plot(self, data, idx):
@@ -1069,7 +1080,7 @@ class Calibration_Diagnostics(Diagnostics_Html):
                             dat['filename'][:dat['filename'].find('.ldac')],
                             self.conf.image_file_format))
 
-                    # build individual curve of growth plots
+                    # build individual calibration plots
                     if self.conf.show_phot_calibration_plots:
                         self.phot_calibration_plot(data, idx)
                         framehtml += (
@@ -1082,7 +1093,9 @@ class Calibration_Diagnostics(Diagnostics_Html):
                             dat['plotfilename'].split(os.path.sep)[-1])
 
                     # build individual catalog maps
-                    if self.conf.show_calibration_star_map:
+                    if (self.conf.individual_frame_pages and
+                        self.conf.show_quickview_image and
+                            self.conf.show_calibration_star_map):
                         self.calibration_star_maps(dat)
                         framehtml += (
                             "<A HREF=\"#calibration_starmap\" "
@@ -1094,13 +1107,9 @@ class Calibration_Diagnostics(Diagnostics_Html):
                             "<DIV CLASS=\"parent_image\">\n"
                             "<IMG CLASS=\"back_image\" SRC=\"{:s}\" />\n"
                             "<IMG CLASS=\"front_image\" SRC=\"{:s}\" />\n"
-                            "</DIV>\n"
-                            #"<P><IMG SRC={:s} \>"
-                            "</DIV>\n").format(
-                                os.path.join(self.conf.diagnostics_path,
-                                             '.diagnostics',
-                                             dat['filename'][:-4]+'fits.' +
-                                             self.conf.image_file_format),
+                            "</DIV></DIV>\n").format(
+                                dat['filename'][:-4]+'fits.' +
+                            self.conf.image_file_format,
                                 catframe.split(os.path.sep)[-1])
 
                     # build individual catalog data table websites
@@ -1134,11 +1143,17 @@ class Calibration_Diagnostics(Diagnostics_Html):
                              len(dat['match'][0][0]))
             html += "</TABLE></P>\n"
 
-            html += "<P><IMG SRC=\"{:s}\" USEMAP=\"#Zeropoints\">\n".format(
-                os.path.join(self.conf.diagnostics_path,
-                             '.diagnostics', data['zpplot']))
-            html += "<MAP NAME=\"#Zeropoints\">\n{:s}</MAP>\n".format(
-                data['zpplotmap'])
+            if self.conf.individual_frame_pages:
+                html += ("<P><IMG SRC=\"{:s}\" "
+                         "USEMAP=\"#Zeropoints\">\n").format(
+                             os.path.join(self.conf.diagnostics_path,
+                                          '.diagnostics', data['zpplot']))
+                html += "<MAP NAME=\"#Zeropoints\">\n{:s}</MAP>\n".format(
+                    data['zpplotmap'])
+            else:
+                html += "<P><IMG SRC=\"{:s}\">\n".format(
+                    os.path.join(self.conf.diagnostics_path,
+                                 '.diagnostics', data['zpplot']))
         else:
             html += ("Instrumental magnitudes are reported "
                      "(filter used: {:s})\n").format(
@@ -1203,21 +1218,25 @@ class Distill_Diagnostics(Diagnostics_Html):
                     self.conf.image_file_format))
 
             # create html map
-            data['lightcurveplots']['maps'][target] = ""
-            for i in range(len(midtimes)):
-                x, y = ax.transData.transform_point(
-                    [((midtimes-midtimes.min())*1440)[i],
-                     [dat[7] for dat in data[target]][i]])
-                data['lightcurveplots']['maps'][target] += (
-                    '<area shape="circle" coords="{:.1f},{:.1f},{:.1f}" '
-                    'href="{:s}#{:s}" alt="{:s}" title="{:s}">\n').format(
-                        x, fig.bbox.height - y, 5,
-                        os.path.join(self.conf.diagnostics_path,
-                                     '.diagnostics', data[
-                                         target][i][10][:-4]+'fits.html'),
-                        target,
-                        data[target][i][10][:-4] + 'fits',
-                        data[target][i][10][:-4] + 'fits')
+            if self.conf.individual_frame_pages:
+                data['lightcurveplots']['maps'][target] = ""
+                for i in range(len(midtimes)):
+                    x, y = ax.transData.transform_point(
+                        [((midtimes-midtimes.min())*1440)[i],
+                         [dat[7] for dat in data[target]][i]])
+                    data['lightcurveplots']['maps'][target] += (
+                        '<area shape="circle" '
+                        'coords="{:.1f},{:.1f},{:.1f}" '
+                        'href="{:s}#{:s}" alt="{:s}" '
+                        'title="{:s}">\n').format(
+                            x, fig.bbox.height - y, 5,
+                            os.path.join(
+                                self.conf.diagnostics_path,
+                                '.diagnostics', data[
+                                    target][i][10][:-4]+'fits.html'),
+                            target,
+                            data[target][i][10][:-4] + 'fits',
+                            data[target][i][10][:-4] + 'fits')
 
         logging.info('lightcurve plots for all targets created')
 
@@ -1469,7 +1488,8 @@ class Distill_Diagnostics(Diagnostics_Html):
 
         self.thumbnail_images(data)
 
-        self.target_animations(data)
+        if self.conf.show_target_animations:
+            self.target_animations(data)
 
         # self.add_frame_report(data)
 
@@ -1483,107 +1503,128 @@ class Distill_Diagnostics(Diagnostics_Html):
                      "<H3>{:s}</H3></A>\n"
                      "<DIV ID=\"{:s}\" "
                      "STYLE=\"display: none\"\>\n"
-                     "<TABLE BORDER=\"0\"><TR><TD>\n"
-                     "<IMG SRC=\"{:s}\" USEMAP=\"#{:s}\">\n"
-                     "<MAP NAME=\"{:s}\">\n{:s}</MAP>\n\n</TD>\n"
-                     "<TD><IMG SRC=\"{:s}\" \></TD>"
-                     "</TR></TABLE>\n</DIV>\n").format(
+                     "<TABLE BORDER=\"0\"><TR><TD>\n").format(
                          target, target,
-                         target.replace('_', ' '), target,
-                         data['lightcurveplots'][target],
-                         target, target,
-                         data['lightcurveplots']['maps'][target],
-                         data['gifs'][target])
+                         target.replace('_', ' '), target)
+            if self.conf.individual_frame_pages:
+                html += ("<IMG SRC=\"{:s}\" USEMAP=\"#{:s}\">\n"
+                         "<MAP NAME=\"{:s}\">\n{:s}</MAP>\n\n").format(
+                             data['lightcurveplots'][target], target,
+                             target,
+                             data['lightcurveplots']['maps'][target])
+            else:
+                html += ("<IMG SRC=\"{:s}\">\n"
+                         "<MAP NAME=\"{:s}\">\n{:s}</MAP>\n\n").format(
+                             data['lightcurveplots'][target],
+                             target, target)
+            html += "</TD>\n<TD>"
+            if self.conf.show_target_animations:
+                html += "<IMG SRC=\"{:s}\" \>".format(
+                    data['gifs'][target])
+            html += "</TD></TR></TABLE>\n</DIV>\n"
 
             # update framepages
-            for fidx, framedat in enumerate(data[target]):
-                fitsfilename = framedat[10][:-4]+'fits'
+            if self.conf.individual_frame_pages:
+                for fidx, framedat in enumerate(data[target]):
+                    fitsfilename = framedat[10][:-4]+'fits'
 
-                # identify next/previous frame in cyclical
-                # data['targetframes'] list
-                previousframe = data['targetframes'][target][
-                    (np.where(np.array(data['targetframes'][target]) ==
-                              fitsfilename)[0][0]-1) %
-                    len(data['targetframes'][target])]
-                nextframe = data['targetframes'][target][
-                    (np.where(np.array(data['targetframes'][target]) ==
-                              fitsfilename)[0][0]+1) %
-                    len(data['targetframes'][target])]
+                    # identify next/previous frame in cyclical
+                    # data['targetframes'] list
+                    previousframe = data['targetframes'][target][
+                        (np.where(np.array(data['targetframes'][target]) ==
+                                  fitsfilename)[0][0]-1) %
+                        len(data['targetframes'][target])]
+                    nextframe = data['targetframes'][target][
+                        (np.where(np.array(data['targetframes'][target]) ==
+                                  fitsfilename)[0][0]+1) %
+                        len(data['targetframes'][target])]
 
-                assert (data['thumbnailplots'][target][fidx][0].strip() ==
-                        fitsfilename.strip())
-                framehtml = ("<!-- Results {:s} -->\n"
-                             "<A HREF=\"#{:s}\" "
-                             "ONCLICK=\"toggledisplay"
-                             "('{:s}');\">"
-                             "<H1>{:s}  Photometry</H1></A>\n"
-                             "<DIV ID=\"{:s}\"\>\n"
-                             "<TABLE BORDER=\"0\"><TR><TD>"
-                             "<TABLE CLASS=\"gridtable\">\n"
-                             "<TR><TH>Apparent Magnitude</TH>"
-                             "<TD>{:.2f} +- {:.2f}</TD></TR>\n"
-                             "<TR><TH>Target RA (deg)</TH>"
-                             "<TD>{:7.5f}</TD></TR>\n"
-                             "<TR><TH>Target Dec (deg)</TH>"
-                             "<TD>{:6.4f}</TD></TR>\n"
-                             "<TR><TH>RA Offset from Prediction (\")</TH>"
-                             "<TD>{:.2f}</TD></TR>\n"
-                             "<TR><TH>Dec Offset from Prediction (\")</TH>"
-                             "<TD>{:.2f}</TD></TR>\n"
-                             "<TH>Target Source Flag</TH>"
-                             "<TD>{:d}</TD></TR>\n"
-                             "</TABLE>\n"
-                             "<P ALIGN=\"center\">"
-                             "<BUTTON ONCLICK=\""
-                             "window.open('{:s}', 'targetWindow', "
-                             "'height=376,width=376,status=no,location=no,"
-                             "scrollbars=no,toolbar=no,menubar=no')\">"
-                             "open animation in new window</BUTTON></P>"
-                             "<P ALIGN=\"center\">"
-                             "<BUTTON ONCLICK=\""
-                             "window.open('{:s}', 'targetWindow', "
-                             "'height=480,width=640,status=no,location=no,"
-                             "scrollbars=no,toolbar=no,menubar=no')\">"
-                             "open lightcurve in new window</BUTTON></P>"
-                             "<P ALIGN=\"center\">"
-                             "<BUTTON ONCLICK=\"toggledisplay"
-                             "('{:s}');\">toggle overlay</BUTTON></P>"
-                             "</TD><TD>\n"
-                             "<DIV CLASS=\"parent_image\">\n"
-                             "<IMG CLASS=\"back_image\" SRC=\"{:s}\" />\n"
-                             "<IMG ID=\"overlay_{:s}\" "
-                             "CLASS=\"front_image\" SRC=\"{:s}\" />\n"
-                             "</DIV>\n"
-                             "<DIV ALIGN=\"center\">"
-                             "<A HREF=\"{:s}#{:s}\">"
-                             "&laquo; previous frame &laquo;</A> | "
-                             "<A HREF=\"{:s}#{:s}\">"
-                             "&raquo; next frame &raquo;</A></DIV>\n"
-                             "</TD></TR></TABLE></DIV>\n").format(
-                                 target, target, target,
-                                 target.replace('_', ' '), target,
-                                 framedat[7], framedat[8],
-                                 framedat[3], framedat[4],
-                                 (framedat[1]-framedat[3])*3600,
-                                 (framedat[2]-framedat[4])*3600,
-                                 int(framedat[14]),
-                                 data['gifs'][target].split('/')[-1],
-                                 data['lightcurveplots'][
-                                     target].split('/')[-1],
-                                 'overlay_'+target,
-                                 data['thumbnailplots'][
-                                     target][fidx][1].split('/')[-1],
-                                 target,
-                                 data['thumbnailoverlays'][
-                                     target][fidx][1].split('/')[-1],
-                                 previousframe+'.html', target,
-                                 nextframe+'.html', target)
+                    assert (data['thumbnailplots']
+                            [target][fidx][0].strip() ==
+                            fitsfilename.strip())
 
-                self.append_website(os.path.join(
-                    self.conf.diagnostics_path, '.diagnostics',
-                    '{:s}.html'.format(fitsfilename)),
-                    framehtml,
-                    replace_from='<!-- Results {:s} -->'.format(target))
+                    if self.conf.show_target_animations:
+                        animation_button = (
+                            "<P ALIGN=\"center\">"
+                            "<BUTTON ONCLICK=\""
+                            "window.open('{:s}', 'targetWindow', "
+                            "'height=376,width=376,status=no,location=no,"
+                            "scrollbars=no,toolbar=no,menubar=no')\">"
+                            "open animation in new window</BUTTON>"
+                            "</P>\n").format(
+                                data['gifs'][target].split(os.path.sep)[-1])
+                    else:
+                        animation_button = ""
+
+                    framehtml = (
+                        "<!-- Results {:s} -->\n"
+                        "<A HREF=\"#{:s}\" "
+                        "ONCLICK=\"toggledisplay"
+                        "('{:s}');\">"
+                        "<H1>{:s}  Photometry</H1></A>\n"
+                        "<DIV ID=\"{:s}\"\>\n"
+                        "<TABLE BORDER=\"0\"><TR><TD>"
+                        "<TABLE CLASS=\"gridtable\">\n"
+                        "<TR><TH>Apparent Magnitude</TH>"
+                        "<TD>{:.2f} +- {:.2f}</TD></TR>\n"
+                        "<TR><TH>Target RA (deg)</TH>"
+                        "<TD>{:7.5f}</TD></TR>\n"
+                        "<TR><TH>Target Dec (deg)</TH>"
+                        "<TD>{:6.4f}</TD></TR>\n"
+                        "<TR><TH>RA Offset from Prediction (\")</TH>"
+                        "<TD>{:.2f}</TD></TR>\n"
+                        "<TR><TH>Dec Offset from Prediction (\")</TH>"
+                        "<TD>{:.2f}</TD></TR>\n"
+                        "<TH>Target Source Flag</TH>"
+                        "<TD>{:d}</TD></TR>\n"
+                        "</TABLE>\n"
+                        "{:s}"
+                        "<P ALIGN=\"center\">"
+                        "<BUTTON ONCLICK=\""
+                        "window.open('{:s}', 'targetWindow', "
+                        "'height=480,width=640,status=no,location=no,"
+                        "scrollbars=no,toolbar=no,menubar=no')\">"
+                        "open lightcurve in new window</BUTTON></P>"
+                        "<P ALIGN=\"center\">"
+                        "<BUTTON ONCLICK=\"toggledisplay"
+                        "('{:s}');\">toggle overlay</BUTTON></P>"
+                        "</TD><TD>\n"
+                        "<DIV CLASS=\"parent_image\">\n"
+                        "<IMG CLASS=\"back_image\" SRC=\"{:s}\" />\n"
+                        "<IMG ID=\"overlay_{:s}\" "
+                        "CLASS=\"front_image\" SRC=\"{:s}\" />\n"
+                        "</DIV>\n"
+                        "<DIV ALIGN=\"center\">"
+                        "<A HREF=\"{:s}#{:s}\">"
+                        "&laquo; previous frame &laquo;</A> | "
+                        "<A HREF=\"{:s}#{:s}\">"
+                        "&raquo; next frame &raquo;</A></DIV>\n"
+                        "</TD></TR></TABLE></DIV>\n").format(
+                            target, target, target,
+                            target.replace('_', ' '), target,
+                            framedat[7], framedat[8],
+                            framedat[3], framedat[4],
+                            (framedat[1]-framedat[3])*3600,
+                            (framedat[2]-framedat[4])*3600,
+                            int(framedat[14]),
+                            animation_button,
+                            data['lightcurveplots'][
+                                target].split('/')[-1],
+                            'overlay_'+target,
+                            data['thumbnailplots'][
+                                target][fidx][1].split('/')[-1],
+                            target,
+                            data['thumbnailoverlays'][
+                                target][fidx][1].split('/')[-1],
+                            previousframe+'.html', target,
+                            nextframe+'.html', target)
+
+                    self.append_website(os.path.join(
+                        self.conf.diagnostics_path, '.diagnostics',
+                        '{:s}.html'.format(
+                            fitsfilename)),
+                        framehtml,
+                        replace_from='<!-- Results {:s} -->'.format(target))
 
         self.append_website(os.path.join(self.conf.diagnostics_path,
                                          self.conf.main_html), html,
