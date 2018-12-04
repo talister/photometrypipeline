@@ -275,7 +275,7 @@ def curve_of_growth_analysis(filenames, parameters,
     output['parameters'] = parameters
 
     # write results to file
-    outf = open(_pp_conf.diagroot+'curveofgrowth.dat', 'w')
+    outf = open('aperturephotometry_curveofgrowth.dat', 'w')
     outf.writelines('#      background              target          flux\n' +
                     '# rad   flux sigma snr      flux sigma snr  residual\n')
     for i in range(len(parameters['aprad'])):

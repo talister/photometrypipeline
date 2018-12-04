@@ -302,7 +302,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
                                              'zp_nstars': 0,
                                              'zp_usedstars': 0,
                                              'obstime': cat.obstime,
-                                             'match': [[], []],
+                                             'match': match,
                                              'clipping_steps': clipping_steps,
                                              'zp_idx': np.nan,
                                              'success': False})

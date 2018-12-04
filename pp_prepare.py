@@ -501,7 +501,6 @@ if __name__ == '__main__':
                 break
             hdulist.close()
 
-
     if telescope is None:
         try:
             telescope = _pp_conf.instrument_identifiers[instruments[0]]

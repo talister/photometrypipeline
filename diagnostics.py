@@ -236,20 +236,24 @@ class Prepare_Diagnostics(Diagnostics_Html):
 
         # create frame image
         imgdat = hdulist[0].data
+
         # normalize imgdat to pixel values 0 < px < 1
+        imgdat[np.where(np.isnan(imgdat))[0]] = np.nanmedian(imgdat)
+        imgdat = np.clip(imgdat, np.percentile(imgdat, 1),
+                         np.percentile(imgdat, 99))
         imgdat = (imgdat - np.min(imgdat)) / np.max(imgdat)
         # resize image larger than lg_image_size_px on one side
         imgdat = resize(imgdat,
                         (min(imgdat.shape[0], self.conf.image_size_lg_px),
                          min(imgdat.shape[1], self.conf.image_size_lg_px)))
 
+        plt.figure(figsize=(self.conf.image_size_lg_in,
+                            self.conf.image_size_lg_in))
+
         norm = ImageNormalize(
             imgdat, interval=ZScaleInterval(),
             stretch={'linear': LinearStretch(),
                      'log': LogStretch()}[self.conf.image_stretch])
-
-        plt.figure(figsize=(self.conf.image_size_lg_in,
-                            self.conf.image_size_lg_in))
 
         img = plt.imshow(imgdat, cmap='gray', norm=norm,
                          origin='lower')
@@ -292,6 +296,7 @@ class Prepare_Diagnostics(Diagnostics_Html):
                     "</TABLE><P>\n"
                     "<A HREF=\"{:s}\">"
                     "&laquo; previous frame &laquo;</A> | "
+                    "<A HREF=\"../diagnostics.html\">run overview</A> | "
                     "<A HREF=\"{:s}\">"
                     "&raquo; next frame &raquo;</A></P>\n\n").format(
                         filename,
@@ -1033,8 +1038,8 @@ class Calibration_Diagnostics(Diagnostics_Html):
                      "<TH>&sigma; (mag)</TH>"
                      "<TH>N<SUP>*</SUP><SUB>used</SUB></TH>"
                      "<TH>N<SUP>*</SUP><SUB>matched</SUB></TH>\n</TR>\n")
-            for idx, dat in enumerate(data['zeropoints']):
 
+            for idx, dat in enumerate(data['zeropoints']):
                 # update frame pages
                 if self.conf.individual_frame_pages:
                     framename = "<A HREF=\"{:s}\">{:s}</A>".format(
@@ -1051,26 +1056,49 @@ class Calibration_Diagnostics(Diagnostics_Html):
                                  "<DIV ID=\"calibration_overview\" "
                                  "STYLE=\"display: none\"\>\n")
 
-                    framehtml += ("<P><TABLE CLASS=\"gridtable\">\n"
-                                  "<TR><TH>Reference Catalog</TH>"
-                                  "<TD>{:s}</TD></TR>\n"
-                                  "<TR><TH>Reference Catalog History</TH>"
-                                  "<TD>{:s}</TD></TR>\n"
-                                  "<TR><TH>Target Filter</TH>"
-                                  "<TD>{:s}</TD></TR>\n"
-                                  "<TR><TH>Zeropoint (mag)</TH>"
-                                  "<TD>{:7.4f}+-{:.4f}</TD></TR>\n"
-                                  "<TR><TH>N<SUP>*</SUP><SUB>used</SUB>"
-                                  "</TH>"
-                                  "<TD>{:d}</TD></TR>\n"
-                                  "<TH>N<SUP>*</SUP><SUB>matched</SUB></TH>"
-                                  "<TD>{:d}</TD></TR>\n").format(
-                                      data['ref_cat'].catalogname,
-                                      data['ref_cat'].history,
-                                      data['filtername'],
-                                      dat['zp'], dat['zp_sig'],
-                                      dat['zp_nstars'],
-                                      len(dat['match'][0][0]))
+                    if dat['success']:
+                        framehtml += (
+                            "<P><TABLE CLASS=\"gridtable\">\n"
+                            "<TR><TH>Reference Catalog</TH>"
+                            "<TD>{:s}</TD></TR>\n"
+                            "<TR><TH>Reference Catalog History</TH>"
+                            "<TD>{:s}</TD></TR>\n"
+                            "<TR><TH>Target Filter</TH>"
+                            "<TD>{:s}</TD></TR>\n"
+                            "<TR><TH>Zeropoint (mag)</TH>"
+                            "<TD>{:7.4f}+-{:.4f}</TD></TR>\n"
+                            "<TR><TH>N<SUP>*</SUP><SUB>used</SUB>"
+                            "</TH>"
+                            "<TD>{:d}</TD></TR>\n"
+                            "<TH>N<SUP>*</SUP><SUB>matched</SUB></TH>"
+                            "<TD>{:d}</TD></TR>\n").format(
+                                data['ref_cat'].catalogname,
+                                data['ref_cat'].history,
+                                data['filtername'],
+                                dat['zp'], dat['zp_sig'],
+                                dat['zp_nstars'],
+                                len(dat['match'][0][0]))
+                    else:
+                        framehtml += (
+                            "<P><TABLE CLASS=\"gridtable\">\n"
+                            "<TR><TH>Reference Catalog</TH>"
+                            "<TD>{:s}</TD></TR>\n"
+                            "<TR><TH>Reference Catalog History</TH>"
+                            "<TD>{:s}</TD></TR>\n"
+                            "<TR><TH>Target Filter</TH>"
+                            "<TD>{:s}</TD></TR>\n"
+                            "<TR><TH>Zeropoint (mag)</TH>"
+                            "<TD>{:7.4f}+-{:.4f}</TD></TR>\n"
+                            "<TR><TH>N<SUP>*</SUP><SUB>used</SUB>"
+                            "</TH>"
+                            "<TD>{:d}</TD></TR>\n"
+                            "<TH>N<SUP>*</SUP><SUB>matched</SUB></TH>"
+                            "<TD>{:d}</TD></TR>\n").format(
+                                data['ref_cat'].catalogname,
+                                data['ref_cat'].history,
+                                data['filtername'],
+                                np.nan, np.nan, 0, len(dat['match'][0][0]))
+
                     framehtml += "</TABLE></P>\n"
 
                     # frame calibration data
@@ -1081,7 +1109,8 @@ class Calibration_Diagnostics(Diagnostics_Html):
                             self.conf.image_file_format))
 
                     # build individual calibration plots
-                    if self.conf.show_phot_calibration_plots:
+                    if (self.conf.show_phot_calibration_plots and
+                            data['zeropoints'][idx]['success']):
                         self.phot_calibration_plot(data, idx)
                         framehtml += (
                             "<A HREF=\"#calibration_plot\" "
@@ -1095,7 +1124,8 @@ class Calibration_Diagnostics(Diagnostics_Html):
                     # build individual catalog maps
                     if (self.conf.individual_frame_pages and
                         self.conf.show_quickview_image and
-                            self.conf.show_calibration_star_map):
+                            self.conf.show_calibration_star_map and
+                            data['zeropoints'][idx]['success']):
                         self.calibration_star_maps(dat)
                         framehtml += (
                             "<A HREF=\"#calibration_starmap\" "
@@ -1113,7 +1143,8 @@ class Calibration_Diagnostics(Diagnostics_Html):
                                 catframe.split(os.path.sep)[-1])
 
                     # build individual catalog data table websites
-                    if self.conf.show_calibration_star_table:
+                    if (self.conf.show_calibration_star_table and
+                            data['zeropoints'][idx]['success']):
                         framehtml += (
                             "<A HREF=\"#calibration_table\" "
                             "ONCLICK=\"toggledisplay"
@@ -1135,12 +1166,20 @@ class Calibration_Diagnostics(Diagnostics_Html):
                 else:
                     framename = dat['filename'][:-4]+'fits'
 
-                html += ("<TR><TD>{:s}</TD>"
-                         "<TD>{:7.4f}</TD><TD>{:7.4f}</TD><TD>{:d}</TD>"
-                         + "<TD>{:d}</TD>\n</TR>").format(
-                             framename, dat['zp'],
-                             dat['zp_sig'], dat['zp_nstars'],
-                             len(dat['match'][0][0]))
+                if data['zeropoints'][idx]['success']:
+                    html += ("<TR><TD>{:s}</TD>"
+                             "<TD>{:7.4f}</TD><TD>{:7.4f}</TD><TD>{:d}</TD>"
+                             + "<TD>{:d}</TD>\n</TR>").format(
+                                 framename, dat['zp'],
+                                 dat['zp_sig'], dat['zp_nstars'],
+                                 len(dat['match'][0][0]))
+                else:
+                    html += ("<TR><TD>{:s}</TD>"
+                             "<TD>{:7.4f}</TD><TD>{:7.4f}</TD><TD>{:d}</TD>"
+                             + "<TD>{:d}</TD>\n</TR>").format(
+                                 framename, np.nan, np.nan, 0,
+                                 len(dat['match'][0][0]))
+
             html += "</TABLE></P>\n"
 
             if self.conf.individual_frame_pages:
