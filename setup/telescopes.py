@@ -1325,7 +1325,7 @@ soargoodmanold_param = {
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['SDSS-R9', 'APASS9', 'PANSTARRS', '2MASS']
+    'photometry_catalogs': ['PANSTARRS', 'SkyMapper', 'SDSS-R9']
 }
 
 # SOAR, Goodman [new] (imager)
@@ -1398,7 +1398,7 @@ soargoodman_param = {
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['SDSS-R9', 'PANSTARRS', 'APASS9']
+    'photometry_catalogs': ['PANSTARRS', 'SkyMapper', 'SDSS-R9']
 }
 
 
