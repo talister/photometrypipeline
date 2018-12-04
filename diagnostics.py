@@ -241,7 +241,7 @@ class Prepare_Diagnostics(Diagnostics_Html):
         imgdat[np.where(np.isnan(imgdat))[0]] = np.nanmedian(imgdat)
         imgdat = np.clip(imgdat, np.percentile(imgdat, 1),
                          np.percentile(imgdat, 99))
-        imgdat = (imgdat - np.min(imgdat)) / np.max(imgdat)
+        imgdat = (imgdat - np.min(imgdat)) / np.max(imgdat - np.min(imgdat))
         # resize image larger than lg_image_size_px on one side
         imgdat = resize(imgdat,
                         (min(imgdat.shape[0], self.conf.image_size_lg_px),
@@ -342,6 +342,14 @@ class Prepare_Diagnostics(Diagnostics_Html):
         translated_filtername = obsparam['filter_translations'][
             refheader[obsparam['filter']]]
 
+        print(self.function_tag,
+              datadirectory,
+              obsparam['telescope_instrument'],
+              len(filenames),
+              raw_filtername,
+              translated_filtername,
+              os.path.join(datadirectory, 'LOG'))
+
         html = ("{:s}\n<H1>Photometry Pipeline Diagnostic Output</H1>\n"
                 "<TABLE CLASS=\"gridtable\">\n"
                 "  <TR><TH>Data Directory</TH><TD>{:s}</TD></TR>\n"
@@ -357,8 +365,8 @@ class Prepare_Diagnostics(Diagnostics_Html):
                     datadirectory,
                     obsparam['telescope_instrument'],
                     len(filenames),
-                    raw_filtername,
-                    translated_filtername,
+                    str(raw_filtername),
+                    str(translated_filtername),
                     os.path.join(datadirectory, 'LOG'))
 
         html += "<H3>Data Summary</H3>\n"
