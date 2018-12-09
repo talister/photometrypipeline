@@ -214,7 +214,7 @@ class Prepare_Diagnostics(Diagnostics_Html):
                          float(header[obsparam['exptime']]),
                          obsparam['secpix'][0],
                          obsparam['secpix'][1],
-                         binning[0], binning[1],
+                         int(binning[0]), int(binning[1]),
                          float(header[obsparam['extent'][0]]) *
                          obsparam['secpix'][0]*binning[0]/60.,
                          float(header[obsparam['extent'][1]]) *
@@ -341,14 +341,6 @@ class Prepare_Diagnostics(Diagnostics_Html):
         raw_filtername = refheader[obsparam['filter']]
         translated_filtername = obsparam['filter_translations'][
             refheader[obsparam['filter']]]
-
-        print(self.function_tag,
-              datadirectory,
-              obsparam['telescope_instrument'],
-              len(filenames),
-              raw_filtername,
-              translated_filtername,
-              os.path.join(datadirectory, 'LOG'))
 
         html = ("{:s}\n<H1>Photometry Pipeline Diagnostic Output</H1>\n"
                 "<TABLE CLASS=\"gridtable\">\n"

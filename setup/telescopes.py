@@ -3598,6 +3598,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
 # PP telescope keyword
 instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'LMI':               'DCTLMI',
+                          'lmi': 'DCTLMI',
                           'arctic':            'ARC35ARCTIC',
                           'agile':             'ARC35AGILE',
                           'IMACS Long-Camera': 'MAGIMACS',
