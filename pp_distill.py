@@ -330,7 +330,7 @@ def serendipitous_variablestars(catalogs, display=True):
                   + 'a %.2f deg radius') %
                  (ra_deg, dec_deg, rad_deg))
 
-    field = coord.SkyCoord(ra=ra_deg, dec=dec_deg, unit=(u.dec, u.dec),
+    field = coord.SkyCoord(ra=ra_deg, dec=dec_deg, unit=(u.deg, u.deg),
                            frame='icrs')
 
     vquery = Vizier(columns=['Name', 'RAJ2000', 'DEJ2000'])
