@@ -568,8 +568,17 @@ def distill(catalogs, man_targetname, offset, fixed_targets_file, posfile,
             for key in cat.fields:
                 if filtername+'mag' in key:
                     mag_keys.append(key)
+        # if both catalog magnitudes and transformated magnitudes in mag_keys
+        # use the transformed ones (the target is most probably not in the
+        # catalog used for photometric calibration)
+        fixed_mag_keys = []
+        for band in mag_keys:
+            if '_'+band in mag_keys:
+                continue
+            else:
+                fixed_mag_keys.append(band)
+        mag_keys = fixed_mag_keys
 
-        # build field lists for observed catalogs
         match_keys_other_catalog, extract_other_catalog = [], []
 
         for key in ['ra_deg', 'dec_deg', 'XWIN_IMAGE', 'YWIN_IMAGE',
