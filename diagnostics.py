@@ -44,7 +44,7 @@ try:
     from skimage.transform import resize
 except ImportError:
     print('Module skimage not found. Please install with: pip install '
-          'skimage')
+          'scikit-kimage')
     sys.exit()
 
 # pipeline-specific modules
