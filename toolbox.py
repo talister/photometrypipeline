@@ -131,7 +131,7 @@ def read_scamp_output():
             data.append(np.hstack(this_data))
         # actually read data line
         if read_this and raw[idx].find('<TD>') > -1:
-            line = raw[idx].replace('/', '').split('<TD>')
+            line = raw[idx].replace('</TD>', '<TD>').split('<TD>')
             for item in line:
                 if len(item.strip()) > 0 and item.find('\n') == -1:
                     this_data.append(item)
@@ -146,7 +146,6 @@ def read_scamp_output():
         idx += 1
 
     # check if data rows have same length as header
-    abort = False
     for i in range(len(data)):
         if len(headers) != len(data[i]):
             raise (RuntimeError,

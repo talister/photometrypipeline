@@ -66,7 +66,9 @@ observatories/instruments:
 +--------------------------+--------------------+----------------+
 | Lowell 24"               | LONEOS             | LONEOS         |
 +--------------------------+--------------------+----------------+
-| Magellan                 | IMACS              | MAGIMACS       |
+| Magellan                 | IMACS long camera  | MAGIMACSL      |
++--------------------------+--------------------+----------------+
+| Magellan                 | IMACS short camera | MAGIMACSS      |
 +--------------------------+--------------------+----------------+
 | Observatoire Haute-      | CCD                | OHP120         |
 | Provence 1.2m            |                    |                |

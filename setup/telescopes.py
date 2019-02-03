@@ -299,10 +299,10 @@ arc35agile_param = {
 }
 
 
-# Magellan, IMACS
-magimacs_param = {
-    'telescope_instrument': 'Magellan/IMACS',  # telescope/instrument name
-    'telescope_keyword': 'MAGIMACS',   # telescope/instrument keyword
+# Magellan, IMACS long camera
+magimacsl_param = {
+    'telescope_instrument': 'Magellan/IMACS long',  # telescope/instrument name
+    'telescope_keyword': 'MAGIMACSL',   # telescope/instrument keyword
     'observatory_code': '269',         # MPC observatory code
     'secpix': (0.11, 0.11),  # pixel size (arcsec)
     # before binning
@@ -324,6 +324,87 @@ magimacs_param = {
                           3: (-0.033, 0.033),  4: (-0.033, 0.099),
                           5: (0.033, -0.033),  6: (0.033, -0.099),
                           7: (0.033, 0.099),   8: (0.033, 0.033)},
+    # chip offset (ra, dec in degress) [optional]
+
+    # instrument-specific FITS header keywords
+    'binning': ('BINNING#x1', 'BINNING#x2'),
+    # binning in x/y, '_blankN' denotes that both axes
+    # are listed in one keyword, sep. by blanks
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': ':',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS|UT-TIME',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+                                         # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+                                         # (usually provided by
+                                         # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'Sloan_u': 'u', 'Sloan_g': 'g', 'Sloan_r': 'r',
+                            'Sloan_i': 'i', 'Sloan_z': 'z',
+                            'Bessell_V1': 'V', 'WB4800-7800': None},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 10,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 8,  # default aperture radius in px
+    'aprad_range': [3, 15],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/magimacs.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/magimacs.scamp',
+    'reg_max_mag': 21,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,CHIP,EXPTYPE,' +
+                      'DATE-OBS,UT-TIME,BINNING,RA,DEC,AIRMASS,' +
+                      'SECPIX,TEL_KEYW'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file': rootpath+'/setup/magimacs.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['SDSS-R9', 'PANSTARRS', 'SkyMapper', 'APASS9', '2MASS']
+}
+
+# Magellan, IMACS short camera
+magimacss_param = {
+    'telescope_instrument': 'Magellan/IMACS short',  # telescope/instrument name
+    'telescope_keyword': 'MAGIMACSS',   # telescope/instrument keyword
+    'observatory_code': '269',         # MPC observatory code
+    'secpix': (0.2, 0.2),  # pixel size (arcsec)
+    # before binning
+    'ext_coeff': 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences (for each chip)
+    'chip_id': 'CHIP',        # chip identifier (remove,
+    # if not existent)
+    # the following keys are dictionaries if 'chip_id' exists, single
+    # values otherwise
+    'flipx': {1: True, 2: False, 3: True, 4: True, 5: True, 6: True,
+                              7: True, 8: True},
+    'flipy': {1: False, 2: False, 3: False, 4: False, 5: False,
+              6: False, 7: False, 8: False},
+    'rotate': {1: 270, 2: 270, 3: 270, 4: 270, 5: 90, 6: 90,
+               7: 90, 8: 90},
+    'chip_offset_fixed': {1: (None, None), 2: (-0.11, 0.06),
+                          3: (None, None),  4: (None, None),
+                          5: (None, None),  6: (None, None),
+                          7: (None, None),   8: (None, None)},
     # chip offset (ra, dec in degress) [optional]
 
     # instrument-specific FITS header keywords
@@ -3576,7 +3657,8 @@ pds35cmstl1001e_param = {
 
 
 implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
-                          'ARC35AGILE', 'MAGIMACS', 'LOWELL31', 'LOWELL42',
+                          'ARC35AGILE', 'MAGIMACSL', 'MAGIMACSS',
+                          'LOWELL31', 'LOWELL42',
                           'LOWELL72',
                           'CTIO09', 'CTIO10', 'CTIO13CCD', 'UH88SNIFS',
                           'WIYN09HDI', 'RATIR', 'SOARGOODMANold', 'SOARGOODMAN',
@@ -3601,7 +3683,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'lmi': 'DCTLMI',
                           'arctic':            'ARC35ARCTIC',
                           'agile':             'ARC35AGILE',
-                          'IMACS Long-Camera': 'MAGIMACS',
+                          'IMACS Long-Camera': 'MAGIMACSL',
+                          'IMACS Short-Camera': 'MAGIMACSS',
                           'DLR-MKIII':         'CA123DLRMKIII',
                           'NASAcam':           'LOWELL31',
                           'nasa42':            'LOWELL42',
@@ -3667,7 +3750,8 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'DCTLMI':        dctlmi_param,
                         'ARC35ARCTIC':   arc35arctic_param,
                         'ARC35AGILE':    arc35agile_param,
-                        'MAGIMACS':      magimacs_param,
+                        'MAGIMACSL':      magimacsl_param,
+                        'MAGIMACSS':      magimacss_param,
                         'CA123DLRMKIII': ca123dlrmkiii_param,
                         'LOWELL31':      lowell31_param,
                         'LOWELL42':      lowell42_param,
