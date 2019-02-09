@@ -1216,6 +1216,9 @@ class Distill_Diagnostics(Diagnostics_Html):
         data['lightcurveplots']['maps'] = {}
         for target in data['targetnames']:
 
+            if len(data[target]) == 0:
+                continue
+
             logging.info('create lightcurve plot for {:s}'.format(target))
 
             midtimes = np.array([dat[9][0] for dat in data[target]])
