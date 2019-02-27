@@ -3653,6 +3653,71 @@ pds35cmstl1001e_param = {
     'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
+# MMT, MMTCam
+mmtcam_param = {
+    'telescope_instrument': 'MMT/MMTCam',  # telescope/instrument name
+    'telescope_keyword': 'MMTCAM',      # telescope/instrument keyword
+    'observatory_code': '696',         # MPC observatory code
+    'secpix': (0.082, 0.082),  # pixel size (arcsec)
+    # before binning
+    'ext_coeff': 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': True,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('XBINNING', 'YBINNING'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'OBJCTRA',  # telescope pointing, RA
+    'dec': 'OBJCTDEC',  # telescope pointin, Dec
+    'radec_separator': ' ',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'g': 'g', 'r': 'r',
+                            'i': 'i'},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 25,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 7,  # default aperture radius in px
+    'aprad_range': [3, 20],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/mmtcam.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/mmtcam.scamp',
+    'reg_max_mag': 25,
+    'reg_search_radius': 0.1,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
+                      'DATE-OBS,OBJCTRA,OBJCTDEC,SECPIX,AIRMASS,' +
+                      'TEL_KEYW,XBINNING,YBINNING,MIDTIMJD'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file': rootpath+'/setup/mmtcam.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
+}
 
 # access functions for telescope configurations
 
@@ -3675,7 +3740,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'LCOSINFA03', 'LCOSINFA15',
                           'LCOSPECFS01', 'P60OPT', 'P60SEDM', 'GMOSN',
                           'DFOSC', 'LONEOS', 'PDO25CMF63ST8', 'PDO05F81KAF1001E',
-                          'PDS35CMSTL1001E']
+                          'PDS35CMSTL1001E', 'MMTCAM']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword
@@ -3744,7 +3809,7 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           '0.5m f/8.1 Ritchey-Chretien_FLI KAF1001E':
                           'PDO05F81KAF1001E',
                           '0.35-m SCT_STL-1001E': 'PDS35CMSTL1001E',
-                          }
+                          'MMT Rapid Imager': 'MMTCAM'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
@@ -3801,6 +3866,7 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'PDO25CMF63ST8': pdo25cmf63st8_param,
                         'PDO05F81KAF1001E': pdo05mf81kaf1001e_param,
                         'PDS35CMSTL1001E': pds35cmstl1001e_param,
+                        'MMTCAM': mmtcam_param
                         }
 
 
