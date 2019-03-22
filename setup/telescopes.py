@@ -3212,7 +3212,7 @@ p60sedm_param = {
     'telescope_instrument': 'Palomar60-inch/SEDmachine',  # telescope/instrument name
     'telescope_keyword': 'P60SEDM',      # telescope/instrument keyword
     'observatory_code': '675',         # MPC observatory code
-    'secpix': (0.378, 0.378),  # pixel size (arcsec)
+    'secpix': (0.38, 0.38),  # pixel size (arcsec)
     # before binning
     'ext_coeff': 0.05,          # typical extinction coefficient
 
@@ -3246,8 +3246,8 @@ p60sedm_param = {
 
 
     # source extractor settings
-    'source_minarea': 9,  # default sextractor source minimum N_pixels
-    'source_snr': 3,  # default sextractor source snr for registration
+    'source_minarea': 7,  # default sextractor source minimum N_pixels
+    'source_snr': 2,  # default sextractor source snr for registration
     'aprad_default': 5,  # default aperture radius in px
     'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/p60sedm.sex',
@@ -3256,8 +3256,8 @@ p60sedm_param = {
 
     # registration settings (Scamp)
     'scamp-config-file': rootpath+'/setup/p60sedm.scamp',
-    'reg_max_mag': 18,
-    'reg_search_radius': 1,  # deg
+    'reg_max_mag': 20,
+    'reg_search_radius': 0.3,  # deg
     'source_tolerance': 'high',
 
     # swarp settings
