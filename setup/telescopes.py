@@ -1614,17 +1614,17 @@ kpno4mos3_param = {
     'airmass': 'AIRMASS',  # airmass keyword
 
     # source extractor settings
-    'source_minarea': 5,  # default sextractor source minimum N_pixels
-    'source_snr': 1.5,  # default sextractor snr for registration
+    'source_minarea': 9,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor snr for registration
     'aprad_default': 5,  # default aperture radius in px
-    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'aprad_range': [3, 15],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath + '/setup/kpno4mos1.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
 
     # scamp settings
     'scamp-config-file': rootpath + '/setup/kpno4mos1.scamp',
-    'reg_max_mag': 19,
+    'reg_max_mag': 21,
     'reg_search_radius': 0.5,  # deg
     'source_tolerance': 'low',
 
