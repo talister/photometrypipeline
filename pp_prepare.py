@@ -202,8 +202,6 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
         # add header keywords for Source Extractor
         if 'EPOCH' not in header:
             header['EPOCH'] = (2000, 'PP: required for registration')
-        # if 'EQUINOX' not in header:
-        #     header['EQUINOX'] = (2000, 'PP: required for registration')
 
         # add header keywords for SCAMP
         header['PHOTFLAG'] = ('F', 'PP: data is not photometric (SCAMP)')
@@ -299,7 +297,7 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
             logging.warning('cannot translate filter keyword \"' +
                             header[obsparam['filter']] +
                             '\"')
-            #header[obsparam['filter']] = 'clear'
+            # header[obsparam['filter']] = 'clear'
         header['FILTER'] = (header[obsparam['filter']], 'PP:copied')
 
         # perform header update
@@ -347,6 +345,8 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
                 ra_deg = coo.ra.deg
                 dec_deg = coo.dec.deg
                 header['EQUINOX'] = (2000.0, 'PP: normalized to ICRS')
+        else:
+            header['EQUINOX'] = (2000, 'added by PP')
 
         if man_ra is not None and man_dec is not None:
             ra_deg = float(man_ra)
