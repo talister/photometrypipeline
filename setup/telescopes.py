@@ -3185,7 +3185,7 @@ p60opt_param = {
     'aprad_default': 5,  # default aperture radius in px
     'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/p60opt.sex',
-    'mask_file': {},
+    'mask_file': {'1,1': rootpath+'/setup/mask_p60opt_1x1.fits'},
     #                        mask files as a function of x,y binning
 
     # registration settings (Scamp)
