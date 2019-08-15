@@ -260,6 +260,7 @@ class catalog(object):
             self.data.rename_column('e_zmag', 'e_zp1mag')
             self.data.rename_column('ymag', 'yp1mag')
             self.data.rename_column('e_ymag', 'e_yp1mag')
+            self.data['mag'] = self.data['rmag']  # use rmag for astrometry
 
             # clip self.data to enforce magnitude error limits
             self.data = self.data[self.data['e_rp1mag'] <= 0.03]
@@ -649,6 +650,7 @@ class catalog(object):
             self.data.rename_column('fiberMagErr_i', 'e_imag')
             self.data.rename_column('fiberMag_z', 'zmag')
             self.data.rename_column('fiberMagErr_z', 'e_zmag')
+            self.data['mag'] = self.data['rmag']  # use rmag for astrometry
 
             # perform correction to AB system for SDSS
             # http://www.sdss3.org/dr8/algorithms/fluxcal.php#SDSStoAB
