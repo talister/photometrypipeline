@@ -260,7 +260,7 @@ class catalog(object):
             self.data.rename_column('e_zmag', 'e_zp1mag')
             self.data.rename_column('ymag', 'yp1mag')
             self.data.rename_column('e_ymag', 'e_yp1mag')
-            self.data['mag'] = self.data['rmag']  # use rmag for astrometry
+            self.data['mag'] = self.data['rp1mag']  # use rmag for astrometry
 
             # clip self.data to enforce magnitude error limits
             self.data = self.data[self.data['e_rp1mag'] <= 0.03]
