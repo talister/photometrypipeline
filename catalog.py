@@ -584,6 +584,8 @@ class catalog(object):
             self.data['umag'] -= 0.04
             self.data['zmag'] += 0.02
 
+            self.data['mag'] = self.data['rmag']  # use rmag for astrometry
+
         elif self.catalogname == 'SDSS-R13':
             try:
                 self.data = SDSS.query_region(
