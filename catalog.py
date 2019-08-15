@@ -265,48 +265,57 @@ class catalog(object):
             self.data = self.data[self.data['e_rp1mag'] <= 0.03]
 
         # --------------------------------------------------------------------
-        # use astroquery TAP query for SkyMapper; this is experimental!
+        # use astroquery vizier query for SkyMapper
         elif self.catalogname == 'SkyMapper':
-            from astroquery.utils.tap.core import TapPlus
+            vquery = Vizier(columns=['ObjectId', 'RAICRS', 'DEICRS',
+                                     'e_RAICRS', 'e_DEICRS',
+                                     'uPSF', 'e_uPSF',
+                                     'vPSF', 'e_vPSF',
+                                     'gPSF', 'e_gPSF',
+                                     'rPSF', 'e_rPSF',
+                                     'iPSF', 'e_iPSF',
+                                     'zPSF', 'e_zPSF'],
+                            column_filters={"rPSF":
+                                            ("<{:f}".format(max_mag))},
+                            row_limit=max_sources,
+                            timeout=300)
 
-            skymap = TapPlus(url=("http://skymappertap.asvo.nci.org.au/"
-                                  "ncitap/tap/"),
-                             verbose=False)
+            try:
+                self.data = vquery.query_region(field,
+                                                radius=rad_deg*u.deg,
+                                                catalog="II/358/smss",
+                                                cache=False)[0]
+            except IndexError:
+                if self.display:
+                    print('no data available from {:s}'.format(
+                        self.catalogname))
+                logging.error('no data available from {:s}'.format(
+                    self.catalogname))
+                return 0
 
-            job = skymap.launch_job(("select top 10000 object_id,raj2000,"
-                                     "dej2000,e_raj2000, e_dej2000,"
-                                     "u_psf,e_u_psf,v_psf,e_v_psf,"
-                                     "g_psf,e_g_psf,"
-                                     "r_psf,e_r_psf,i_psf,e_i_psf,"
-                                     "z_psf,e_z_psf "
-                                     "from dr1.master where "
-                                     "(raj2000<{:f} and raj2000>{:f} and"
-                                     " dej2000<{:f} and dej2000>{:f})").
-                                    format(
-                                        ra_deg+rad_deg, ra_deg-rad_deg,
-                                        dec_deg+rad_deg, dec_deg-rad_deg),
-                                    verbose=False)
-
-            self.data = job.get_results()
+            print(self.data.columns)
 
             # rename column names using PP conventions
-            self.data.rename_column('object_id', 'ident')
-            self.data.rename_column('raj2000', 'ra_deg')
-            self.data.rename_column('dej2000', 'dec_deg')
-            self.data.rename_column('e_raj2000', 'e_ra_deg')
-            self.data.rename_column('e_dej2000', 'e_dec_deg')
-            self.data.rename_column('u_psf', 'umag')
-            self.data.rename_column('e_u_psf', 'e_umag')
-            self.data.rename_column('v_psf', 'vmag')
-            self.data.rename_column('e_v_psf', 'e_vmag')
-            self.data.rename_column('g_psf', 'gmag')
-            self.data.rename_column('e_g_psf', 'e_gmag')
-            self.data.rename_column('r_psf', 'rmag')
-            self.data.rename_column('e_r_psf', 'e_rmag')
-            self.data.rename_column('i_psf', 'imag')
-            self.data.rename_column('e_i_psf', 'e_imag')
-            self.data.rename_column('z_psf', 'zmag')
-            self.data.rename_column('e_z_psf', 'e_zmag')
+            self.data.rename_column('ObjectId', 'ident')
+            self.data.rename_column('RAICRS', 'ra_deg')
+            self.data.rename_column('DEICRS', 'dec_deg')
+            self.data.rename_column('e_RAICRS', 'e_ra_deg')
+            self.data['e_ra_deg'].convert_unit_to(u.deg)
+            self.data.rename_column('e_DEICRS', 'e_dec_deg')
+            self.data['e_dec_deg'].convert_unit_to(u.deg)
+            self.data.rename_column('uPSF', 'umag')
+            self.data.rename_column('e_uPSF', 'e_umag')
+            self.data.rename_column('vPSF', 'vmag')
+            self.data.rename_column('e_vPSF', 'e_vmag')
+            self.data.rename_column('gPSF', 'gmag')
+            self.data.rename_column('e_gPSF', 'e_gmag')
+            self.data.rename_column('rPSF', 'rmag')
+            self.data.rename_column('e_rPSF', 'e_rmag')
+            self.data.rename_column('iPSF', 'imag')
+            self.data.rename_column('e_iPSF', 'e_imag')
+            self.data.rename_column('zPSF', 'zmag')
+            # self.data.rename_column('e_zPSF', 'e_zmag')
+            # e_zPSF does not seem to exist...
 
             self.data = self.data[self.data['e_rmag'] <= 0.03]
 
