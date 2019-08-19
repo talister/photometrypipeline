@@ -180,7 +180,7 @@ class catalog(object):
 
     def download_catalog(self, ra_deg, dec_deg, rad_deg,
                          max_sources, save_catalog=False,
-                         max_mag=21):
+                         max_mag=21, use_all_stars=False):
         """
         download existing catalog from VIZIER server using self.catalogname
         input: ra_deg, dec_deg, rad_deg, max_sources, (display_progress),
@@ -263,7 +263,8 @@ class catalog(object):
             self.data['mag'] = self.data['rp1mag']  # use rmag for astrometry
 
             # clip self.data to enforce magnitude error limits
-            self.data = self.data[self.data['e_rp1mag'] <= 0.03]
+            if not use_all_stars:
+                self.data = self.data[self.data['e_rp1mag'] <= 0.03]
 
         # --------------------------------------------------------------------
         # use astroquery vizier query for SkyMapper
@@ -318,7 +319,8 @@ class catalog(object):
             # self.data.rename_column('e_zPSF', 'e_zmag')
             # e_zPSF does not seem to exist...
 
-            self.data = self.data[self.data['e_rmag'] <= 0.03]
+            if not use_all_stars:
+                self.data = self.data[self.data['e_rmag'] <= 0.03]
 
         # --------------------------------------------------------------------
 
@@ -430,11 +432,12 @@ class catalog(object):
 
             # filter columns to only have really good detections
             # see the Vizier webpage for a description of what the flags mean
-            Qflags = set('ABC')  # only A, B, or C flagged detections
-            qmask = [True if not set(item).difference(Qflags) else False
-                     for item in self.data['Qflg']]
-            # filter columns to only have really good detections
-            self.data = self.data[qmask]
+            if not use_all_stars:
+                Qflags = set('ABC')  # only A, B, or C flagged detections
+                qmask = [True if not set(item).difference(Qflags) else False
+                         for item in self.data['Qflg']]
+                # filter columns to only have really good detections
+                self.data = self.data[qmask]
 
             # rename column names using PP conventions
             self.data.rename_column('_2MASS', 'ident')
@@ -620,21 +623,22 @@ class catalog(object):
                 return 0
 
             # apply some quality masks
-            try:
-                mask_primary = self.data['mode'] == 1
-                mask_clean = self.data['clean'] == 1
-                mask_star = self.data['type'] == 6
-                mask_bright = self.data['fiberMag_g'] < max_mag
-                mask = mask_primary & mask_clean & mask_star & mask_bright
-            except TypeError:
-                if self.display:
-                    print('no data available from {:s}'.format(
-                        self.catalogname))
-                logging.error('no data available from {:s}'.format(
-                    self.catalogname))
-                return 0
+            if not use_all_stars:
+                try:
+                    mask_primary = self.data['mode'] == 1
+                    mask_clean = self.data['clean'] == 1
+                    mask_star = self.data['type'] == 6
+                    mask_bright = self.data['fiberMag_g'] < max_mag
+                    mask = mask_primary & mask_clean & mask_star & mask_bright
+                except TypeError:
+                    if self.display:
+                        print('no data available from {:s}'.format(
+                            self.catalogname))
+                        logging.error('no data available from {:s}'.format(
+                            self.catalogname))
+                        return 0
 
-            self.data = self.data[mask]
+                self.data = self.data[mask]
 
             # rename column names using PP conventions
             self.data.rename_column('objID', 'ident')
@@ -970,7 +974,7 @@ class catalog(object):
     def lin_func(self, x, a, b):
         return a*x + b
 
-    def transform_filters(self, targetfilter):
+    def transform_filters(self, targetfilter, use_all_stars=False):
         """
         transform a given catalog into a different filter band; crop the
         resulting catalog to only those sources that have transformed magnitudes
@@ -1007,13 +1011,16 @@ class catalog(object):
                              self['e_umag'].data])
 
             # sort out sources that do not meet the C&G requirements
-            keep_idc = (mags[1]-mags[2] > 0.08) & (mags[1]-mags[2] < 0.5) & \
-                (mags[0]-mags[1] > 0.2) & (mags[0]-mags[1] < 1.4) & \
-                (mags[0] >= 14.5) & (mags[0] < 19.5) & \
-                (mags[1] >= 14.5) & (mags[1] < 19.5) & \
-                (mags[2] >= 14.5) & (mags[2] < 19.5)
-            filtered_mags = np.array([mags[i][keep_idc]
-                                      for i in range(len(mags))])
+            if not use_all_stars:
+                keep_idc = ((mags[1]-mags[2] > 0.08) & (mags[1]-mags[2] < 0.5) &
+                            (mags[0]-mags[1] > 0.2) & (mags[0]-mags[1] < 1.4) &
+                            (mags[0] >= 14.5) & (mags[0] < 19.5) &
+                            (mags[1] >= 14.5) & (mags[1] < 19.5) &
+                            (mags[2] >= 14.5) & (mags[2] < 19.5))
+                filtered_mags = np.array([mags[i][keep_idc]
+                                          for i in range(len(mags))])
+            else:
+                filtered_mags = mags
 
             # ... derive a linear best fit and remove outliers (>3 sigma)
             ri = np.array(filtered_mags[1]) - np.array(filtered_mags[2])
@@ -1103,7 +1110,10 @@ class catalog(object):
                              self['e_imag'].data])
 
             # sort out sources that do not meet the C&G requirements
-            keep_idc = (mags[0]-mags[1] > 0.08) & (mags[0]-mags[1] < 0.5)
+            if not use_all_stars:
+                keep_idc = (mags[0]-mags[1] > 0.08) & (mags[0]-mags[1] < 0.5)
+            else:
+                keep_idc = [True]*len(mags[0])
 
             # transformed magnitudes; uncertainties through Gaussian and C&G2008
             nmags = np.array([np.empty(len(mags[0])),
@@ -1168,6 +1178,9 @@ class catalog(object):
                 # al. 2009, MNRAS
                 if mags[0][idx] > 18 or mags[1][idx] > 17:
                     keep = False
+
+                if use_all_stars:
+                    keep = True
 
                 if keep:
                     # 0.064 (sig: 0.035) is a systematic offset
@@ -1374,9 +1387,10 @@ class catalog(object):
             # transform magnitudes to Johnson-Cousins, Vega system
             # using http://gea.esac.esa.int/archive/documentation/GDR2/Data_processing/chap_cu5pho/sec_cu5pho_calibr/ssec_cu5pho_PhotTransf.html
 
-            colormask = ((self.data['BPmag']-self.data['RPmag'] > -0.5) &
-                         (self.data['BPmag']-self.data['RPmag'] < 2.75))
-            self.data = self.data[colormask]
+            if not use_all_stars:
+                colormask = ((self.data['BPmag']-self.data['RPmag'] > -0.5) &
+                             (self.data['BPmag']-self.data['RPmag'] < 2.75))
+                self.data = self.data[colormask]
 
             g = self.data['Gmag'].data
             e_g = self.data['e_Gmag'].data
@@ -1425,17 +1439,18 @@ class catalog(object):
             # transform magnitudes to Johnson-Cousins, Vega system
             # using http://gea.esac.esa.int/archive/documentation/GDR2/Data_processing/chap_cu5pho/sec_cu5pho_calibr/ssec_cu5pho_PhotTransf.html
 
-            if targetfilter == 'g':
-                colormask = ((self.data['BPmag']-self.data['RPmag'] > -0.5) &
-                             (self.data['BPmag']-self.data['RPmag'] < 2.0))
-            elif targetfilter == 'r':
-                colormask = ((self.data['BPmag']-self.data['RPmag'] > 0.2) &
-                             (self.data['BPmag']-self.data['RPmag'] < 2.7))
-            elif targetfilter == 'i':
-                colormask = ((self.data['BPmag']-self.data['RPmag'] > 0) &
-                             (self.data['BPmag']-self.data['RPmag'] < 4.5))
+            if not use_all_stars:
+                if targetfilter == 'g':
+                    colormask = ((self.data['BPmag']-self.data['RPmag'] > -0.5) &
+                                 (self.data['BPmag']-self.data['RPmag'] < 2.0))
+                elif targetfilter == 'r':
+                    colormask = ((self.data['BPmag']-self.data['RPmag'] > 0.2) &
+                                 (self.data['BPmag']-self.data['RPmag'] < 2.7))
+                elif targetfilter == 'i':
+                    colormask = ((self.data['BPmag']-self.data['RPmag'] > 0) &
+                                 (self.data['BPmag']-self.data['RPmag'] < 4.5))
 
-            self.data = self.data[colormask]
+                self.data = self.data[colormask]
 
             g = self.data['Gmag'].data
             e_g = self.data['e_Gmag'].data
@@ -1500,8 +1515,9 @@ class catalog(object):
                  astropy.table functionality; how about astropy.coord matching?
         """
 
-        this_tree = spatial.KDTree(list(zip(self[match_keys_this_catalog[0]].data,
-                                            self[match_keys_this_catalog[1]].data)))
+        this_tree = spatial.KDTree(
+            list(zip(self[match_keys_this_catalog[0]].data,
+                     self[match_keys_this_catalog[1]].data)))
 
         # kd-tree matching
         if tolerance is not None:

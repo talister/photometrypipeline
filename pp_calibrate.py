@@ -59,7 +59,8 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                              preferred_catalogs,
                              min_sources=_pp_conf.min_sources_photometric_catalog,
                              max_sources=1e4, mag_accuracy=0.1,
-                             solar=False, display=False):
+                             solar=False, use_all_stars=False,
+                             display=False):
     """create a photometric catalog of the field of view"""
 
     for catalogname in preferred_catalogs:
@@ -68,6 +69,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
         # load catalog
         n_sources = cat.download_catalog(ra_deg, dec_deg, rad_deg,
                                          max_sources,
+                                         use_all_stars=use_all_stars,
                                          save_catalog=True)
 
         if display:
@@ -83,7 +85,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             return None
 
         # reject non-solar colors, if requested by user
-        if solar:
+        if solar and not use_all_stars:
             sol_gr = 0.44  # g-r
             sol_ri = 0.11  # r-i
             n_rejected = 0
@@ -100,7 +102,8 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                 n_rejected += cat.reject_sources_with(
                     (cat['rmag']-cat['imag']) > sol_ri+_pp_conf.solcol)
             elif 'PANSTARRS' in cat.catalogname:
-                cat.transform_filters('g')  # derive Sloan griz
+                cat.transform_filters('g')
+                # derive Sloan griz
                 n_rejected += cat.reject_sources_with(
                     (cat['_gmag']-cat['_rmag']) < sol_gr-_pp_conf.solcol)
                 n_rejected += cat.reject_sources_with(
@@ -152,7 +155,8 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             ('GAIA' in catalogname and
              filtername not in {'G', 'RP', 'BP'})):
 
-            n_transformed = cat.transform_filters(filtername)
+            n_transformed = cat.transform_filters(filtername,
+                                                  use_all_stars=use_all_stars)
             if n_transformed == 0:
                 raise ValueError(('unable to transform {:s} to {:s}'.format(
                     cat.catalogname, filtername) +
@@ -202,6 +206,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
 
 
 def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
+                      use_all_stars=False,
                       display=False, diagnostics=False):
     """derive zeropoint for a number of catalogs based on a reference catalog"""
 
@@ -470,6 +475,7 @@ def derive_zeropoints(ref_cat, catalogs, filtername, minstars_external,
 def calibrate(filenames, minstars, manfilter, manualcatalog,
               obsparam, maxflag=3,
               magzp=None, solar=False,
+              use_all_stars=False,
               display=False, diagnostics=False):
     """
     wrapper for photometric calibration
@@ -555,6 +561,7 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
         ref_cat = create_photometrycatalog(ra_deg, dec_deg, rad_deg,
                                            filtername, preferred_catalogs,
                                            max_sources=2e4, solar=solar,
+                                           use_all_stars=use_all_stars,
                                            display=display)
 
     if ref_cat == None:
@@ -634,7 +641,9 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
 
     # match catalogs and derive magnitude zeropoint
     zp_data = derive_zeropoints(ref_cat, catalogs, filtername,
-                                minstars, display=display,
+                                minstars,
+                                use_all_stars=use_all_stars,
+                                display=display,
                                 diagnostics=diagnostics)
 
     # zp_data content
@@ -680,6 +689,9 @@ if __name__ == '__main__':
     parser.add_argument('-solar',
                         help='restrict to solar-color stars',
                         action="store_true", default=False)
+    parser.add_argument('-use_all_stars',
+                        help='ignore all quality checks and use all stars',
+                        action="store_true", default=False)
     parser.add_argument('images', help='images to process', nargs='+')
     args = parser.parse_args()
     minstars = float(args.minstars)
@@ -689,6 +701,7 @@ if __name__ == '__main__':
     instrumental = args.instrumental
     man_magzp = args.magzp
     solar = args.solar
+    use_all_stars = args.use_all_stars
     filenames = args.images
 
     # manfilter: None: instrumental magnitudes, False: no manfilter provided
@@ -720,4 +733,5 @@ if __name__ == '__main__':
     calibration = calibrate(filenames, minstars, manfilter,
                             manualcatalog, obsparam, maxflag=maxflag,
                             magzp=man_magzp, solar=solar,
+                            use_all_stars=use_all_stars,
                             display=True, diagnostics=conf.diagnostics)
