@@ -269,14 +269,7 @@ class catalog(object):
         # --------------------------------------------------------------------
         # use astroquery vizier query for SkyMapper
         elif self.catalogname == 'SkyMapper':
-            vquery = Vizier(columns=['ObjectId', 'RAICRS', 'DEICRS',
-                                     'e_RAICRS', 'e_DEICRS',
-                                     'uPSF', 'e_uPSF',
-                                     'vPSF', 'e_vPSF',
-                                     'gPSF', 'e_gPSF',
-                                     'rPSF', 'e_rPSF',
-                                     'iPSF', 'e_iPSF',
-                                     'zPSF', 'e_zPSF'],
+            vquery = Vizier(columns=['all'],
                             column_filters={"rPSF":
                                             ("<{:f}".format(max_mag))},
                             row_limit=max_sources,
@@ -295,7 +288,19 @@ class catalog(object):
                     self.catalogname))
                 return 0
 
-            print(self.data.columns)
+            # throw out columns we don't need
+            new_data = Table(self.data)
+            for col in self.data.columns:
+                if col not in ['ObjectId', 'RAICRS', 'DEICRS',
+                               'e_RAICRS', 'e_DEICRS',
+                               'uPSF', 'e_uPSF',
+                               'vPSF', 'e_vPSF',
+                               'gPSF', 'e_gPSF',
+                               'rPSF', 'e_rPSF',
+                               'zPSF', 'e_zPSF',
+                               'iPSF', 'e_iPSF']:
+                    new_data.remove_column(col)
+            self.data = new_data
 
             # rename column names using PP conventions
             self.data.rename_column('ObjectId', 'ident')
@@ -305,8 +310,8 @@ class catalog(object):
             self.data['e_ra_deg'].convert_unit_to(u.deg)
             self.data.rename_column('e_DEICRS', 'e_dec_deg')
             self.data['e_dec_deg'].convert_unit_to(u.deg)
-            self.data.rename_column('uPSF', 'umag')
-            self.data.rename_column('e_uPSF', 'e_umag')
+            #self.data.rename_column('uPSF', 'umag')
+            #self.data.rename_column('e_uPSF', 'e_umag')
             self.data.rename_column('vPSF', 'vmag')
             self.data.rename_column('e_vPSF', 'e_vmag')
             self.data.rename_column('gPSF', 'gmag')
@@ -316,8 +321,7 @@ class catalog(object):
             self.data.rename_column('iPSF', 'imag')
             self.data.rename_column('e_iPSF', 'e_imag')
             self.data.rename_column('zPSF', 'zmag')
-            # self.data.rename_column('e_zPSF', 'e_zmag')
-            # e_zPSF does not seem to exist...
+            self.data.rename_column('e_zPSF', 'e_zmag')
 
             if not use_all_stars:
                 self.data = self.data[self.data['e_rmag'] <= 0.03]
