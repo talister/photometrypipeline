@@ -371,6 +371,41 @@ class catalog(object):
 
         # --------------------------------------------------------------------
 
+        elif self.catalogname == 'USNO-B1':
+            # astrometric and photometric catalog
+            vquery = Vizier(columns=['USNO-B1.0', 'RAJ2000', 'DEJ2000',
+                                     'e_RAJ2000', 'e_DEJ2000',
+                                     'R2mag'],
+                            column_filters={"R2mag":
+                                            ("<{:f}".format(max_mag))},
+                            row_limit=max_sources,
+                            timeout=300)
+
+            try:
+                self.data = vquery.query_region(field,
+                                                radius=rad_deg*u.deg,
+                                                catalog="I/284/out",
+                                                cache=False)[0]
+            except IndexError:
+                if self.display:
+                    print('no data available from {:s}'.format(
+                        self.catalogname))
+                logging.error('no data available from {:s}'.format(
+                    self.catalogname))
+                return 0
+
+            # rename column names using PP conventions
+            self.data.rename_column('USNO-B1.0', 'ident')
+            self.data.rename_column('RAJ2000', 'ra_deg')
+            self.data.rename_column('DEJ2000', 'dec_deg')
+            self.data.rename_column('e_RAJ2000', 'e_ra_deg')
+            self.data['e_ra_deg'].convert_unit_to(u.deg)
+            self.data.rename_column('e_DEJ2000', 'e_dec_deg')
+            self.data['e_dec_deg'].convert_unit_to(u.deg)
+            self.data['mag'] = self.data['R2mag']  # required for scamp
+
+        # --------------------------------------------------------------------
+
         elif self.catalogname == 'TGAS':
             # astrometric catalog
             vquery = Vizier(columns=['Source', 'RA_ICRS', 'DE_ICRS',
