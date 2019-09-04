@@ -3,7 +3,7 @@
 from diagnostics import calibration as diag
 from toolbox import *
 from catalog import *
-import diagnostics as diag
+from diagnostics import calibration as diag
 from pp_setup import confcalibrate as conf
 import _pp_conf
 """ PP_CALIBRATE - match image databases against photometry catalogs
