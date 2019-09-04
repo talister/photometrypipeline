@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+from diagnostics import calibration as diag
+from toolbox import *
+from catalog import *
+import diagnostics as diag
+from pp_setup import confcalibrate as conf
+import _pp_conf
 """ PP_CALIBRATE - match image databases against photometry catalogs
                    and derive magnitude zeropoint
     v1.0: 2016-01-15, mommermiscience@gmail.com
@@ -38,11 +44,6 @@ if sys.version_info > (3, 0):
 
 
 # pipeline-specific modules
-import _pp_conf
-from pp_setup import confcalibrate as conf
-import diagnostics as diag
-from catalog import *
-from toolbox import *
 
 # setup logging
 logging.basicConfig(filename=_pp_conf.log_filename,
@@ -51,8 +52,6 @@ logging.basicConfig(filename=_pp_conf.log_filename,
                     datefmt=_pp_conf.log_datefmt)
 
 # photometric fitting routines
-
-from diagnostics import calibration as diag
 
 
 def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
@@ -88,6 +87,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
         if solar and not use_all_stars:
             sol_gr = 0.44  # g-r
             sol_ri = 0.11  # r-i
+            sol_JH = 0.29  # J-H
             n_rejected = 0
             n_raw = cat.shape[0]
             if ('SDSS' in cat.catalogname or
@@ -122,6 +122,11 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                     (cat['_rmag']-cat['_imag']) < sol_ri-_pp_conf.solcol)
                 n_rejected += cat.reject_sources_with(
                     (cat['_rmag']-cat['_imag']) > sol_ri+_pp_conf.solcol)
+            elif '2MASS' in cat.catalogname:
+                # derive UKIRT ZJHK (Casagrande et al. 2012)
+                cat.transform_filters('K')
+                n_rejected += cat.reject_sources_with(
+                    (cat['_Jmag']-cat['_Hmag']) < sol_JH-_pp_conf.solcol)
             else:
                 if display:
                     print('Warning: solar colors not supported for catalog',
@@ -137,6 +142,8 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                             format(n_raw-n_rejected))
             cat.catalogname += '_solar'
 
+        print(catalogname, filtername)
+
         # transform catalog to requested filtername, if necessesary
         if (n_sources > 0 and
             ('SDSS' in catalogname and
@@ -146,7 +153,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             ('APASS' in catalogname and
              filtername not in {'B', 'V', 'g', 'r', 'i'}) or
             ('2MASS' in catalogname and
-             filtername not in {'J', 'H', 'K', 'Ks'}) or
+             filtername not in {'J', 'H', 'Ks'}) or
             ('PANSTARRS' in catalogname and
              filtername not in {'gp1', 'rp1', 'ip1', 'zp1', 'yp1'}) or
             ('SkyMapper' in catalogname and

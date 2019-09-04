@@ -1,3 +1,5 @@
+import _pp_conf
+from pandas import read_sql
 """
 CATALOG - class structure for dealing with astronomical catalogs,
           FITS_LDAC files, and sqlite databases.
@@ -37,7 +39,6 @@ from astropy.io import fits
 import scipy.optimize as optimization
 import warnings
 warnings.simplefilter("ignore", UserWarning)
-from pandas import read_sql
 
 
 try:
@@ -61,7 +62,6 @@ sql.register_adapter(np.int64, int)
 sql.register_adapter(np.int32, int)
 
 # import pp modules
-import _pp_conf
 
 # setup logging
 logging.basicConfig(filename=_pp_conf.log_filename,
