@@ -82,6 +82,9 @@ observatories/instruments:
 +--------------------------+--------------------+----------------+
 | San Pedro Martir 84cm    | Mexman (E2V CCD)   | MEXMAN         |
 +--------------------------+--------------------+----------------+
+| Steward Observatory 90"  | Spacewatch Camera  | STEWARD90SCC   |
+| Bok Telescope            |                    |                |
++--------------------------+--------------------+----------------+
 | SOAR 4.1m                | Goodman (**)       | SOARGOODMAN    |
 +--------------------------+--------------------+----------------+
 | Sutherland 40-inch       | SHA                | SL40IN         |
