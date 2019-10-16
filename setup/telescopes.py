@@ -1452,8 +1452,8 @@ soargoodman_param = {
     'aprad_default': 4,  # default aperture radius in px
     'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/soargoodman.sex',
-    'mask_file': {}, {'1,1': rootpath+'/setup/mask_soargoodman_1x1.fits',
-                      '2,2': rootpath+'/setup/mask_soargoodman_2x2.fits'},
+    'mask_file': {'1,1': rootpath+'/setup/mask_soargoodman_1x1.fits',
+                  '2,2': rootpath+'/setup/mask_soargoodman_2x2.fits'},
     #                        mask files as a function of x,y binning
 
     # registration settings (Scamp)
@@ -3937,7 +3937,7 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'MMT Rapid Imager': 'MMTCAM',
                           'LDSS3-C': 'MAGLDSS3',
                           'Finger Lakes Instr. ProLine Model PL23042, S/N PL0101015':
-                              'STEWARD90SCC',}
+                              'STEWARD90SCC', }
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
