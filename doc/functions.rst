@@ -211,6 +211,7 @@ the logical order:
                             curve-of-growth analysis
    :param -target_only: only account for the target in the
                         curve-of-growth analysis
+   :param -nodeblending: (optional) deactives Source Extractor deblending
    :param images: images to run `pp_photometry` on
 
 
