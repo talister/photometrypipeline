@@ -3909,6 +3909,57 @@ struvecquean_param = {
     'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
+ztfmosaic_param = {
+    'telescope_instrument': 'ZTF/MOSAIC',  # telescope/instrument name
+    'telescope_keyword': 'ZTFMOSAIC',  # telescope/instrument keyword
+    'observatory_code': 'I41',  # MPC observatory code
+    'secpix': (1.012, 1.012),  # pixel size (arcsec) before binning
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('CCDSUM#blank0', 'CCDSUM#blank1'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),  # N_pixels in x/y
+    'ra': 'OBJRAD',  # telescope pointing, RA
+    'dec': 'OBJDECD',  # telescope pointin, Dec
+    'radec_separator': 'XXX',  # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'OBSJD',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'ZTF_g': 'g', 'ZTF_r': 'r'},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+    # source extractor settings
+    'source_minarea': 12,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath + '/setup/ztfmosaic.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # scamp settings
+    'scamp-config-file': rootpath + '/setup/ztfmosaic.scamp',
+    'reg_max_mag': 19,
+    'reg_search_radius': 0.1,  # deg
+    'source_tolerance': 'high',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9']
+}
 
 # access functions for telescope configurations
 
@@ -3931,7 +3982,8 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'LCOSPECFS01', 'P60OPT', 'P60SEDM', 'GMOSN',
                           'DFOSC', 'LONEOS', 'PDO25CMF63ST8', 'PDO05F81KAF1001E',
                           'PDS35CMSTL1001E', 'MMTCAM', 'MAGLDSS3',
-                          'SL40IN', 'STEWARD90SCC', 'STRUVECQUEAN']
+                          'SL40IN', 'STEWARD90SCC', 'STRUVECQUEAN',
+                          'ZTFMOSAIC']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword
@@ -4004,7 +4056,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'LDSS3-C': 'MAGLDSS3',
                           'Finger Lakes Instr. ProLine Model PL23042, S/N PL0101015':
                               'STEWARD90SCC',
-                          '2.1m Otto Struve': 'STRUVECQUEAN'}
+                          '2.1m Otto Struve': 'STRUVECQUEAN',
+                          'ZTF/MOSAIC': 'ZTFMOSAIC'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
@@ -4065,7 +4118,7 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'SL40IN': sl40in_param,
                         'STEWARD90SCC': steward90scc_param,
                         'STRUVECQUEAN': struvecquean_param,
-                        }
+                        'ZTFMOSAIC': ztfmosaic_param}
 
 
 # append mytelescopes.py, if available

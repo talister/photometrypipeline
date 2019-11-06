@@ -4,7 +4,7 @@ Functions
 The individual pipeline functions are introduced and explained
 below. All functions presented here can be called from the terminal. 
 
-.. function:: pp_run ([-prefix string], [-target string], [-filter string], [-fixed_aprad float], [-solar], images)
+.. function:: pp_run ([-prefix string], [-target string], [-filter string], [-fixed_aprad float], [-solar], [-rerun_registration], [-asteroids], [-keep_wcs], images)
 
    serves as a wrapper for all the individual pipeline processes
 
@@ -35,9 +35,8 @@ below. All functions presented here can be called from the terminal.
 			       all frames registered successfull during
 			       the first try.
    :param -asteroids: (optional) make use of ``-asteroids`` option of
-                      :func:`pp_distill`
-   :param -filter: (optional) make use of ``-filter`` option of
-                   :func:`pp_distill`, default: ``pos``
+                  :func:`pp_distill`
+   :param -keep_wcs: (optional) skip registration and keep wcs information 
    :param images: images on which the pipeline is supposed to run,
                   wildcard symbols (``'*'``, ``'?'``) can be used; or,
                   by using ``all``, PP runs on all FITS files in

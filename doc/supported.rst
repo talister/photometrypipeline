@@ -103,6 +103,8 @@ observatories/instruments:
 +--------------------------+--------------------+----------------+
 | WIYN 0.9m                | Half Degree Imager | WIYN09HDI      |
 +--------------------------+--------------------+----------------+
+| ZTF                      | Mosaic (***)       | ZTFMOSAIC      |
++--------------------------+--------------------+----------------+
 | Generic Telescope        | any                | GENERIC        |
 +--------------------------+--------------------+----------------+
 
@@ -116,6 +118,10 @@ that force astropy to crash; in order to use PP, please remove header
 keywords ``PARAM0``, ``PARAM61``, ``PARAM62``, and ``PARAM63`` prior
 to running PP, e.g., using the ``delhead`` command provided by
 `WCSTools`_.
+
+(***): wcs provided with telescope data is usually excellent; in this case
+I suggest skipping registration and to use ``pp_run`` with the
+``-keep_wcs`` option.
 
 It is recommended to stitch images from cameras with multiple amplifiers
 together using the correct orientations.
