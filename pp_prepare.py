@@ -234,7 +234,8 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
                               'AP_0_1', 'AP_0_2', 'AP_1_0', 'AP_1_1',
                               'AP_2_0', 'BP_ORDER', 'BP_0_0', 'BP_0_1',
                               'BP_0_2', 'BP_1_0', 'BP_1_1', 'BP_2_0',
-                              'CDELT1', 'CDELT2', 'CRDELT1', 'CRDELT2'] +
+                              'CDELT1', 'CDELT2', 'CRDELT1', 'CRDELT2',
+                              'PROJP1', 'PROJP2', 'PROJP3', 'CUNIT1', 'CUNIT2'] +
                              ['TR{}_{}'.format(i, j)
                               for i in range(1, 3)
                               for j in range(15)]):

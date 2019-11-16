@@ -32,6 +32,8 @@ observatories/instruments:
 +--------------------------+--------------------+----------------+
 | Gran Canaria 1.5m        | MUSCAT2            | TCS15MUSCAT2   |
 +--------------------------+--------------------+----------------+
+| INT                      | WFC                | INTWFC         |
++--------------------------+--------------------+----------------+
 | IRSF 1.4m                | SIRIUS             | IRSFSIRIUS     |
 +--------------------------+--------------------+----------------+
 | KMTnet SAAO              | --- (*)            | KMTNETS        |
@@ -124,7 +126,9 @@ I suggest skipping registration and to use ``pp_run`` with the
 ``-keep_wcs`` option.
 
 It is recommended to stitch images from cameras with multiple amplifiers
-together using the correct orientations.
+together using the correct orientations. Furthermore, it is recommended to
+flatten FITS files with multiple headers by simply combining the individual
+headers under a single extension.
  
 If you would like to use the pipeline for other observatories, please
 contact me.

@@ -3961,6 +3961,72 @@ ztfmosaic_param = {
     'photometry_catalogs': ['PANSTARRS', 'SDSS-R9']
 }
 
+# INT, WFC
+intwfc_param = {
+    'telescope_instrument': 'INT/WFC',  # telescope/instrument name
+    'telescope_keyword': 'INTWFC',      # telescope/instrument keyword
+    'observatory_code': '950',         # MPC observatory code
+    'secpix': (0.333, 0.333),  # pixel size (arcsec)
+    # before binning
+    'ext_coeff': 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 90,
+
+    # instrument-specific FITS header keywords
+    'binning': ('CCDXBIN', 'CCDYBIN'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': ':',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS|UT',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'WFFBAND',  # filter keyword
+    'filter_translations': {'V': 'V'},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 12,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 12],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/intwfc.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/intwfc.scamp',
+    'reg_max_mag': 19,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('TELESCOP,INSTRUME,FILTER,EXPTIME,OBJECT,' +
+                      'DATE-OBS,UT,RA,DEC,SECPIX,AIRMASS,' +
+                      'TEL_KEYW,CCDXBIN,CCDYBIN,MIDTIMJD'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file': rootpath+'/setup/intwfc.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
+}
+
+
 # access functions for telescope configurations
 
 
@@ -4057,7 +4123,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'Finger Lakes Instr. ProLine Model PL23042, S/N PL0101015':
                               'STEWARD90SCC',
                           '2.1m Otto Struve': 'STRUVECQUEAN',
-                          'ZTF/MOSAIC': 'ZTFMOSAIC'}
+                          'ZTF/MOSAIC': 'ZTFMOSAIC',
+                          'WFC': 'INTWFC'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
@@ -4118,7 +4185,8 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'SL40IN': sl40in_param,
                         'STEWARD90SCC': steward90scc_param,
                         'STRUVECQUEAN': struvecquean_param,
-                        'ZTFMOSAIC': ztfmosaic_param}
+                        'ZTFMOSAIC': ztfmosaic_param,
+                        'INTWFC': intwfc_param}
 
 
 # append mytelescopes.py, if available
