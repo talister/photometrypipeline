@@ -4026,6 +4026,71 @@ intwfc_param = {
     'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
+# NOT, ALFOSC
+notalfosc_param = {
+    'telescope_instrument': 'NOT/ALFOSC',  # telescope/instrument name
+    'telescope_keyword': 'NOTALFOSC',      # telescope/instrument keyword
+    'observatory_code': 'Z18',         # MPC observatory code
+    'secpix': (0.2138, 0.2138),  # pixel size (arcsec)
+    # before binning
+    'ext_coeff': 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('DETXBIN', 'DETYBIN'),  # binning in x/y
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': 'XXX',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'ALFLTNM',  # filter keyword
+    'filter_translations': {'Open': None},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 12,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 5,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/notalfosc.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/notalfosc.scamp',
+    'reg_max_mag': 19,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('TELESCOP,INSTRUME,ALFTLNM,EXPTIME,OBJECT,' +
+                      'DATE-OBS,RA,DEC,SECPIX,AIRMASS,' +
+                      'TEL_KEYW,DETXBIN,DETYBIN,MIDTIMJD'),
+    #                         keywords to be copied in image
+    #                         combination using swarp
+    'swarp-config-file': rootpath+'/setup/notalfosc.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
+}
+
 
 # access functions for telescope configurations
 
@@ -4049,7 +4114,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'DFOSC', 'LONEOS', 'PDO25CMF63ST8', 'PDO05F81KAF1001E',
                           'PDS35CMSTL1001E', 'MMTCAM', 'MAGLDSS3',
                           'SL40IN', 'STEWARD90SCC', 'STRUVECQUEAN',
-                          'ZTFMOSAIC']
+                          'ZTFMOSAIC', 'NOTALFOSC']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword
@@ -4124,7 +4189,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                               'STEWARD90SCC',
                           '2.1m Otto Struve': 'STRUVECQUEAN',
                           'ZTF/MOSAIC': 'ZTFMOSAIC',
-                          'WFC': 'INTWFC'}
+                          'WFC': 'INTWFC',
+                          'ALFOSC_FASU': 'NOTALFOSC'}
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
@@ -4186,7 +4252,8 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'STEWARD90SCC': steward90scc_param,
                         'STRUVECQUEAN': struvecquean_param,
                         'ZTFMOSAIC': ztfmosaic_param,
-                        'INTWFC': intwfc_param}
+                        'INTWFC': intwfc_param,
+                        'NOTALFOSC': notalfosc_param, }
 
 
 # append mytelescopes.py, if available
