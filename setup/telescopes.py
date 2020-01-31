@@ -4138,7 +4138,7 @@ nextfli_param = {
     'reg_max_mag': 19,
     'reg_search_radius': 0.5,  # deg
     'source_tolerance': 'high',
-    
+
     # swarp settings
     'copy_keywords': ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
                       'DATE-OBS,TEL_KEYW,XBINNING,YBINNING,' +
@@ -4150,6 +4150,73 @@ nextfli_param = {
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
     'photometry_catalogs': ['PANSTARRS']
+}
+
+# GTC, OSIRIS
+gtcosiris_param = {
+    'telescope_instrument': 'GTC/OSIRIS',  # telescope/instrument name
+    'telescope_keyword': 'GTCOSIRIS',  # telescope/instrument keyword
+    'observatory_code': 'Z18',         # MPC observatory code
+    'secpix': (0.127, 0.127),  # pixel size (arcsec)
+    # before binning
+    'ext_coeff': 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('CCDSUM#blank0', 'CCDSUM#blank1'),
+    # binning in x/y, '_blankN' denotes that both axes
+    # are listed in one keyword, sep. by blanks
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': ':',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER2',  # filter keyword
+    'filter_translations': {'Sloan_r': 'r'},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 9,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 4,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/dctlmi.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/dctlmi.scamp',
+    'reg_max_mag': 19,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
+                      'DATE-OBS,RA,DEC,AIRMASS,TEL_KEYW,CCDSUM,' +
+                      'FILTER2,MIDTIMJD'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file': rootpath+'/setup/dctlmi.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
 
@@ -4175,7 +4242,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'DFOSC', 'LONEOS', 'PDO25CMF63ST8', 'PDO05F81KAF1001E',
                           'PDS35CMSTL1001E', 'MMTCAM', 'MAGLDSS3',
                           'SL40IN', 'STEWARD90SCC', 'STRUVECQUEAN',
-                          'ZTFMOSAIC', 'NOTALFOSC', 'NEXT']
+                          'ZTFMOSAIC', 'NOTALFOSC', 'NEXT', 'GTCOSIRIS']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword
@@ -4252,7 +4319,9 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'ZTF/MOSAIC': 'ZTFMOSAIC',
                           'WFC': 'INTWFC',
                           'ALFOSC_FASU': 'NOTALFOSC',
-                          'FLI': 'NEXT'}
+                          'FLI': 'NEXT',
+                          'OSIRIS': 'GTCOSIRIS'
+                          }
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
@@ -4316,7 +4385,8 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'ZTFMOSAIC': ztfmosaic_param,
                         'INTWFC': intwfc_param,
                         'NOTALFOSC': notalfosc_param,
-                        'NEXT': nextfli_param}
+                        'NEXT': nextfli_param,
+                        'GTCOSIRIS': gtcosiris_param}
 
 
 # append mytelescopes.py, if available
