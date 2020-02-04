@@ -91,7 +91,6 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             n_rejected = 0
             n_raw = cat.shape[0]
             if ('SDSS' in cat.catalogname or
-                'SkyMapper' in cat.catalogname or
                     'APASS' in cat.catalogname):
                 n_rejected += cat.reject_sources_with(
                     (cat['gmag']-cat['rmag']) < sol_gr-_pp_conf.solcol)
@@ -101,6 +100,16 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                     (cat['rmag']-cat['imag']) < sol_ri-_pp_conf.solcol)
                 n_rejected += cat.reject_sources_with(
                     (cat['rmag']-cat['imag']) > sol_ri+_pp_conf.solcol)
+            elif 'SkyMapper' in cat.catalogname:
+                cat.transform_filters('g')  # derive Sloan griz
+                n_rejected += cat.reject_sources_with(
+                    (cat['_gmag']-cat['_rmag']) < sol_gr-_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['_gmag']-cat['_rmag']) > sol_gr+_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['_rmag']-cat['_imag']) < sol_ri-_pp_conf.solcol)
+                n_rejected += cat.reject_sources_with(
+                    (cat['_rmag']-cat['_imag']) > sol_ri+_pp_conf.solcol)
             elif 'PANSTARRS' in cat.catalogname:
                 cat.transform_filters('g')
                 # derive Sloan griz
@@ -157,7 +166,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
             ('PANSTARRS' in catalogname and
              filtername not in {'gp1', 'rp1', 'ip1', 'zp1', 'yp1'}) or
             ('SkyMapper' in catalogname and
-             filtername not in {'g', 'r', 'i', 'z'}) or
+             filtername not in {'gsm', 'rsm', 'ism', 'zsm'}) or
 
             ('GAIA' in catalogname and
              filtername not in {'G', 'RP', 'BP'})):
