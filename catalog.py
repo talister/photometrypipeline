@@ -1035,7 +1035,7 @@ class catalog(object):
         # SDSS to BVRI
         # transformations based on Chonis & Gaskell 2008, AJ, 135
         if ((('SDSS' in self.catalogname) and
-                (targetfilter in {'B', 'V', 'R', 'I'})):
+                (targetfilter in {'B', 'V', 'R', 'I'}))):
 
             logging.info(('trying to transform {:d} SDSS sources to '
                           + '{:s}').format(self.shape[0], targetfilter))
