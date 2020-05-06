@@ -101,7 +101,7 @@ if __name__ == '__main__':
     fixed_aprad = float(args.fixed_aprad)
     snr = float(args.snr)
     solar = args.solar
-    reject = args.reject[0]
+    reject = args.reject
     filenames = args.images
 
     # use current directory as root directory

@@ -25,10 +25,11 @@ import logging
 import subprocess
 
 from astropy.io import fits
-from astropy import wcs
 from astropy.visualization import (ZScaleInterval, ImageNormalize,
                                    LogStretch, LinearStretch)
 from astropy.time import Time
+from astropy import wcs
+
 
 try:
     import matplotlib
@@ -489,7 +490,7 @@ class Registration_Diagnostics(Diagnostics_Html):
                                 s=5, marker='o', edgecolors='red',
                                 linewidth=self.conf.overlay_lg_linewidth,
                                 facecolor='none')
-                except astropy.wcs._wcs.InvalidTransformError:
+                except wcs._wcs.InvalidTransformError:
                     logging.error('could not plot reference sources due to '
                                   'astropy.wcs._wcs.InvalidTransformError; '
                                   'most likely unknown distortion '
