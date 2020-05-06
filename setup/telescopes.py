@@ -4030,7 +4030,7 @@ intwfc_param = {
 notalfosc_param = {
     'telescope_instrument': 'NOT/ALFOSC',  # telescope/instrument name
     'telescope_keyword': 'NOTALFOSC',      # telescope/instrument keyword
-    'observatory_code': 'Z18',         # MPC observatory code
+    'observatory_code': 'Z23',         # MPC observatory code
     'secpix': (0.2138, 0.2138),  # pixel size (arcsec)
     # before binning
     'ext_coeff': 0.05,          # typical extinction coefficient
@@ -4057,7 +4057,9 @@ notalfosc_param = {
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
     'filter': 'ALFLTNM',  # filter keyword
-    'filter_translations': {'Open': None},
+    'filter_translations': {'Open': None, 'U_Bes 362_60': 'U',
+                            'B_Bes 440_100': 'B', 'V_Bes 530_80': 'V',
+                            'R_Bes 650_130': 'R', 'i_int 797_157': 'I'},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
@@ -4091,12 +4093,12 @@ notalfosc_param = {
     'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
-# iac_80 setup parameters
-iac80_param = {
-    'telescope_instrument': 'IAC80/SI600 CCD Camera',  # telescope/instrument name
-    'telescope_keyword': 'IAC80',  # telescope/instrument keyword
-    'observatory_code': '954',  # MPC observatory code
-    'secpix': (0.304, 0.304),  # pixel size (arcsec) before binning
+# NEXT
+nextfli_param = {
+    'telescope_instrument': 'NEXT',  # telescope/instrument name
+    'telescope_keyword': 'NEXT',  # telescope/instrument keyword
+    'observatory_code': 'C42',  # MPC observatory code
+    'secpix': (0.64, 0.64),  # pixel size (arcsec) before binning
 
     # image orientation preferences
     'flipx': False,
@@ -4104,22 +4106,22 @@ iac80_param = {
     'rotate': 0,
 
     # instrument-specific FITS header keywords
-    'binning': ('CCDSUM#blank0', 'CCDSUM#blank1'),  # binning in x/y
+    'binning': ('XBINNING', 'YBINNING'),  # binning in x/y
     'extent': ('NAXIS1', 'NAXIS2'),  # N_pixels in x/y
     'ra': 'RA',  # telescope pointing, RA
     'dec': 'DEC',  # telescope pointin, Dec
-    'radec_separator': ':',  # RA/Dec hms separator, use 'XXX'
+    'radec_separator': ' ',  # RA/Dec hms separator, use 'XXX'
     # if already in degrees
-    'date_keyword': 'DATE-OBS|UT',  # obs date/time
+    'date_keyword': 'DATE-OBS',  # obs date/time
     # keyword; use
     # 'date|time' if
     # separate
-    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    'obsmidtime_jd': 'MJD-OBS',  # obs midtime jd keyword
     # (usually provided by
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
-    'filter': 'INSFILTE',  # filter keyword
-    'filter_translations': {'R': 'R'},
+    'filter': 'FILTER',  # filter keyword
+    'filter_translations': {'V': 'V', 'R': 'R', 'B': 'B', 'g2': 'g', 'r2': 'r', 'i2': 'i'},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
@@ -4129,26 +4131,104 @@ iac80_param = {
     'source_snr': 3,  # default sextractor source snr for registration
     'aprad_default': 5,  # default aperture radius in px
     'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
-    'sex-config-file': rootpath + '/setup/iac80.sex',
+    'sex-config-file': rootpath + '/setup/next.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
 
     # scamp settings
-    'scamp-config-file': rootpath + '/setup/iac80.scamp',
+    'scamp-config-file': rootpath + '/setup/next.scamp',
+
     'reg_max_mag': 19,
     'reg_search_radius': 0.5,  # deg
     'source_tolerance': 'high',
 
     # swarp settings
     'copy_keywords': ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
-                      'DATE-OBS,TEL_KEYW'),
+                      'DATE-OBS,TEL_KEYW,XBINNING,YBINNING,' +
+                      'FILTER,RA,DEC'),
     #                        keywords to be copied in image
     #                        combination using swarp
-    'swarp-config-file': rootpath+'/setup/iac80.swarp',
+    'swarp-config-file': rootpath+'/setup/next.swarp',
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9', '2MASS']
+    'photometry_catalogs': ['PANSTARRS']
+}
+
+                      
+# CFHT, MegaPrime
+cfhtmegaprime_param = {
+    'telescope_instrument': 'CFHT/MegaPrime',  # telescope/instrument name
+    'telescope_keyword': 'CFHTMEGAPRIME',  # telescope/instrument keyword
+    'observatory_code': '568',         # MPC observatory code
+    'secpix': (0.185, 0.185),  # pixel size (arcsec)
+=======
+
+# GTC, OSIRIS
+gtcosiris_param = {
+    'telescope_instrument': 'GTC/OSIRIS',  # telescope/instrument name
+    'telescope_keyword': 'GTCOSIRIS',  # telescope/instrument keyword
+    'observatory_code': 'Z18',         # MPC observatory code
+    'secpix': (0.127, 0.127),  # pixel size (arcsec)
+    # before binning
+    'ext_coeff': 0.05,          # typical extinction coefficient
+
+
+    # image orientation preferences
+    'flipx': True,
+    'flipy': False,
+    'rotate': 0,
+
+    # instrument-specific FITS header keywords
+    'binning': ('CCDSUM#blank0', 'CCDSUM#blank1'),
+    # binning in x/y, '_blankN' denotes that both axes
+    # are listed in one keyword, sep. by blanks
+    'extent': ('NAXIS1', 'NAXIS2'),   # N_pixels in x/y
+    'ra': 'RA',  # telescope pointing, RA
+    'dec': 'DEC',  # telescope pointin, Dec
+    'radec_separator': ':',   # RA/Dec hms separator, use 'XXX'
+    # if already in degrees
+    'date_keyword': 'DATE-OBS',  # obs date/time
+    # keyword; use
+    # 'date|time' if
+    # separate
+    'obsmidtime_jd': 'MIDTIMJD',  # obs midtime jd keyword
+    # (usually provided by
+    # pp_prepare
+    'object': 'OBJECT',  # object name keyword
+    'filter': 'FILTER2',  # filter keyword
+    'filter_translations': {'Sloan_r': 'r'},
+    # filtername translation dictionary
+    'exptime': 'EXPTIME',  # exposure time keyword (s)
+    'airmass': 'AIRMASS',  # airmass keyword
+
+
+    # source extractor settings
+    'source_minarea': 9,  # default sextractor source minimum N_pixels
+    'source_snr': 3,  # default sextractor source snr for registration
+    'aprad_default': 4,  # default aperture radius in px
+    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'sex-config-file': rootpath+'/setup/dctlmi.sex',
+    'mask_file': {},
+    #                        mask files as a function of x,y binning
+
+    # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/dctlmi.scamp',
+    'reg_max_mag': 19,
+    'reg_search_radius': 0.5,  # deg
+    'source_tolerance': 'high',
+
+    # swarp settings
+    'copy_keywords': ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
+                      'DATE-OBS,RA,DEC,AIRMASS,TEL_KEYW,CCDSUM,' +
+                      'FILTER2,MIDTIMJD'),
+    #                        keywords to be copied in image
+    #                        combination using swarp
+    'swarp-config-file': rootpath+'/setup/dctlmi.swarp',
+
+    # default catalog settings
+    'astrometry_catalogs': ['GAIA'],
+    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
 # CFHT, MegaPrime
@@ -4175,7 +4255,7 @@ cfhtmegaprime_param = {
     'dec': 'DEC',  # telescope pointin, Dec
     'radec_separator': ':',   # RA/Dec hms separator, use 'XXX'
     # if already in degrees
-    'date_keyword': 'DATE-OBS|UTC-OBS',  # obs date/time
+    'date_keyword': 'DATE-OBS',  # obs date/time
     # keyword; use
     # 'date|time' if
     # separate
@@ -4183,8 +4263,8 @@ cfhtmegaprime_param = {
     # (usually provided by
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
-    'filter': 'FILTER',  # filter keyword
-    'filter_translations': {'r.MP9602': 'r'},
+    'filter': 'FILTER2',  # filter keyword
+    'filter_translations': {'Sloan_r': 'r'},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
@@ -4206,9 +4286,9 @@ cfhtmegaprime_param = {
     'source_tolerance': 'high',
 
     # swarp settings
-    'copy_keywords': ('TELESCOP,INSTRUME,EXPTIME,OBJECT,' +
+    'copy_keywords': ('OBSERVAT,INSTRUME,EXPTIME,OBJECT,' +
                       'DATE-OBS,RA,DEC,AIRMASS,TEL_KEYW,CCDSUM,' +
-                      'FILTER,MIDTIMJD'),
+                      'FILTER2,MIDTIMJD'),
     #                        keywords to be copied in image
     #                        combination using swarp
     'swarp-config-file': rootpath+'/setup/dctlmi.swarp',
@@ -4218,7 +4298,7 @@ cfhtmegaprime_param = {
     'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
-
+    
 # access functions for telescope configurations
 
 
@@ -4241,8 +4321,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'DFOSC', 'LONEOS', 'PDO25CMF63ST8', 'PDO05F81KAF1001E',
                           'PDS35CMSTL1001E', 'MMTCAM', 'MAGLDSS3',
                           'SL40IN', 'STEWARD90SCC', 'STRUVECQUEAN',
-                          'ZTFMOSAIC', 'NOTALFOSC', 'IAC80',
-                          'CFHTMEGAPRIME']
+                          'ZTFMOSAIC', 'NOTALFOSC', 'NEXT', 'GTCOSIRIS']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword
@@ -4319,8 +4398,11 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'ZTF/MOSAIC': 'ZTFMOSAIC',
                           'WFC': 'INTWFC',
                           'ALFOSC_FASU': 'NOTALFOSC',
-                          'SI600 CCD Camera': 'IAC80',
+                          'FLI': 'NEXT',
+                          'OSIRIS': 'GTCOSIRIS'
                           'MegaPrime': 'CFHTMEGAPRIME',}
+
+>>>>>>> cc302ad0f48c40e2d5f38ecd3d02e1e316523128
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
@@ -4384,8 +4466,11 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'ZTFMOSAIC': ztfmosaic_param,
                         'INTWFC': intwfc_param,
                         'NOTALFOSC': notalfosc_param,
+                        'NEXT': nextfli_param,
+                        'GTCOSIRIS': gtcosiris_param,
                         'IAC80': iac80_param,
                         'CFHTMEGAPRIME': cfhtmegaprime_param}
+
 
 
 # append mytelescopes.py, if available

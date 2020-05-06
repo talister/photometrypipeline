@@ -312,19 +312,19 @@ class catalog(object):
             self.data['e_dec_deg'].convert_unit_to(u.deg)
             #self.data.rename_column('uPSF', 'umag')
             #self.data.rename_column('e_uPSF', 'e_umag')
-            self.data.rename_column('vPSF', 'vmag')
-            self.data.rename_column('e_vPSF', 'e_vmag')
-            self.data.rename_column('gPSF', 'gmag')
-            self.data.rename_column('e_gPSF', 'e_gmag')
-            self.data.rename_column('rPSF', 'rmag')
-            self.data.rename_column('e_rPSF', 'e_rmag')
-            self.data.rename_column('iPSF', 'imag')
-            self.data.rename_column('e_iPSF', 'e_imag')
-            self.data.rename_column('zPSF', 'zmag')
-            self.data.rename_column('e_zPSF', 'e_zmag')
+            self.data.rename_column('vPSF', 'vsmmag')
+            self.data.rename_column('e_vPSF', 'e_vsmmag')
+            self.data.rename_column('gPSF', 'gsmmag')
+            self.data.rename_column('e_gPSF', 'e_gsmmag')
+            self.data.rename_column('rPSF', 'rsmmag')
+            self.data.rename_column('e_rPSF', 'e_rsmmag')
+            self.data.rename_column('iPSF', 'ismmag')
+            self.data.rename_column('e_iPSF', 'e_ismmag')
+            self.data.rename_column('zPSF', 'zsmmag')
+            self.data.rename_column('e_zPSF', 'e_zsmmag')
 
             if not use_all_stars:
-                self.data = self.data[self.data['e_rmag'] <= 0.03]
+                self.data = self.data[self.data['e_rsmmag'] <= 0.03]
 
         # --------------------------------------------------------------------
 
@@ -1034,9 +1034,8 @@ class catalog(object):
 
         # SDSS to BVRI
         # transformations based on Chonis & Gaskell 2008, AJ, 135
-        if ((('SDSS' in self.catalogname) or
-             ('SkyMapper' in self.catalogname)) and
-                (targetfilter in {'B', 'V', 'R', 'I'})):
+        if ((('SDSS' in self.catalogname) and
+                (targetfilter in {'B', 'V', 'R', 'I'}))):
 
             logging.info(('trying to transform {:d} SDSS sources to '
                           + '{:s}').format(self.shape[0], targetfilter))
@@ -1348,6 +1347,7 @@ class catalog(object):
             ierr_sdss = np.sqrt(e_i**2 + 0.004**2)
             z_sdss = (z + 0.013 - 0.039*(g-r) - 0.012*(g-r)**2)
             zerr_sdss = np.sqrt(e_z**2 + 0.01**2)
+            
 
             self.data.add_column(Column(data=g_sdss, name='_gmag',
                                         unit=u.mag))
@@ -1376,6 +1376,123 @@ class catalog(object):
                           'to {:s}').format(self.shape[0], targetfilter))
 
             return self.shape[0]
+        
+
+        # SkyMapper to Sloan griz
+        elif ('SkyMapper' in self.catalogname and
+              targetfilter in ['g', 'r', 'i', 'z']):
+
+            logging.info(('trying to transform {:d} SkyMapper sources to '
+                          + '{:s}').format(self.shape[0], targetfilter))
+
+            # transform magnitudes to SDSS AB system
+            # using linear transformation equations derived from data in Wolf et al. 2018 PASA Vol 35
+            # uncertainties from linear fit 
+
+            g = self.data['gsmmag'].data
+            e_g = self.data['e_gsmmag'].data
+            r = self.data['rsmmag'].data
+            e_r = self.data['e_rsmmag'].data
+            i = self.data['ismmag'].data
+            e_i = self.data['e_ismmag'].data
+            z = self.data['zsmmag'].data
+            e_z = self.data['e_zsmmag'].data
+            
+            
+            #g mag
+            g_sdss = np.zeros(g.shape[0])
+            gerr_sdss = np.zeros(g.shape[0])
+            
+            for ism in range(g.shape[0]):
+                if (g[ism]-i[ism]) <  1.5:
+                    g_sdss[ism] = g[ism] - (-0.2366)*(g[ism]-i[ism]) - (-0.0598)
+                    gerr_sdss[ism] = np.sqrt(e_g[ism]**2 + 0.0045**2 + 0.0036**2)
+                elif (g[ism]-i[ism]) > 1.5:
+                    g_sdss[ism] = g[ism] - (0.1085)*(g[ism]-i[ism]) - (-0.5700)
+                    gerr_sdss[ism] = np.sqrt(e_g[ism]**2 + 0.0148**2 + 0.0399**2)
+            
+            
+            #r mag
+            r_sdss = np.zeros(r.shape[0])
+            rerr_sdss = np.zeros(r.shape[0])
+            
+            for ism in range(r.shape[0]):
+                if (g[ism]-i[ism]) <  1.5:
+                    r_sdss[ism] = r[ism] - (0.0318)*(g[ism]-i[ism]) - (0.0011)
+                    rerr_sdss[ism] = np.sqrt(e_r[ism]**2 + 0.0009**2 + 0.0007**2)
+                elif (g[ism]-i[ism]) > 1.5:
+                    r_sdss[ism] = r[ism] - (-0.0472)*(g[ism]-i[ism]) - (0.1127)
+                    rerr_sdss[ism] = np.sqrt(e_r[ism]**2 + 0.0062**2 + 0.0168**2) 
+            
+
+            #i mag
+            i_sdss = np.zeros(i.shape[0])
+            ierr_sdss = np.zeros(i.shape[0])
+            
+            for ism in range(i.shape[0]):
+                if (g[ism]-i[ism]) <  1.1:
+                    i_sdss[ism] = i[ism] - (-0.0389)*(g[ism]-i[ism]) - (0.0137)
+                    ierr_sdss[ism] = np.sqrt(e_i[ism]**2 + 0.0023**2 + 0.0015**2)
+                elif (g[ism]-i[ism]) > 1.1:
+                    i_sdss[ism] = i[ism] - (-0.0617)*(g[ism]-i[ism]) - (0.0362)
+                    ierr_sdss[ism] = np.sqrt(e_i[ism]**2 + 0.0020**2 + 0.0048**2)
+            
+            
+            #z mag
+            z_sdss = np.zeros(z.shape[0])
+            zerr_sdss = np.zeros(z.shape[0])
+            
+            for ism in range(z.shape[0]):
+                if (g[ism]-i[ism]) <  2.0:
+                    z_sdss[ism] = z[ism] - (-0.0352)*(g[ism]-i[ism]) - (0.0095)
+                    zerr_sdss[ism] = np.sqrt(e_z[ism]**2 + 0.0017**2 + 0.0018**2)
+                elif (g[ism]-i[ism]) > 2.0:
+                    z_sdss[ism] = z[ism] - (-0.1209)*(g[ism]-i[ism]) - (0.2115)
+                    zerr_sdss[ism] = np.sqrt(e_z[ism]**2 + 0.0155**2 + 0.0470**2)
+            
+
+            self.data.add_column(Column(data=g_sdss, name='_gmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=gerr_sdss, name='_e_gmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=r_sdss, name='_rmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=rerr_sdss, name='_e_rmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=i_sdss, name='_imag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=ierr_sdss, name='_e_imag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=z_sdss, name='_zmag',
+                                        unit=u.mag))
+            self.data.add_column(Column(data=zerr_sdss, name='_e_zmag',
+                                        unit=u.mag))
+            
+            
+            # get rid of sources with no information from catalog
+            self.data = self.data[self['_gmag'] != 0]
+            self.data = self.data[self['_e_gmag'] != 0]
+            self.data = self.data[self['_rmag'] != 0]
+            self.data = self.data[self['_e_rmag'] != 0]
+            self.data = self.data[self['_imag'] != 0]
+            self.data = self.data[self['_e_imag'] != 0]
+            self.data = self.data[self['_zmag'] != 0]
+            self.data = self.data[self['_e_zmag'] != 0]
+            
+
+            if '_transformed' not in self.catalogname:
+                self.catalogname += '_transformed'
+                self.history += ', {:d} transformed to {:s} (AB)'.format(
+                    self.shape[0], targetfilter)
+                self.magsystem = 'AB'
+
+            logging.info(('{:d} sources sucessfully transformed '
+                          'to {:s}').format(self.shape[0], targetfilter))
+            
+
+            return self.shape[0]
+        
+        
 
         # SDSS to UKIRT Z
         elif (self.catalogname.find('SDSS') > -1) and \
