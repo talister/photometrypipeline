@@ -4156,14 +4156,6 @@ nextfli_param = {
 }
 
                       
-# CFHT, MegaPrime
-cfhtmegaprime_param = {
-    'telescope_instrument': 'CFHT/MegaPrime',  # telescope/instrument name
-    'telescope_keyword': 'CFHTMEGAPRIME',  # telescope/instrument keyword
-    'observatory_code': '568',         # MPC observatory code
-    'secpix': (0.185, 0.185),  # pixel size (arcsec)
-=======
-
 # GTC, OSIRIS
 gtcosiris_param = {
     'telescope_instrument': 'GTC/OSIRIS',  # telescope/instrument name
@@ -4399,10 +4391,8 @@ instrument_identifiers = {'= "Vatt4k"':        'VATT4K',
                           'WFC': 'INTWFC',
                           'ALFOSC_FASU': 'NOTALFOSC',
                           'FLI': 'NEXT',
-                          'OSIRIS': 'GTCOSIRIS'
+                          'OSIRIS': 'GTCOSIRIS',
                           'MegaPrime': 'CFHTMEGAPRIME',}
-
->>>>>>> cc302ad0f48c40e2d5f38ecd3d02e1e316523128
 
 # translate telescope keyword into parameter set defined here
 telescope_parameters = {'VATT4K':       vatt4k_param,
@@ -4468,7 +4458,6 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'NOTALFOSC': notalfosc_param,
                         'NEXT': nextfli_param,
                         'GTCOSIRIS': gtcosiris_param,
-                        'IAC80': iac80_param,
                         'CFHTMEGAPRIME': cfhtmegaprime_param}
 
 
