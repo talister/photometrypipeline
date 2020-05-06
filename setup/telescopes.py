@@ -4030,7 +4030,7 @@ intwfc_param = {
 notalfosc_param = {
     'telescope_instrument': 'NOT/ALFOSC',  # telescope/instrument name
     'telescope_keyword': 'NOTALFOSC',      # telescope/instrument keyword
-    'observatory_code': 'Z18',         # MPC observatory code
+    'observatory_code': 'Z23',         # MPC observatory code
     'secpix': (0.2138, 0.2138),  # pixel size (arcsec)
     # before binning
     'ext_coeff': 0.05,          # typical extinction coefficient
@@ -4057,7 +4057,9 @@ notalfosc_param = {
     # pp_prepare
     'object': 'OBJECT',  # object name keyword
     'filter': 'ALFLTNM',  # filter keyword
-    'filter_translations': {'Open': None},
+    'filter_translations': {'Open': None, 'U_Bes 362_60': 'U',
+                            'B_Bes 440_100': 'B', 'V_Bes 530_80': 'V',
+                            'R_Bes 650_130': 'R', 'i_int 797_157': 'I'},
     # filtername translation dictionary
     'exptime': 'EXPTIME',  # exposure time keyword (s)
     'airmass': 'AIRMASS',  # airmass keyword
