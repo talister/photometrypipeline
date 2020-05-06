@@ -4030,7 +4030,7 @@ intwfc_param = {
 notalfosc_param = {
     'telescope_instrument': 'NOT/ALFOSC',  # telescope/instrument name
     'telescope_keyword': 'NOTALFOSC',      # telescope/instrument keyword
-    'observatory_code': 'Z18',         # MPC observatory code
+    'observatory_code': 'Z23',         # MPC observatory code
     'secpix': (0.2138, 0.2138),  # pixel size (arcsec)
     # before binning
     'ext_coeff': 0.05,          # typical extinction coefficient
