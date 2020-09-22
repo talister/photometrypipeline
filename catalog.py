@@ -828,10 +828,10 @@ class catalog(object):
                       'e_ra_deg': '1E',
                       'e_dec_deg': '1E',
                       'mag': '1E'}
-        # disp_dic = {'ra_deg': 'E15', 'dec_deg': 'E15',
-        #             'e_ra_deg': 'E12',
-        #             'e_dec_deg': 'E12',
-        #             'mag': 'F8.4'}
+        #disp_dic = {'ra_deg': 'F13.8', 'dec_deg': 'F13.8',
+        #            'e_ra_deg': 'F13.8',
+        #            'e_dec_deg': 'F13.8',
+        #            'mag': 'F8.4'}
         unit_dic = {'ra_deg': 'deg', 'dec_deg': 'deg',
                     'e_ra_deg': 'deg',
                     'e_dec_deg': 'deg',

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """ PP_RUN - wrapper for automated data analysis
     v1.0: 2016-02-10, mommermiscience@gmail.com
@@ -53,7 +53,7 @@ import pp_register
 import pp_photometry
 import pp_calibrate
 import pp_distill
-import diagnostics as diag
+from diagnostics import registration as diag
 
 # setup logging
 logging.basicConfig(filename=_pp_conf.log_filename,
