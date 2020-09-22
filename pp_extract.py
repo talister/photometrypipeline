@@ -67,7 +67,7 @@ logging.basicConfig(filename=_pp_conf.log_filename,
 version = '1.0'
 
 # Determine the Source Extractor executable name: sex or sextractor.
-for cmd in ['sex', 'sextractor']:
+for cmd in ['sex', 'sextractor', 'source-extractor']:
     try:
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)

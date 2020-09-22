@@ -92,7 +92,7 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
     implants = {}
 
     # if GENERIC telescope, ask user for header keywords
-    if obsparam['telescope_keyword'] is 'GENERIC':
+    if obsparam['telescope_keyword'] == 'GENERIC':
         keywords = {'pixel scale in arcsec/px before binning': 'secpix',
                     'binning factor in both axes': 'binning',
                     'image center RA (keyword or degrees)': 'ra',
@@ -111,12 +111,12 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
 
             inp = input('%s? > ' % description)
 
-            if keyword is 'secpix':
+            if keyword == 'secpix':
                 obsparam[keyword] = (float(inp), float(inp))
-            if keyword is 'binning':
+            if keyword == 'binning':
                 implants['BINX'] = (float(inp), 'PP: user-defined')
                 implants['BINY'] = (float(inp), 'PP: user-defined')
-            if keyword is 'ra':
+            if keyword == 'ra':
                 try:
                     implants['OBJCTRA'] = (float(inp), 'PP: user_defined')
                     obsparam['radec_separator'] = 'XXX'
@@ -131,17 +131,17 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
                 #         obsparam['radec_separator'] = ':'
                 #     if ' ' in header[inp].strip():
                 #         obsparam['radec_separator'] = ' '
-            if keyword is 'dec':
+            if keyword == 'dec':
                 try:
                     implants['OBJCTDEC'] = (float(inp), 'PP: user_defined')
                     obsparam['radec_separator'] = 'XXX'
                 except TypeError:
                     obsparam['dec'] = inp
-            if keyword is 'filter':
+            if keyword == 'filter':
                 implants[obsparam['filter']] = (inp, 'PP: user-defined')
-            if keyword is 'date_keyword':
+            if keyword == 'date_keyword':
                 obsparam['date_keyword'] = inp
-            if keyword is 'exptime':
+            if keyword == 'exptime':
                 implants['EXPTIME'] = (float(inp), 'PP: user-defined')
 
         implants['INSTRUME'] = ('GENERIC', 'PP: manually set')
@@ -252,7 +252,7 @@ def prepare(filenames, obsparam, header_update, keep_wcs=False,
                 pass
 
             # if GENERIC telescope, add implants to header
-            if obsparam['telescope_keyword'] is 'GENERIC':
+            if obsparam['telescope_keyword'] == 'GENERIC':
                 for key, val in list(implants.items()):
                     header[key] = (val[0], val[1])
 
