@@ -48,8 +48,8 @@ directory (include these commands in your ``.bashrc``, ``.cshrc``, or
 ``.profile`` file.)
 
 
-Installation Instructions for Ubuntu 16.10/16.04
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Installation Instructions for Ubuntu 16.04+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Clone the PP github repo::
 
@@ -71,17 +71,12 @@ Install software requirements for SCAMP, Source Extractor and imagemagick::
 	 libcurl4-gnutls-dev \
 	 liblapack3 liblapack-dev liblapacke liblapacke-dev \
 	 libfftw3-3 libfftw3-dev libfftw3-single3 \
-	 libatlas-base-dev
-
-Unpack SCAMP and install using::
-
-  ./configure --enable-threads
-  make
-  sudo make install
+	 libatlas-base-dev \
+	 scamp 
 
 Install Python modules::
 
-  pip install --upgrade --user numpy scipy astropy astroquery matplotlib pandas
+  pip install --upgrade --user numpy scipy astropy astroquery matplotlib pandas future scikit-image
 
 Add these lines to the ``.bashrc`` file in your home directory and
 replace ``<path>`` with the actual path to the PP directory::
@@ -93,14 +88,53 @@ replace ``<path>`` with the actual path to the PP directory::
 Kudos to `towicode`_ for figuring out the SCAMP requirements.
   
 
-Installation Instructions for Mac OS (Sierra)
+Installation Instructions for Mac OS Catalina
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Install Anaconda: download Anaconda from https://www.continuum.io/downloads
 In your terminal window type one of the below and follow the instructions::
   
+  https://repo.anaconda.com/archive/Anaconda3-2020.07-MacOSX-x86_64.sh
+
+Install AstroConda::
+
+  $ conda update conda
+  $ conda config --add channels http://ssb.stsci.edu/astroconda
+
+Add packages to base environment::
+  $ conda install stsci wcstools
+
+Install extra packages::
+  $ conda install -c astropy pyephem astroquery astroplan astroscrappy ccdproc
+  $ conda install -c conda-forge uncertainties lmfit pysftp scikit-image cfitsio ghostscript openorb
+  $ conda install -c anaconda future pillow wget gfortran_osx-64
+  $ conda install -c bioconda graphicsmagick
+
+Install sextractor and scamp::
+  $ conda install -c conda-forge astromatic-scamp
+  $ conda install -c conda-forge astromatic-source-extractor
+
+Update pip and install dev version of astroquery::
+  $ pip install --upgrade pip
+  $ pip install --upgrade --pre astroquery
+
+Install homebrew::
+  $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  $ brew doctor
+
+Install extra software::
+  $ brew install imagemagick
+
+(Thanks to Nick Moskovitz for these instructions!)
+
+	
+Legacy: Installation Instructions for Mac OS (Sierra)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Install Anaconda: download Anaconda from https://www.continuum.io/downloads
+In your terminal window type one of the below and follow the instructions::
+  
   Anaconda3-4.4.0-MacOSX-x86_64.sh
-  Anaconda2-4.4.0-MacOSX-x86_64.sh
 
 Install Homebrew::
   
