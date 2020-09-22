@@ -11,7 +11,7 @@ setup/mytelescopes.py
 doc/_build/
 ppident_asteroids*
 ppident_variablestars*
-.idea/
+.idea/*
 
 ### Python ###
 ## Byte-compiled / optimized / DLL files
