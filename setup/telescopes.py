@@ -4291,9 +4291,9 @@ cfhtmegaprime_param = {
 }
 
 # NPOI PW1m, FLI
-pwfli_param = {
-    'telescope_instrument': 'PW1m/FLI',  # telescope/instrument name
-    'telescope_keyword': 'PWFLI',  # telescope/instrument keyword
+pwflinpoi_param = {
+    'telescope_instrument': 'PW1mNPOI/FLI',  # telescope/instrument name
+    'telescope_keyword': 'PWFLINPOI',  # telescope/instrument keyword
 
     'observatory_code': '699',         # MPC observatory code
     'secpix': (0.31, 0.31),  # pixel size (arcsec)
@@ -4382,7 +4382,7 @@ implemented_telescopes = ['VATT4K', 'DCTLMI', 'ARC35ARCTIC',
                           'PDS35CMSTL1001E', 'MMTCAM', 'MAGLDSS3',
                           'SL40IN', 'STEWARD90SCC', 'STRUVECQUEAN',
                           'ZTFMOSAIC', 'NOTALFOSC', 'NEXT', 'GTCOSIRIS',
-                          'PWFLI']
+                          'PWFLINPOI']
 
 # translate INSTRUME (or others, see _pp_conf.py) header keyword into
 # PP telescope keyword
@@ -4528,7 +4528,7 @@ telescope_parameters = {'VATT4K':       vatt4k_param,
                         'NEXT': nextfli_param,
                         'GTCOSIRIS': gtcosiris_param,
                         'CFHTMEGAPRIME': cfhtmegaprime_param,
-                        'PWFLI': pwfli_param}
+                        'PWFLINPOI': pwflinpoi_param}
 
 
 
