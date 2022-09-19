@@ -261,7 +261,8 @@ def run_the_pipeline(filenames, man_targetname, man_filtername,
     # a fixed aperture radius has been used
     else:
         if _pp_conf.photmode == 'APER':
-            summary_message += "using a fixed aperture radius of %.1f px;" % aprad
+            summary_message = ("<FONT COLOR=\"green\">using a fixed aperture radius of %.1f px;" +
+                               "</FONT>") % aprad
 
     # add information to summary website, if requested
     if _pp_conf.use_diagnostics_summary:
@@ -430,6 +431,8 @@ if __name__ == '__main__':
 
     else:
         # call run_the_pipeline only on filenames
+        print(fixed_aprad, source_tolerance, solar,\
+                         rerun_registration, asteroids, keep_wcs)
         run_the_pipeline(filenames, man_targetname, man_filtername,
                          fixed_aprad, source_tolerance, solar,
                          rerun_registration, asteroids, keep_wcs)
