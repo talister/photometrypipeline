@@ -57,7 +57,7 @@ logging.basicConfig(filename=_pp_conf.log_filename,
 def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
                              preferred_catalogs,
                              min_sources=_pp_conf.min_sources_photometric_catalog,
-                             max_sources=1e4, mag_accuracy=0.1,
+                             max_sources=1e4, mag_accuracy=0.1, max_mag=21,
                              solar=False, use_all_stars=False,
                              display=False):
     """create a photometric catalog of the field of view"""
@@ -69,7 +69,7 @@ def create_photometrycatalog(ra_deg, dec_deg, rad_deg, filtername,
         n_sources = cat.download_catalog(ra_deg, dec_deg, rad_deg,
                                          max_sources,
                                          use_all_stars=use_all_stars,
-                                         save_catalog=True)
+                                         save_catalog=True, max_mag=max_mag)
 
         if display:
             print(n_sources, 'sources downloaded from', catalogname)
@@ -543,6 +543,13 @@ def calibrate(filenames, minstars, manfilter, manualcatalog,
                              'ignore').format(ldac_filename))
             if display:
                 print('catalog {:s} is empty; ignore'.format(ldac_filename))
+#        min_ra  = numpy.min(cat['ra.deg'])
+#        max_ra  = numpy.max(cat['ra.deg'])
+#        min_dec = numpy.min(cat['dec.deg'])
+#        max_dec = numpy.max(cat['dec.deg'])
+
+#        print("FoV center for %s is (%.7f -- %.7f/%+.7f -- %.7f)" % (ldac_filename, min_ra, max_ra, min_dec, max_dec))
+#        catalogs.append(cat)
 
     # derive center and radius of field of view of all images
     ra_deg, dec_deg, rad_deg = skycenter(catalogs)
