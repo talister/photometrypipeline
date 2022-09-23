@@ -338,8 +338,9 @@ class catalog(object):
                                      'RPmag', 'eRPmag'],
                             column_filters={"phot_g_mean_mag":
                                             ("<{:f}".format(max_mag))},
-                            row_limit=max_sources,
-                            timeout=300)
+                            row_limit = max_sources,
+                            timeout = 300,
+                            vizier_server=u'vizier.cfa.harvard.edu') # vizier.hia.nrc.ca')
 
             try:
                 self.data = vquery.query_region(field,
