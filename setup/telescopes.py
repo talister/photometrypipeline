@@ -3445,6 +3445,7 @@ lcosinfa15_param = {
     #                        mask files as a function of x,y binning
 
     # registration settings (Scamp)
+    'scamp-config-file': rootpath+'/setup/lcosin.scamp',
     'reg_max_mag': 18,
     'reg_search_radius': 0.5,  # deg
     'source_tolerance': 'high',
@@ -3459,7 +3460,7 @@ lcosinfa15_param = {
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
+    'photometry_catalogs': ['GAIA', 'PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
 # LCOGT, SINISTRO camera (SSO, FA12)
