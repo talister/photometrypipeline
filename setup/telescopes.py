@@ -3167,7 +3167,7 @@ lcosinfa03_param = {
     'source_minarea': 9,  # default sextractor source minimum N_pixels
     'source_snr': 3,  # default sextractor source snr for registration
     'aprad_default': 5,  # default aperture radius in px
-    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'aprad_range': [2, 21],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/lcosin.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
@@ -3188,7 +3188,7 @@ lcosinfa03_param = {
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['GAIA', 'PANSTARRS', 'SDSS-R9', 'APASS9']
+    'photometry_catalogs': ['PANSTARRS', 'GAIA', 'SDSS-R9', 'APASS9']
 }
 
 
@@ -3371,7 +3371,7 @@ lcosinfa04_param = {
     'source_minarea': 9,  # default sextractor source minimum N_pixels
     'source_snr': 3,  # default sextractor source snr for registration
     'aprad_default': 5,  # default aperture radius in px
-    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'aprad_range': [2, 21],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/lcosin.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
@@ -3392,7 +3392,7 @@ lcosinfa04_param = {
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
+    'photometry_catalogs': ['GAIA', 'PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
 
@@ -3725,7 +3725,7 @@ lcosinfa16_param = {
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['PANSTARRS', 'GAIA', 'SDSS-R9', 'APASS9']
+    'photometry_catalogs': ['GAIA', 'PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
 
@@ -4040,7 +4040,7 @@ lcosinfa06_param = {
     'source_minarea': 9,  # default sextractor source minimum N_pixels
     'source_snr': 3,  # default sextractor source snr for registration
     'aprad_default': 5,  # default aperture radius in px
-    'aprad_range': [2, 10],  # [minimum, maximum] aperture radius (px)
+    'aprad_range': [2, 21],  # [minimum, maximum] aperture radius (px)
     'sex-config-file': rootpath+'/setup/lcosin.sex',
     'mask_file': {},
     #                        mask files as a function of x,y binning
@@ -4061,7 +4061,7 @@ lcosinfa06_param = {
 
     # default catalog settings
     'astrometry_catalogs': ['GAIA'],
-    'photometry_catalogs': ['PANSTARRS', 'SDSS-R9', 'APASS9']
+    'photometry_catalogs': ['GAIA', 'PANSTARRS', 'SDSS-R9', 'APASS9']
 }
 
 
