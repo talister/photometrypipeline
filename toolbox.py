@@ -31,6 +31,8 @@ except ImportError:
 
 import math
 import numpy as np
+from time import sleep
+from random import randint
 
 # only import if Python3 is used
 if sys.version_info > (3, 0):
@@ -243,3 +245,22 @@ def if_val_in_dict(target_val, dic):
             if target_val == val:
                 result = True
     return result
+
+def random_delay(lower_limit=10, upper_limit=20):
+    """Waits a random number of integer seconds between [lower_limit; default 10]
+    and [upper_limit; default 20]. Useful for slowing down web requests to prevent
+    overloading remote systems. The executed delay is returned."""
+
+    try:
+        lower_limit = max(int(lower_limit), 0)
+    except ValueError:
+        lower_limit = 10
+    try:
+        upper_limit = int(upper_limit)
+    except ValueError:
+        upper_limit = 20
+
+    delay = randint(lower_limit, upper_limit)
+    sleep(delay)
+
+    return delay
